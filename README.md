@@ -1,19 +1,8 @@
 <img align="right" width="40%" src="https://www.finos.org/hubfs/FINOS/finos-logo/FINOS_Icon_Wordmark_Name_RGB_horizontal.png">
 
-# FINOS Software Project Blueprint
+# FINOS Open Reg Tech - LCR
 
-Project blueprint is a GitHub repository template for all [Fintech Open Source Foundation (FINOS)](https://www.finos.org/) hosted GitHub repositories, contributed and maintained by FINOS as part of the [Open Developer Platform (ODP)](https://odp.finos.org) initiative.
-
-## How to use this blueprint
-
-Please follow https://odp.finos.org/docs/project-collaboration/#how-to-use-this-blueprint
-
-## Blueprint preview
-
-A preview of the blueprint can be found [here](https://amazing-joliot-c42cde.netlify.app/). 
-
-## Governance
-This blueprint implements https://community.finos.org/docs/governance/#open-source-software-projects
+Welcome to the Open Reg Tech ipmlementation of the US Liquidity Coverage Ratio (LCR). The goal of the project is to establish the delivery and collaboration of regulations in code. 
 
 ## License
 
