@@ -1,0 +1,11 @@
+/.lobo/
+/.idea/
+/node_modules/
+*.iml
+
+/src/
+/tests/
+/tools/
+elm.json
+lobo.json
+morphir.json

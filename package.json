@@ -1,0 +1,22 @@
+{
+  "name": "finos/open-reg-tech-us-lcr",
+  "version": "0.0.1",
+  "keywords": [
+    "finos",
+	"morphir",
+	"lcr"
+  ],
+  "scripts": {
+    "morphir-elm-make": "morphir-elm make",
+    "test": "lobo  --framework=elm-test",
+  },
+  "devDependencies": {
+    "lobo": "^1.0.0"
+  },
+  "dependencies": {
+    "morphir-elm": "^2.67.0"
+  },
+  "files": [
+    "morphir-ir.json"
+  ]
+}

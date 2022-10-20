@@ -14,3 +14,12 @@ docs/contributing.md
 
 # We use YARN
 website/package-lock.json
+
+# Morphir
+/.lobo/
+/.idea/
+/node_modules/
+*.iml
+morphir-ir.json
+/elm-stuff/
+/dist/
