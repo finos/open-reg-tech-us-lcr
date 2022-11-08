@@ -1,7 +1,6 @@
 [![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Incubating)
-![website build](https://github.com/finos/open-reg-tech-us-lcr/workflows/Docusaurus-website-build/badge.svg)
 
-<img align="right" width="40%" src="https://www.finos.org/hubfs/FINOS/finos-logo/FINOS_Icon_Wordmark_Name_RGB_horizontal.png">
+<img align="right" width="40%" src="https://github.com/finos/finos-landscape/blob/master/hosted_logos/open-reg-tech-us-lcr.svg">
 
 # FINOS Open Reg Tech - LCR
 
