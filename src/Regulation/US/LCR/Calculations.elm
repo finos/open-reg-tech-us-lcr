@@ -15,9 +15,12 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (..)
+import Regulation.US.FR2052A.DataTables.Inflows.Secured as Inflows
+import Regulation.US.FR2052A.DataTables.Outflows.Secured as Outflows
 import Regulation.US.FR2052A.Fields.MaturityBucket exposing (MaturityBucket(..))
 import Regulation.US.LCR.Basics exposing (Balance)
 import Regulation.US.LCR.Flows as Flows exposing (..)
+import Regulation.US.LCR.Rule exposing (Rule)
 import Regulation.US.LCR.Rules as Rules
 
 
@@ -40,7 +43,56 @@ import Regulation.US.LCR.Rules as Rules
 --
 --fn_name Adjusted_Level2A_HQLA_Additive_Values = ""
 --
---fn_name Adjusted_Level2B_HQLA_Additive_Values = ""
+--fn_name Adjusted_Level2B_HQLA_Additive_Values =
+adjusted_Level2B_HQLA_Additive_Values : Float -> Inflows -> Outflows -> Inflows -> Inflows -> Float
+adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+  let
+          securedLen : List Flow
+          securedLen =
+                  Flows.inflowRules securedLending
+                      |> Rules.findAll
+                          [ "33(f)(1)(v)"]
+          slen : Float
+          slen = List.map(\(v,u) -> u) securedLen
+                |> List.sum
+          assetExchangeMat : List Flow
+          assetExchangeMat =
+                            Flows.inflowRules assetExchangeUnwind
+                                |> Rules.findAll
+                                    [ "21(c)(todo)"]
+          assEx : Float
+          assEx = List.map(\(v,u) -> u) assetExchangeMat
+                          |> List.sum
+          assetCollateral : List Flow
+          assetCollateral =
+                   Flows.inflowRules assetExunwindcollateral
+                        |> Rules.findAll
+                             [ "33(f)(2)(i)"]
+          assColl : Float
+          assColl = List.map(\(v,u) -> u) assetCollateral
+                   |> List.sum
+          securedFund : List Flow
+          securedFund =
+              Flows.outflowRules securedFunding
+               |> Rules.findAll
+                        ["21(b)(todo)"]
+          secFun : Float
+          secFun = List.map(\(u,v) -> v) securedFund
+                   |> List.sum
+  in
+          float  - slen + secFun + assEx - assColl
+
+
+
+          --ruleout : List RuleFlow
+          --ruleout =
+          --        Flows.outflowRules out
+          --        |> Rules.findAll
+          --           ["21(b)(todo)"]
+          --inFlowAmt : Float
+
+
+         --formula = level2B values - SecuredLendingUnwindColl + SecuredFundingCollectoral + AssetExchangeUnwind - AssetExcahngeunwindCollecteral
 --
 --fn_name Adjusted_Excess_HQLA = ""
 --
