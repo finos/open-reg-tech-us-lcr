@@ -11,7 +11,8 @@ Local run uses Docker, please [follow instructions](https://docs.docker.com/get-
 
 ```
 docker build . -t morphir-lcr
-docker run --name morphir-lcr-container -p 3000:3000 morphir-lcr
+docker run --name morphir-lcr-container -p 3000:3000 morphir-lcr:latest
+docker rm morphir-lcr-container
 ```
 
 ## Tentative Roadmap
