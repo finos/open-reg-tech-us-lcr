@@ -21,5 +21,6 @@ website/package-lock.json
 /node_modules/
 *.iml
 morphir-ir.json
+morphir-hashes.json
 /elm-stuff/
 /dist/
