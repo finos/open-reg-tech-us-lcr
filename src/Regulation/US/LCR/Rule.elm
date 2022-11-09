@@ -11,13 +11,23 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.LCR.Rule exposing (..)
 
+import Regulation.US.FR2052A.DataTables exposing (Flow)
 
-applyRule : Bool -> String -> Float -> List ( String, Float )
-applyRule flag label amount =
+
+type alias RuleFlow =
+    { rule : String
+    , amount : Float
+    , flow : Flow
+    }
+
+
+applyRule : Bool -> RuleFlow -> List RuleFlow
+applyRule flag ruleFlow =
     if flag then
-        [ ( label, amount ) ]
+        [ ruleFlow ]
 
     else
         []
