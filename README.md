@@ -6,6 +6,14 @@
 
 Welcome to the Open Reg Tech ipmlementation of the US Liquidity Coverage Ratio (LCR). The goal of the project is to establish the delivery and collaboration of regulations in code. 
 
+# Local run
+Local run uses Docker, please [follow instructions](https://docs.docker.com/get-docker/) to install it locally, then run the following commands:
+
+```
+docker build . -t morphir-lcr
+docker run --name morphir-lcr-container -p 3000:3000 morphir-lcr
+```
+
 ## Tentative Roadmap
 
 1. Agree on the regulation (LCR)
