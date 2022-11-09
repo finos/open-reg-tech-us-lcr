@@ -6,7 +6,6 @@ LABEL author="finos"
 ENV NODE_ENV=production
 ENV PORT=80
 ENV MORPHIR_USER=morphir
-ENV PROJECT_MODEL_DIR=src/Regulation/US/LCR
 
 # Add Non Root User
 RUN adduser --system --uid=7357 --no-create-home $MORPHIR_USER
@@ -14,7 +13,7 @@ RUN adduser --system --uid=7357 --no-create-home $MORPHIR_USER
 #Directory of Docker Container
 WORKDIR /var/morphir
 
-COPY $PROJECT_MODEL_DIR ./
+COPY src ./src/
 COPY morphir.json ./
 
 RUN npm install -g morphir-elm
