@@ -33,6 +33,20 @@ applyRules flow =
         , applyRule (match_rule_107_section_33_d_1 flow) "33(d)(1)" flow.marketValue
         ]
 
+rule_1_section_20_a_1_C : List Assets -> Float
+rule_1_section_20_a_1_C assets =
+    assets
+        |> List.filter match_rule_1_section_20_a_1_C
+        |> List.map .marketValue
+        |> List.sum
+
+rule_107_section_33_d_1 : List Assets -> Float
+rule_107_section_33_d_1 flows =
+    flows
+        |> List.filter match_rule_107_section_33_d_1
+        |> List.map .marketValue
+        |> List.sum
+
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
@@ -125,3 +139,4 @@ match_rule_107_section_33_d_1 flow =
     && (flow.forwardStartAmount == Nothing)
     -- Forward Start Bucket: NULL
     && (flow.forwardStartBucket == Nothing)
+
