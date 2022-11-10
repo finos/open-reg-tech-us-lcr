@@ -14,6 +14,7 @@
 
 module Regulation.US.LCR.Basics exposing (..)
 
+
 type alias Balance =
     Float
 

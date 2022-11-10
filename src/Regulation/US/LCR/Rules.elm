@@ -16,6 +16,7 @@ module Regulation.US.LCR.Rules exposing (..)
 
 import Regulation.US.LCR.Flows exposing (Flow)
 
+
 type alias Weight =
     Float
 
@@ -54,7 +55,7 @@ find name rules =
         |> List.head
 
 
-findAll : List String -> List ( Flow ) -> List ( Flow )
+findAll : List String -> List Flow -> List Flow
 findAll rules flows =
     flows
-        |> List.filter (\(rule,amount) -> List.member rule rules)
+        |> List.filter (\( rule, amount ) -> List.member rule rules)
