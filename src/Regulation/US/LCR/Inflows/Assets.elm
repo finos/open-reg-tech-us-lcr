@@ -21,28 +21,56 @@ import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
 import Regulation.US.LCR.AmountCalculations exposing (..)
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Basics exposing (Balance)
 
+type alias AssetAggregations =
+    { rule_1_section_20_a_1_C : Balance
+    , rule_1_section_20_a_1 : Balance
+    , rule_1_section_20_b_1 : Balance
+    , rule_1_section_20_c_1 : Balance
+    , rule_107_section_33_d_1 : Balance
+    }
 
-applyRules : Assets -> List ( String, Float )
-applyRules flow =
-    List.concat
-        [ applyRule (match_rule_1_section_20_a_1_C flow) "20(a)(1)C" flow.marketValue
-        , applyRule (match_rule_1_section_20_a_1 flow) "20(a)(1)" flow.marketValue
-        , applyRule (match_rule_1_section_20_b_1 flow) "20(b)(1)" flow.marketValue
-        , applyRule (match_rule_1_section_20_c_1 flow) "20(c)(1)" flow.marketValue
-        , applyRule (match_rule_107_section_33_d_1 flow) "33(d)(1)" flow.marketValue
-        ]
+applyRules : List Assets -> AssetAggregations
+applyRules assets =
+    AssetAggregations 
+        (rule_1_section_20_a_1_C assets)
+        (rule_1_section_20_a_1 assets)
+        (rule_1_section_20_b_1 assets)
+        (rule_1_section_20_c_1 assets)
+        (rule_107_section_33_d_1 assets)
 
-rule_1_section_20_a_1_C : List Assets -> Float
+rule_1_section_20_a_1_C : List Assets -> Balance
 rule_1_section_20_a_1_C assets =
     assets
         |> List.filter match_rule_1_section_20_a_1_C
         |> List.map .marketValue
         |> List.sum
 
-rule_107_section_33_d_1 : List Assets -> Float
-rule_107_section_33_d_1 flows =
-    flows
+rule_1_section_20_a_1 : List Assets -> Balance
+rule_1_section_20_a_1 assets =
+    assets
+        |> List.filter match_rule_1_section_20_a_1
+        |> List.map .marketValue
+        |> List.sum
+
+rule_1_section_20_b_1 : List Assets -> Balance
+rule_1_section_20_b_1 assets =
+    assets
+        |> List.filter match_rule_1_section_20_b_1
+        |> List.map .marketValue
+        |> List.sum
+
+rule_1_section_20_c_1 : List Assets -> Balance
+rule_1_section_20_c_1 assets =
+    assets
+        |> List.filter match_rule_1_section_20_c_1
+        |> List.map .marketValue
+        |> List.sum
+
+rule_107_section_33_d_1 : List Assets -> Balance
+rule_107_section_33_d_1 assets =
+    assets
         |> List.filter match_rule_107_section_33_d_1
         |> List.map .marketValue
         |> List.sum
