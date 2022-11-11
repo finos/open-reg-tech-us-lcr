@@ -23,6 +23,8 @@ import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits)
 import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (Other)
 import Regulation.US.FR2052A.DataTables.Outflows.Secured exposing (Secured)
 import Regulation.US.FR2052A.DataTables.Outflows.Wholesale exposing (Wholesale)
+import Regulation.US.FR2052A.DataTables.Supplemental.DerivativesCollateral exposing (DerivativesCollateral)
+import Regulation.US.FR2052A.DataTables.Supplemental.LiquidityRiskMeasurement exposing (LiquidityRiskMeasurement)
 import Regulation.US.FR2052A.Fields.MaturityBucket exposing (MaturityBucket(..))
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct exposing (SubProduct)
 import Regulation.US.LCR.Basics exposing (Balance)
@@ -400,56 +402,176 @@ level_1_HQLA_additive_values data =
 level_1_HQLA_subtractive_values : DataTables -> Balance
 level_1_HQLA_subtractive_values data =
     let
-        level_1_outflow_secured : List Secured
-        level_1_outflow_secured =
-            data.outflows.secured
-            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+        level_1_supplemental_LiquidityRiskMeasurement : List LiquidityRiskMeasurement
+        level_1_supplemental_LiquidityRiskMeasurement =
+            data.supplemental.liquidityRiskMeasurement
+        --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
 
-        level_1_outflows : DataTables.Outflows
-        level_1_outflows = { deposits = [], other = [], secured = level_1_outflow_secured, wholesale = [] }
+        level_1_suplementals : DataTables.Supplemental
+        level_1_suplementals = { informational = [], derivativesCollateral = [], liquidityRiskMeasurement = level_1_supplemental_LiquidityRiskMeasurement, balanceSheet = [], foreignExchange = []}
 
-        level_1_inflow_secured : List Inflows.Secured
-        level_1_inflow_secured =
-            data.inflows.secured
-            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
 
-        level_1_inflow_assets : List Assets
-        level_1_inflow_assets =
-            data.inflows.assets
-            |> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel1)
+        level_1_supplemental_DerivativesCollateral : List DerivativesCollateral
+        level_1_supplemental_DerivativesCollateral =
+           data.supplemental.derivativesCollateral
+                --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
 
-        level_1_inflows : DataTables.Inflows
-        level_1_inflows = { assets = level_1_inflow_assets, other = [], secured = level_1_inflow_secured, unsecured = [] }
+        level_1_suplementals_derivates : DataTables.Supplemental
+        level_1_suplementals_derivates = { informational = [], derivativesCollateral = level_1_supplemental_DerivativesCollateral, liquidityRiskMeasurement = [], balanceSheet = [], foreignExchange = []}
+
+
+        --level_1_inflow_secured : List Inflows.Secured
+        --level_1_inflow_secured =
+        --    data.inflows.secured
+        --    --|> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
         --
-        outflow_rules : List Flow
-        outflow_rules =
-            Flows.outflowRules level_1_outflows
+        --level_1_inflow_assets : List Assets
+        --level_1_inflow_assets =
+        --    data.inflows.assets
+        --    --|> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel1)
+
+        --level_1_inflows : DataTables.Inflows
+        --level_1_inflows = { assets = level_1_inflow_assets, other = [], secured = level_1_inflow_secured, unsecured = [] }
+        ----
+        supplemental_rules_liquidity_risk : List Flow
+        supplemental_rules_liquidity_risk =
+            Flows.supplementalRules level_1_suplementals
                 |> Rules.findAll
-                    [ "22(b)(3)"
-                    , "22(b)(3)"
-                    , "22(a)(3)"
-                    , "22(b)(5)"
+                    [ "22(b)(3)L1"
+                    , "22(a)(3)L1"
                     ]
 
-        outflowAmount : Float
-        outflowAmount =
-            List.sum (List.map (\f -> second f) outflow_rules)
+        liquidity_risk_amount : Float
+        liquidity_risk_amount =
+            List.sum (List.map (\f -> second f) supplemental_rules_liquidity_risk)
 
-        inflow_rules : List Flow
-        inflow_rules =
-            Flows.inflowRules level_1_inflows
+        supplemental_rules_derivaties_collateral : List Flow
+        supplemental_rules_derivaties_collateral =
+            Flows.supplementalRules level_1_suplementals_derivates
                 |> Rules.findAll
-                    [ "22(b)(3)"
-                    , "22(b)(3)"
-                    , "22(a)(3)"
-                    , "22(b)(5)"
-                    ]
-        inflowAmount : Float
-        inflowAmount =
-            List.sum (List.map (\f -> second f) inflow_rules)
+                    [ "22(b)(5)L1"]
+        deravativesCollectoralAmt : Float
+        deravativesCollectoralAmt =
+            List.sum (List.map (\f -> second f) supplemental_rules_derivaties_collateral)
 
     in
-        inflowAmount
+        deravativesCollectoralAmt + liquidity_risk_amount
+
+level_2A_HQLA_subtractive_values : DataTables -> Balance
+level_2A_HQLA_subtractive_values data =
+    let
+        level_2A_supplemental_LiquidityRiskMeasurement : List LiquidityRiskMeasurement
+        level_2A_supplemental_LiquidityRiskMeasurement =
+            data.supplemental.liquidityRiskMeasurement
+        --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+
+        level_2A_suplementals : DataTables.Supplemental
+        level_2A_suplementals = { informational = [], derivativesCollateral = [], liquidityRiskMeasurement = level_2A_supplemental_LiquidityRiskMeasurement, balanceSheet = [], foreignExchange = []}
+
+
+        level_2A_supplemental_DerivativesCollateral : List DerivativesCollateral
+        level_2A_supplemental_DerivativesCollateral =
+           data.supplemental.derivativesCollateral
+                --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+
+        level_2A_suplementals_derivates : DataTables.Supplemental
+        level_2A_suplementals_derivates = { informational = [], derivativesCollateral = level_2A_supplemental_DerivativesCollateral, liquidityRiskMeasurement = [], balanceSheet = [], foreignExchange = []}
+
+
+        --level_1_inflow_secured : List Inflows.Secured
+        --level_1_inflow_secured =
+        --    data.inflows.secured
+        --    --|> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+        --
+        --level_1_inflow_assets : List Assets
+        --level_1_inflow_assets =
+        --    data.inflows.assets
+        --    --|> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel1)
+
+        --level_1_inflows : DataTables.Inflows
+        --level_1_inflows = { assets = level_1_inflow_assets, other = [], secured = level_1_inflow_secured, unsecured = [] }
+        ----
+        supplemental_rules_liquidity_risk : List Flow
+        supplemental_rules_liquidity_risk =
+            Flows.supplementalRules level_2A_suplementals
+                |> Rules.findAll
+                    [ "22(b)(3)L2a"
+                    , "22(a)(3)L2a"
+                    ]
+
+        liquidity_risk_amount : Float
+        liquidity_risk_amount =
+            List.sum (List.map (\f -> second f) supplemental_rules_liquidity_risk)
+
+        supplemental_rules_derivaties_collateral : List Flow
+        supplemental_rules_derivaties_collateral =
+            Flows.supplementalRules level_2A_suplementals_derivates
+                |> Rules.findAll
+                    [ "22(b)(5)L2a"]
+        deravativesCollectoralAmt : Float
+        deravativesCollectoralAmt =
+            List.sum (List.map (\f -> second f) supplemental_rules_derivaties_collateral)
+
+    in
+        deravativesCollectoralAmt + liquidity_risk_amount
+
+level_2B_HQLA_subtractive_values : DataTables -> Balance
+level_2B_HQLA_subtractive_values data =
+    let
+        level_2B_supplemental_LiquidityRiskMeasurement : List LiquidityRiskMeasurement
+        level_2B_supplemental_LiquidityRiskMeasurement =
+            data.supplemental.liquidityRiskMeasurement
+        --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+
+        level_2B_suplementals : DataTables.Supplemental
+        level_2B_suplementals = { informational = [], derivativesCollateral = [], liquidityRiskMeasurement = level_2B_supplemental_LiquidityRiskMeasurement, balanceSheet = [], foreignExchange = []}
+
+
+        level_2B_supplemental_DerivativesCollateral : List DerivativesCollateral
+        level_2B_supplemental_DerivativesCollateral =
+           data.supplemental.derivativesCollateral
+                --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+
+        level_2B_suplementals_derivates : DataTables.Supplemental
+        level_2B_suplementals_derivates = { informational = [], derivativesCollateral = level_2B_supplemental_DerivativesCollateral, liquidityRiskMeasurement = [], balanceSheet = [], foreignExchange = []}
+
+
+        --level_1_inflow_secured : List Inflows.Secured
+        --level_1_inflow_secured =
+        --    data.inflows.secured
+        --    --|> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+        --
+        --level_1_inflow_assets : List Assets
+        --level_1_inflow_assets =
+        --    data.inflows.assets
+        --    --|> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel1)
+
+        --level_1_inflows : DataTables.Inflows
+        --level_1_inflows = { assets = level_1_inflow_assets, other = [], secured = level_1_inflow_secured, unsecured = [] }
+        ----
+        supplemental_rules_liquidity_risk : List Flow
+        supplemental_rules_liquidity_risk =
+            Flows.supplementalRules level_2B_suplementals
+                |> Rules.findAll
+                    [ "22(b)(3)L2b"
+                    , "22(a)(3)L2b"
+                    ]
+
+        liquidity_risk_amount : Float
+        liquidity_risk_amount =
+            List.sum (List.map (\f -> second f) supplemental_rules_liquidity_risk)
+
+        supplemental_rules_derivaties_collateral : List Flow
+        supplemental_rules_derivaties_collateral =
+            Flows.supplementalRules level_2B_suplementals_derivates
+                |> Rules.findAll
+                    [ "22(b)(5)L2b"]
+        deravativesCollectoralAmt : Float
+        deravativesCollectoralAmt =
+            List.sum (List.map (\f -> second f) supplemental_rules_derivaties_collateral)
+
+    in
+        deravativesCollectoralAmt + liquidity_risk_amount
 
 total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
 total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
