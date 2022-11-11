@@ -15,7 +15,7 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Morphir.SDK.Dict as Dict exposing (Dict)
-import Regulation.US.FR2052A.DataTables as DataTables
+import Regulation.US.FR2052A.DataTables as DataTables exposing (Inflows)
 import Regulation.US.FR2052A.DataTables.Outflows as Outflows exposing (Outflows)
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits)
 import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (Other)
@@ -46,59 +46,109 @@ import Tuple exposing (second)
 --
 --fn_name Adjusted_Level1_HQLA_Additive_Values = ""
 --
---fn_name Adjusted_Level2A_HQLA_Additive_Values = ""
+adjusted_Level2A_HQLA_Additive_Values :  Float -> Inflows -> Outflows -> Inflows -> Inflows -> Float
+adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+    let
+        securedFunds: List Flow
+        securedFunds =
+                Flows.outflowRules securedFunding
+                    |> Rules.findAll
+                        ["21(b)(todo)"]
+        securedFundings : Float
+        securedFundings = List.map(\(u,v) -> v) securedFunds
+                          |> List.sum
+        securedLen : List Flow
+        securedLen =
+                          Flows.inflowRules securedLending
+                              |> Rules.findAll
+                                  [ "33(f)(1)(iv)"]
+        securedlendings : Float
+        securedlendings = List.map(\(v,u) -> u) securedLen
+                        |> List.sum
+
+        assetExchangeMat : List Flow
+        assetExchangeMat =
+            Flows.inflowRules assetExchangeUnwind
+              |> Rules.findAll
+                      [ "21(c)(todo)"]
+        assetExchange : Float
+        assetExchange = List.map(\(v,u) -> u) assetExchangeMat
+                         |> List.sum
+        assetCollateral : List Flow
+        assetCollateral =
+           Flows.inflowRules assetExunwindcollateral
+             |> Rules.findAll
+                   [ "33(f)(2)(i)"]
+        assetExcahngeUnwindColl : Float
+        assetExcahngeUnwindColl = List.map(\(v,u) -> u) assetCollateral
+              |> List.sum
+    in
+        float  - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+
+
+
+
+        --securedFundings = List.filter(\flow -> flow.assetType == L2Assets)
+        --                     |> List.map(\(v,u) -> u) securedFunds
+
+
+
+
+    -- securedFunding L2A : 32(j)(1)(ii)
+    --securedLending
+    --Asset Exchange
+
+-- output : lvl 2A HQLA - SecuredLending unwind + se
 --
---fn_name Adjusted_Level2B_HQLA_Additive_Values =
-adjusted_Level2B_HQLA_Additive_Values : Float -> Inflows -> Outflows -> Inflows -> Inflows -> Float
+
+--adjusted_Level2B_HQLA_Additive_Values : Int -> DataTables.Outflows -> DataTables.Inflows -> Balance
+--adjusted_Level2B_HQLA_Additive_Values int outflows inflows =
+--  let
+--      securedLen : List Flow
+--      securedLen =
+--       Flows.inflowRules Inflows
+--           |> Rules.findAll
+--              [ "33(f)(1)(v)"]
+
+adjusted_Level2B_HQLA_Additive_Values : Float -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+
   let
           securedLen : List Flow
           securedLen =
-                  Flows.inflowRules securedLending
+                 Flows.inflowRules securedLending
                       |> Rules.findAll
                           [ "33(f)(1)(v)"]
-          slen : Float
-          slen = List.map(\(v,u) -> u) securedLen
+          securedlendings : Float
+          securedlendings = List.map(\(v,u) -> u) securedLen
                 |> List.sum
           assetExchangeMat : List Flow
           assetExchangeMat =
                             Flows.inflowRules assetExchangeUnwind
                                 |> Rules.findAll
                                     [ "21(c)(todo)"]
-          assEx : Float
-          assEx = List.map(\(v,u) -> u) assetExchangeMat
+          assetExchange : Float
+          assetExchange = List.map(\(v,u) -> u) assetExchangeMat
                           |> List.sum
           assetCollateral : List Flow
           assetCollateral =
                    Flows.inflowRules assetExunwindcollateral
                         |> Rules.findAll
                              [ "33(f)(2)(i)"]
-          assColl : Float
-          assColl = List.map(\(v,u) -> u) assetCollateral
+          assetExcahngeUnwindColl : Float
+          assetExcahngeUnwindColl = List.map(\(v,u) -> u) assetCollateral
                    |> List.sum
           securedFund : List Flow
           securedFund =
               Flows.outflowRules securedFunding
                |> Rules.findAll
                         ["21(b)(todo)"]
-          secFun : Float
-          secFun = List.map(\(u,v) -> v) securedFund
+          securedFundings : Float
+          securedFundings = List.map(\(u,v) -> v) securedFund
                    |> List.sum
   in
-          float  - slen + secFun + assEx - assColl
+          float  - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
-
-
-          --ruleout : List RuleFlow
-          --ruleout =
-          --        Flows.outflowRules out
-          --        |> Rules.findAll
-          --           ["21(b)(todo)"]
-          --inFlowAmt : Float
-
-
-         --formula = level2B values - SecuredLendingUnwindColl + SecuredFundingCollectoral + AssetExchangeUnwind - AssetExcahngeunwindCollecteral
---
 --fn_name Adjusted_Excess_HQLA = ""
 --
 --fn_name Adjusted_Level2_Cap_Excess_Amount = ""
