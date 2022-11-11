@@ -14,14 +14,19 @@
 
 module Regulation.US.LCR.Calculations exposing (..)
 
-import Regulation.US.FR2052A.DataTables as DataTables exposing (..)
-import Regulation.US.FR2052A.DataTables.Inflows.Secured as Inflows
-import Regulation.US.FR2052A.DataTables.Outflows.Secured as Outflows
+import Morphir.SDK.Dict as Dict exposing (Dict)
+import Regulation.US.FR2052A.DataTables as DataTables
+import Regulation.US.FR2052A.DataTables.Outflows as Outflows exposing (Outflows)
+import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits)
+import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (Other)
+import Regulation.US.FR2052A.DataTables.Outflows.Secured exposing (Secured)
+import Regulation.US.FR2052A.DataTables.Outflows.Wholesale exposing (Wholesale)
 import Regulation.US.FR2052A.Fields.MaturityBucket exposing (MaturityBucket(..))
 import Regulation.US.LCR.Basics exposing (Balance)
 import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.Rule exposing (Rule)
 import Regulation.US.LCR.Rules as Rules
+import Tuple exposing (second)
 
 
 
@@ -100,45 +105,50 @@ adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetE
 --
 --fn_name Adjusted_Level2B_Cap_Excess_Amount = ""
 --
-{-
-   total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
-   total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
-       let
-           outflows_summed : Float
-           outflows_summed = ((List.map(\o -> o.amount) (Outflows.outflowRules outflows)) |> List.sum)
-           inflows_summed : Float
-           inflows_summed = ((List.map(\o -> o.amount) (Inflows.inflowRules inflows)) |> List.sum)
-       in
-       outflow_adjustment_percentage * (outflows_summed - (min inflows_summed (0.75 * outflows_summed)) + maturity_Mismatch_Add_On outflows inflows)
--}
---
---fn_name Maturity_Mismatch_Add_On = ""
 
 
-getDayFromMaturityBucket : MaturityBucket -> Int
-getDayFromMaturityBucket bucket =
-    case bucket of
-        Day d ->
-            d
+total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
+total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
+    let
+        outflows_summed : Float
+        outflows_summed =
+            List.map (\o -> second o) (Flows.outflowRules outflows) |> List.sum
 
-        _ ->
-            -1
+        inflows_summed : Float
+        inflows_summed =
+            List.map (\o -> second o) (Flows.inflowRules inflows) |> List.sum
+    in
+    outflow_adjustment_percentage * (outflows_summed - min inflows_summed (0.75 * outflows_summed) + maturity_Mismatch_Add_On outflows inflows)
 
 
-type alias BucketRule =
-    { rule : String
-    , amount : Float
-    , maturityBucket : MaturityBucket
-    }
+maturity_Mismatch_Add_On : DataTables.Outflows -> DataTables.Inflows -> Balance
+maturity_Mismatch_Add_On out inf =
+    let
+        cum_outflow : Balance
+        cum_outflow =
+            max 0 (net_day30_cumulative_maturity_outflow_amount out inf)
+
+        largest_outflow : Balance
+        largest_outflow =
+            max 0 (largest_net_cumulative_maturity_outflow_amount out inf)
+    in
+    largest_outflow - cum_outflow
 
 
 cumulative_outflow_amount_from_one_to_m : Int -> DataTables.Outflows -> DataTables.Inflows -> Balance
 cumulative_outflow_amount_from_one_to_m m out inf =
     let
-        dates : List Int
-        dates =
+        applicable_buckets : List Int
+        applicable_buckets =
             List.range 1 m
 
+        --maturity_buckets : Dict MaturityBucket (List Outflows)
+        --maturity_buckets =
+        --    Dict.empty
+        --
+        --outflows_flattened : List Outflows
+        --outflows_flattened =
+        --    deconstruct_outflows out
         outflow_rules : List Flow
         outflow_rules =
             Flows.outflowRules out
@@ -162,7 +172,7 @@ cumulative_outflow_amount_from_one_to_m m out inf =
 
         outflowAmount : Float
         outflowAmount =
-            dates
+            applicable_buckets
                 -- TODO : figure out how to take maturity bucket into account
                 -- |> List.concatMap (\n -> List.filter (getDayFromMaturityBucket .maturityBucket == n) outflow_rules)
                 |> List.concatMap (\n -> outflow_rules)
@@ -176,7 +186,7 @@ cumulative_outflow_amount_from_one_to_m m out inf =
 
         inflowAmount : Float
         inflowAmount =
-            dates
+            applicable_buckets
                 -- TODO : figure out how to take maturity bucket into account
                 -- |> List.concatMap (\n -> List.filter (getDayFromMaturityBucket .maturityBucket == n) inflow_rules)
                 |> List.concatMap (\n -> inflow_rules)
@@ -186,34 +196,108 @@ cumulative_outflow_amount_from_one_to_m m out inf =
     outflowAmount - inflowAmount
 
 
+largest_net_cumulative_maturity_outflow_amount : DataTables.Outflows -> DataTables.Inflows -> Balance
+largest_net_cumulative_maturity_outflow_amount out inf =
+    let
+        maturityBuckets : List Int
+        maturityBuckets =
+            List.range 1 30
 
-{-
-   net_day30_cumulative_maturity_outflow_amount : DataTables.Outflows -> DataTables.Inflows -> Balance
-   net_day30_cumulative_maturity_outflow_amount out inf = cumulative_outflow_amount_from_one_to_m 30 out inf
-   largest_net_cumulative_maturity_outflow_amount : DataTables.Outflows -> DataTables.Inflows -> Balance
-   largest_net_cumulative_maturity_outflow_amount out inf =
-           let
-               maturityBuckets : List Int
-               maturityBuckets = List.range 1 30
-               cumulative_outflows : List Balance
-               cumulative_outflows = List.map(\m -> cumulative_outflow_amount_from_one_to_m m out inf) maturityBuckets
-               max_val : Maybe Balance
-               max_val = List.maximum cumulative_outflows
-           in
-               case max_val of
-                   Just v ->
-                         v
-                   Nothing -> -1
-   maturity_Mismatch_Add_On : DataTables.Outflows -> DataTables.Inflows -> Balance
-   maturity_Mismatch_Add_On out inf =
-       let
-           cum_outflow : Balance
-           cum_outflow = max 0 (net_day30_cumulative_maturity_outflow_amount out inf)
-           largest_outflow : Balance
-           largest_outflow = max 0 (largest_net_cumulative_maturity_outflow_amount out inf)
-       in
-           largest_outflow - cum_outflow
--}
+        cumulative_outflows : List Balance
+        cumulative_outflows =
+            List.map (\m -> cumulative_outflow_amount_from_one_to_m m out inf) maturityBuckets
+
+        max_val : Maybe Balance
+        max_val =
+            List.maximum cumulative_outflows
+    in
+    case max_val of
+        Just v ->
+            v
+
+        Nothing ->
+            -1
+
+
+net_day30_cumulative_maturity_outflow_amount : DataTables.Outflows -> DataTables.Inflows -> Balance
+net_day30_cumulative_maturity_outflow_amount out inf =
+    cumulative_outflow_amount_from_one_to_m 30 out inf
+
+
+
+--deconstruct_outflows : DataTables.Outflows -> List Outflows
+--deconstruct_outflows out =
+--    let
+--        deposits : List Deposits
+--        deposits =
+--            out.deposits
+--
+--        other : List Other
+--        other =
+--            out.other
+--
+--        secured : List Secured
+--        secured =
+--            out.secured
+--
+--        wholesale : List Wholesale
+--        wholesale =
+--            out.wholesale
+--    in
+--    List.concat
+--        [ List.map (\d -> Outflows.Deposits d) deposits
+--        , List.map (\o -> Outflows.Other o) other
+--        , List.map (\s -> Outflows.Secured s) secured
+--        , List.map (\w -> Outflows.Wholesale w) wholesale
+--        ]
+--maturity_buckets_dict_out : Dict MaturityBucket (List Outflows) -> Outflows -> Dict MaturityBucket (List Outflows)
+--maturity_buckets_dict_out dict_out out =
+--    let
+--        maturity_bucket : MaturityBucket
+--        maturity_bucket =
+--            get_maturity_bucket_from_outflow out
+--
+--        outflows_for_bucket : List Outflows
+--        outflows_for_bucket =
+--            List.singleton out
+--
+--        outflows : Maybe (List Outflows)
+--        outflows =
+--            Dict.get maturity_bucket dict_out
+--    in
+--    case outflows of
+--        Just o ->
+--            Dict.insert maturity_bucket (out :: o) dict_out
+--
+--        Nothing ->
+--            Dict.insert maturity_bucket outflows_for_bucket dict_out
+--get_maturity_bucket_from_outflow : Outflows -> MaturityBucket
+--get_maturity_bucket_from_outflow out =
+--    case out of
+--        Outflows.Deposits d ->
+--            d.maturityBucket
+--
+--        Outflows.Other o ->
+--            o.maturityBucket
+--
+--        Outflows.Secured s ->
+--            s.maturityBucket
+--
+--        Outflows.Wholesale w ->
+--            w.maturityBucket
+--getDayFromMaturityBucket : MaturityBucket -> Int
+--getDayFromMaturityBucket bucket =
+--    case bucket of
+--        Day d ->
+--            d
+--
+--        _ ->
+--            -1
+--type alias BucketRule =
+--    { rule : String
+--    , amount : Float
+--    , maturityBucket : MaturityBucket
+--    }
 
 
 {-| Helper function to accumulated steps of a sum across a list. This is used in calculating the maturity mismatch add-on.
