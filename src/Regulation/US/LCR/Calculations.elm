@@ -46,7 +46,7 @@ import Tuple exposing (second)
 --
 --fn_name Adjusted_Level1_HQLA_Additive_Values = ""
 --
-adjusted_Level2A_HQLA_Additive_Values :  Float -> Inflows -> Outflows -> Inflows -> Inflows -> Float
+adjusted_Level2A_HQLA_Additive_Values :  Float -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
     let
         securedFunds: List Flow
@@ -110,7 +110,7 @@ adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetE
 --           |> Rules.findAll
 --              [ "33(f)(1)(v)"]
 
-adjusted_Level2B_HQLA_Additive_Values : Float -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
+adjusted_Level2B_HQLA_Additive_Values : Float -> DataTables.Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
 
   let
@@ -148,6 +148,11 @@ adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetE
                    |> List.sum
   in
           float  - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+
+
+
+
+
 
 --fn_name Adjusted_Excess_HQLA = ""
 --
