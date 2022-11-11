@@ -15,7 +15,7 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Morphir.SDK.Dict as Dict exposing (Dict)
-import Regulation.US.FR2052A.DataTables as DataTables exposing (Inflows)
+import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
 import Regulation.US.FR2052A.DataTables.Outflows as Outflows exposing (Outflows)
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits)
 import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (Other)
@@ -34,73 +34,108 @@ import Tuple exposing (second)
 {-
    Formulas from: https://www.federalreserve.gov/reportforms/formsreview/Appendix%20VI%20and%20VII.pdf
 -}
---fn_name LCR = ""
---
---fn_name HQLA_Amount = ""
---
---fn_name Unadjusted_Excess_HQLA = ""
---
---fn_name Level2_Cap_Excess_Amount = ""
---
---fn_name Level2B_Cap_Excess_Amount = ""
---
---fn_name Adjusted_Level1_HQLA_Additive_Values = ""
---
-adjusted_Level2A_HQLA_Additive_Values :  Float -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
+
+lcr : DataTables -> Balance
+lcr =
+    hqla_amount / total_net_cash_outflows
+
+hqla_amount : DataTables -> Balance
+hqla_amount =
+     (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
+     + .0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
+     + 0.5 * (level_2B_HQLA_additive_value - level_2A_HQLA_additive_value)
+     + Math.max unadjusted_excess_HQLA adjusted_excess_HQLA
+
+unadjusted_excess_HQLA : DataTables -> Balance
+unadjusted_excess_HQLA =
+     level_2_cap_excess_amount + level_2B_Cap_excess_amount
+
+level_2_cap_excess_amount : DataTables -> Balance
+level_2_cap_excess_amount =
+ let
+     amount =
+         0.85 * (level_2A_HQLA_additive_value - level_2A_HQLA_subtractive_values)
+         + 0.5 * (level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values)
+         - 0.6667 (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
+ in
+     Basics.max 0 amount
+
+level_2B_cap_excess_amount : DataTables -> Balance
+level_2B_cap_excess_amount =
+ let
+     amount =
+         0.5 * (level_2B_HQLA_additive_value - level_2B_HQLA_subtractive_values)
+         - level_2_cap_excess_amount
+         + 0.1765 * (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
+         - 0.85 (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
+ in
+     Basics.max 0 amount
+
+adjusted_level_1_HQLA_additive_values : DataTables -> Balance
+adjusted_level_1_HQLA_additive_values =
+    level_1_HQLA_additive_values + secured_lending_unwind_maturity_amounts
+ -- TODO do more
+
+
+
+adjusted_Level2A_HQLA_Additive_Values : Float -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
     let
-        securedFunds: List Flow
+        securedFunds : List Flow
         securedFunds =
-                Flows.outflowRules securedFunding
-                    |> Rules.findAll
-                        ["21(b)(todo)"]
+            Flows.outflowRules securedFunding
+                |> Rules.findAll
+                    [ "21(b)(todo)" ]
+
         securedFundings : Float
-        securedFundings = List.map(\(u,v) -> v) securedFunds
-                          |> List.sum
+        securedFundings =
+            List.map (\( u, v ) -> v) securedFunds
+                |> List.sum
+
         securedLen : List Flow
         securedLen =
-                          Flows.inflowRules securedLending
-                              |> Rules.findAll
-                                  [ "33(f)(1)(iv)"]
+            Flows.inflowRules securedLending
+                |> Rules.findAll
+                    [ "33(f)(1)(iv)" ]
+
         securedlendings : Float
-        securedlendings = List.map(\(v,u) -> u) securedLen
-                        |> List.sum
+        securedlendings =
+            List.map (\( v, u ) -> u) securedLen
+                |> List.sum
 
         assetExchangeMat : List Flow
         assetExchangeMat =
             Flows.inflowRules assetExchangeUnwind
-              |> Rules.findAll
-                      [ "21(c)(todo)"]
+                |> Rules.findAll
+                    [ "21(c)(todo)" ]
+
         assetExchange : Float
-        assetExchange = List.map(\(v,u) -> u) assetExchangeMat
-                         |> List.sum
+        assetExchange =
+            List.map (\( v, u ) -> u) assetExchangeMat
+                |> List.sum
+
         assetCollateral : List Flow
         assetCollateral =
-           Flows.inflowRules assetExunwindcollateral
-             |> Rules.findAll
-                   [ "33(f)(2)(i)"]
+            Flows.inflowRules assetExunwindcollateral
+                |> Rules.findAll
+                    [ "33(f)(2)(i)" ]
+
         assetExcahngeUnwindColl : Float
-        assetExcahngeUnwindColl = List.map(\(v,u) -> u) assetCollateral
-              |> List.sum
+        assetExcahngeUnwindColl =
+            List.map (\( v, u ) -> u) assetCollateral
+                |> List.sum
     in
-        float  - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    float - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
-
-        --securedFundings = List.filter(\flow -> flow.assetType == L2Assets)
-        --                     |> List.map(\(v,u) -> u) securedFunds
-
-
-
-
-    -- securedFunding L2A : 32(j)(1)(ii)
-    --securedLending
-    --Asset Exchange
-
+--securedFundings = List.filter(\flow -> flow.assetType == L2Assets)
+--                     |> List.map(\(v,u) -> u) securedFunds
+-- securedFunding L2A : 32(j)(1)(ii)
+--securedLending
+--Asset Exchange
 -- output : lvl 2A HQLA - SecuredLending unwind + se
 --
-
 --adjusted_Level2B_HQLA_Additive_Values : Int -> DataTables.Outflows -> DataTables.Inflows -> Balance
 --adjusted_Level2B_HQLA_Additive_Values int outflows inflows =
 --  let
@@ -110,47 +145,55 @@ adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetE
 --           |> Rules.findAll
 --              [ "33(f)(1)(v)"]
 
+
 adjusted_Level2B_HQLA_Additive_Values : Float -> DataTables.Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+    let
+        securedLen : List Flow
+        securedLen =
+            Flows.inflowRules securedLending
+                |> Rules.findAll
+                    [ "33(f)(1)(v)" ]
 
-  let
-          securedLen : List Flow
-          securedLen =
-                 Flows.inflowRules securedLending
-                      |> Rules.findAll
-                          [ "33(f)(1)(v)"]
-          securedlendings : Float
-          securedlendings = List.map(\(v,u) -> u) securedLen
+        securedlendings : Float
+        securedlendings =
+            List.map (\( v, u ) -> u) securedLen
                 |> List.sum
-          assetExchangeMat : List Flow
-          assetExchangeMat =
-                            Flows.inflowRules assetExchangeUnwind
-                                |> Rules.findAll
-                                    [ "21(c)(todo)"]
-          assetExchange : Float
-          assetExchange = List.map(\(v,u) -> u) assetExchangeMat
-                          |> List.sum
-          assetCollateral : List Flow
-          assetCollateral =
-                   Flows.inflowRules assetExunwindcollateral
-                        |> Rules.findAll
-                             [ "33(f)(2)(i)"]
-          assetExcahngeUnwindColl : Float
-          assetExcahngeUnwindColl = List.map(\(v,u) -> u) assetCollateral
-                   |> List.sum
-          securedFund : List Flow
-          securedFund =
-              Flows.outflowRules securedFunding
-               |> Rules.findAll
-                        ["21(b)(todo)"]
-          securedFundings : Float
-          securedFundings = List.map(\(u,v) -> v) securedFund
-                   |> List.sum
-  in
-          float  - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
+        assetExchangeMat : List Flow
+        assetExchangeMat =
+            Flows.inflowRules assetExchangeUnwind
+                |> Rules.findAll
+                    [ "21(c)(todo)" ]
 
+        assetExchange : Float
+        assetExchange =
+            List.map (\( v, u ) -> u) assetExchangeMat
+                |> List.sum
 
+        assetCollateral : List Flow
+        assetCollateral =
+            Flows.inflowRules assetExunwindcollateral
+                |> Rules.findAll
+                    [ "33(f)(2)(i)" ]
+
+        assetExcahngeUnwindColl : Float
+        assetExcahngeUnwindColl =
+            List.map (\( v, u ) -> u) assetCollateral
+                |> List.sum
+
+        securedFund : List Flow
+        securedFund =
+            Flows.outflowRules securedFunding
+                |> Rules.findAll
+                    [ "21(b)(todo)" ]
+
+        securedFundings : Float
+        securedFundings =
+            List.map (\( u, v ) -> v) securedFund
+                |> List.sum
+    in
+    float - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
