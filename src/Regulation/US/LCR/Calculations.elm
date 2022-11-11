@@ -208,19 +208,19 @@ adjusted_excess_HQLA = adjusted_level2_cap_excess_amount + adjusted_level2b_cap_
 adjusted_level2_cap_excess_amount =
     Math.max 0
     (0.85 * (adjusted_Level2A_HQLA_Additive_Values -
-    level2a_hqla_subtractive_values) +
+    level_2A_HQLA_subtractive_values) +
     0.5 * (adjusted_Level2B_HQLA_Additive_Values -
-    level2b_hqla_subtractive_values) -
+    level_2B_HQLA_subtractive_values) -
     0.6667 * (adjusted_level_1_HQLA_additive_values -
-    level_1_hqla_subtractive_values))
+    level_1_HQLA_subtractive_values))
 
 adjusted_level2b_cap_excess_amount =
     Math.max 0
         (0.5 * (adjusted_Level2b_HQLA_Additive_Values -
-        level2b_hqla_subtractive_values) -
+        level_2B_HQLA_subtractive_values) -
         adjusted_level2_cap_excess_amount
-        - 0.1765 * ((adjusted_level_1_HQLA_additive_values - level_1_hqla_subtractive_values)
-        +0.85 * (adjusted_Level2A_HQLA_Additive_Values - level_2a_hqla_subtractive_values)))
+        - 0.1765 * ((adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
+        +0.85 * (adjusted_Level2A_HQLA_Additive_Values - level_2A_HQLA_subtractive_values)))
 
 
 level_1_HQLA_additive_values : DataTables -> Balance
@@ -506,6 +506,7 @@ level_2A_HQLA_subtractive_values data =
     in
         deravativesCollectoralAmt + liquidity_risk_amount
 
+
 level_2B_HQLA_subtractive_values : DataTables -> Balance
 level_2B_HQLA_subtractive_values data =
     let
@@ -563,6 +564,7 @@ level_2B_HQLA_subtractive_values data =
 
     in
         deravativesCollectoralAmt + liquidity_risk_amount
+
 
 total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
 total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
