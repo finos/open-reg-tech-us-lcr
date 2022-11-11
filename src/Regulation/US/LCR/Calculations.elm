@@ -45,7 +45,7 @@ lcr data =
 hqla_amount : DataTables -> Balance
 hqla_amount =
      (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
-     + .0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
+     + 0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
      + 0.5 * (level_2B_HQLA_additive_value - level_2A_HQLA_additive_values)
      + Math.max unadjusted_excess_HQLA adjusted_excess_HQLA
 
@@ -279,6 +279,121 @@ level_2A_HQLA_additive_values data =
     in
     outflowAmount + inflowAmount
 
+level_2B_HQLA_additive_values : DataTables -> Balance
+level_2B_HQLA_additive_values data =
+    let
+        level_2B_outflow_secured : List Secured
+        level_2B_outflow_secured =
+            data.outflows.secured
+            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel2B)
+
+        level_2B_outflows : DataTables.Outflows
+        level_1_outflows = { deposits = [], other = [], secured = level_2B_outflow_secured, wholesale = [] }
+
+        level_2B_inflow_secured : List Inflows.Secured
+        level_2B_inflow_secured =
+            data.inflows.secured
+            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel2B)
+
+        level_2B_inflow_assets : List Assets
+        level_2B_inflow_assets =
+            data.inflows.assets
+            |> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel2B)
+
+        level_2B_inflows : DataTables.Inflows
+        level_2B_inflows = { assets = level_2B_inflow_assets, other = [], secured = level_2B_inflow_secured, unsecured = [] }
+        --
+        --outflow_rules : List Flow
+        --outflow_rules =
+        --    Flows.outflowRules level_1_outflows
+        --        |> Rules.findAll
+        --            [ "33(c)"
+        --            , "33(d)(1)"
+        --            , "33(d)(2)"
+        --            , "20(a)(1)"
+        --            , "20(b)(1)"
+        --            , "20(c)(1)"
+        --            ]
+        --
+        --outflowAmount : Float
+        --outflowAmount =
+        --    List.sum (List.map (\f -> second f) outflow_rules)
+
+        inflow_rules : List Flow
+        inflow_rules =
+            Flows.inflowRules level_2B_inflows
+                |> Rules.findAll
+                    [ "33(c)"
+                    , "33(d)(1)"
+                    , "33(d)(2)"
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    ]
+        inflowAmount : Float
+        inflowAmount =
+            List.sum (List.map (\f -> second f) inflow_rules)
+
+    in
+        inflowAmount
+
+level_1_HQLA_additive_values : DataTables -> Balance
+level_1_HQLA_additive_values data =
+    let
+        level_1_outflow_secured : List Secured
+        level_1_outflow_secured =
+            data.outflows.secured
+            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+
+        level_1_outflows : DataTables.Outflows
+        level_1_outflows = { deposits = [], other = [], secured = level_1_outflow_secured, wholesale = [] }
+
+        level_1_inflow_secured : List Inflows.Secured
+        level_1_inflow_secured =
+            data.inflows.secured
+            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
+
+        level_1_inflow_assets : List Assets
+        level_1_inflow_assets =
+            data.inflows.assets
+            |> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel1)
+
+        level_1_inflows : DataTables.Inflows
+        level_1_inflows = { assets = level_1_inflow_assets, other = [], secured = level_1_inflow_secured, unsecured = [] }
+        --
+        --outflow_rules : List Flow
+        --outflow_rules =
+        --    Flows.outflowRules level_1_outflows
+        --        |> Rules.findAll
+        --            [ "33(c)"
+        --            , "33(d)(1)"
+        --            , "33(d)(2)"
+        --            , "20(a)(1)"
+        --            , "20(b)(1)"
+        --            , "20(c)(1)"
+        --            ]
+        --
+        --outflowAmount : Float
+        --outflowAmount =
+        --    List.sum (List.map (\f -> second f) outflow_rules)
+
+        inflow_rules : List Flow
+        inflow_rules =
+            Flows.inflowRules level_1_inflows
+                |> Rules.findAll
+                    [ "33(c)"
+                    , "33(d)(1)"
+                    , "33(d)(2)"
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    ]
+        inflowAmount : Float
+        inflowAmount =
+            List.sum (List.map (\f -> second f) inflow_rules)
+
+    in
+        inflowAmount
 
 total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
 total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
