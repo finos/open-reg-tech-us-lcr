@@ -46,7 +46,7 @@ hqla_amount : DataTables -> Balance
 hqla_amount =
      (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
      + .0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
-     + 0.5 * (level_2B_HQLA_additive_value - level_2A_HQLA_additive_value)
+     + 0.5 * (level_2B_HQLA_additive_value - level_2A_HQLA_additive_values)
      + Math.max unadjusted_excess_HQLA adjusted_excess_HQLA
 
 unadjusted_excess_HQLA : DataTables -> Balance
@@ -57,7 +57,7 @@ level_2_cap_excess_amount : DataTables -> Balance
 level_2_cap_excess_amount =
  let
      amount =
-         0.85 * (level_2A_HQLA_additive_value - level_2A_HQLA_subtractive_values)
+         0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
          + 0.5 * (level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values)
          - 0.6667 (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
  in
@@ -128,7 +128,7 @@ adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchang
             List.map (\( v, u ) -> u) assetCollateral
                 |> List.sum
     in
-    level_2a_hqla_additive_values - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    level_2A_HQLA_additive_values - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
@@ -221,8 +221,8 @@ adjusted_level2b_cap_excess_amount =
         +0.85 * (adjusted_Level2A_HQLA_Additive_Values - level_2a_hqla_subtractive_values)))
 
 
-level_2a_HQLA_additive_values : DataTables -> Balance
-level_2a_HQLA_additive_values data =
+level_2A_HQLA_additive_values : DataTables -> Balance
+level_2A_HQLA_additive_values data =
     let
         level_2a_outflow_secured : List Secured
         level_2a_outflow_secured =
