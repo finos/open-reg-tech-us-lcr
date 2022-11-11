@@ -16,12 +16,15 @@ module Regulation.US.LCR.Calculations exposing (..)
 
 import Morphir.SDK.Dict as Dict exposing (Dict)
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
+import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets)
+import Regulation.US.FR2052A.DataTables.Inflows.Secured as Inflows
 import Regulation.US.FR2052A.DataTables.Outflows as Outflows exposing (Outflows)
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits)
 import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (Other)
 import Regulation.US.FR2052A.DataTables.Outflows.Secured exposing (Secured)
 import Regulation.US.FR2052A.DataTables.Outflows.Wholesale exposing (Wholesale)
 import Regulation.US.FR2052A.Fields.MaturityBucket exposing (MaturityBucket(..))
+import Regulation.US.FR2052A.Fields.SubProduct as SubProduct exposing (SubProduct)
 import Regulation.US.LCR.Basics exposing (Balance)
 import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.Rule exposing (Rule)
@@ -48,7 +51,7 @@ hqla_amount =
 
 unadjusted_excess_HQLA : DataTables -> Balance
 unadjusted_excess_HQLA =
-     level_2_cap_excess_amount + level_2B_Cap_excess_amount
+     level_2_cap_excess_amount + level_2B_cap_excess_amount
 
 level_2_cap_excess_amount : DataTables -> Balance
 level_2_cap_excess_amount =
@@ -217,6 +220,66 @@ adjusted_level2b_cap_excess_amount =
         - 0.1765 * ((adjusted_level_1_HQLA_additive_values - level_1_hqla_subtractive_values)
         +0.85 * (adjusted_Level2A_HQLA_Additive_Values - level_2a_hqla_subtractive_values)))
 
+
+level_2a_HQLA_additive_values : DataTables -> Balance
+level_2a_HQLA_additive_values data =
+    let
+        level_2a_outflow_secured : List Secured
+        level_2a_outflow_secured =
+            data.outflows.secured
+            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel2A)
+
+        level_2a_outflows : DataTables.Outflows
+        level_2a_outflows = { deposits = [], other = [], secured = level_2a_outflow_secured, wholesale = [] }
+
+        level_2a_inflow_secured : List Inflows.Secured
+        level_2a_inflow_secured =
+            data.inflows.secured
+            |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel2A)
+
+        level_2a_inflow_assets : List Assets
+        level_2a_inflow_assets =
+            data.inflows.assets
+            |> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel2A)
+
+        level_2a_inflows : DataTables.Inflows
+        level_2a_inflows = { assets = level_2a_inflow_assets, other = [], secured = level_2a_inflow_secured, unsecured = [] }
+
+        outflow_rules : List Flow
+        outflow_rules =
+            Flows.outflowRules level_2a_outflows
+                |> Rules.findAll
+                    [ "33(c)"
+                    , "33(d)(1)"
+                    , "33(d)(2)"
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    ]
+
+        outflowAmount : Float
+        outflowAmount =
+            List.sum (List.map (\f -> second f) outflow_rules)
+
+        inflow_rules : List Flow
+        inflow_rules =
+            Flows.inflowRules level_2a_inflows
+                |> Rules.findAll
+                    [ "33(c)"
+                    , "33(d)(1)"
+                    , "33(d)(2)"
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    ]
+        inflowAmount : Float
+        inflowAmount =
+            List.sum (List.map (\f -> second f) inflow_rules)
+
+    in
+    outflowAmount + inflowAmount
+
+
 total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
 total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
     let
@@ -333,6 +396,15 @@ net_day30_cumulative_maturity_outflow_amount : DataTables.Outflows -> DataTables
 net_day30_cumulative_maturity_outflow_amount out inf =
     cumulative_outflow_amount_from_one_to_m 30 out inf
 
+
+isSubProduct : Maybe SubProduct -> (SubProduct -> Bool) -> Bool
+isSubProduct subProduct filter =
+    case subProduct of
+        Just sp ->
+            filter sp
+
+        Nothing ->
+            False
 
 
 --deconstruct_outflows : DataTables.Outflows -> List Outflows
