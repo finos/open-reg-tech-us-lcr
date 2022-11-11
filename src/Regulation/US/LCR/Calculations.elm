@@ -36,8 +36,8 @@ import Tuple exposing (second)
 -}
 
 lcr : DataTables -> Balance
-lcr =
-    hqla_amount / total_net_cash_outflows
+lcr data =
+    hqla_amount data / total_net_cash_outflows
 
 hqla_amount : DataTables -> Balance
 hqla_amount =
@@ -78,8 +78,8 @@ adjusted_level_1_HQLA_additive_values =
 
 
 
-adjusted_Level2A_HQLA_Additive_Values : Float -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
-adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+adjusted_Level2A_HQLA_Additive_Values : Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
+adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
     let
         securedFunds : List Flow
         securedFunds =
@@ -125,7 +125,7 @@ adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetE
             List.map (\( v, u ) -> u) assetCollateral
                 |> List.sum
     in
-    float - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    level_2a_hqla_additive_values - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
@@ -146,8 +146,8 @@ adjusted_Level2A_HQLA_Additive_Values float securedLending securedFunding assetE
 --              [ "33(f)(1)(v)"]
 
 
-adjusted_Level2B_HQLA_Additive_Values : Float -> DataTables.Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
-adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+adjusted_Level2B_HQLA_Additive_Values : DataTables.Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
+adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
     let
         securedLen : List Flow
         securedLen =
@@ -193,17 +193,29 @@ adjusted_Level2B_HQLA_Additive_Values float securedLending securedFunding assetE
             List.map (\( u, v ) -> v) securedFund
                 |> List.sum
     in
-    float - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    level_2b_hqla_additive_values - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
---fn_name Adjusted_Excess_HQLA = ""
---
---fn_name Adjusted_Level2_Cap_Excess_Amount = ""
---
---fn_name Adjusted_Level2B_Cap_Excess_Amount = ""
---
+adjusted_excess_HQLA : Balance
+adjusted_excess_HQLA = adjusted_level2_cap_excess_amount + adjusted_level2b_cap_excess_amount
 
+adjusted_level2_cap_excess_amount =
+    Math.max 0
+    (0.85 * (adjusted_Level2A_HQLA_Additive_Values -
+    level2a_hqla_subtractive_values) +
+    0.5 * (adjusted_Level2B_HQLA_Additive_Values -
+    level2b_hqla_subtractive_values) -
+    0.6667 * (adjusted_level_1_HQLA_additive_values -
+    level_1_hqla_subtractive_values))
+
+adjusted_level2b_cap_excess_amount =
+    Math.max 0
+        (0.5 * (adjusted_Level2b_HQLA_Additive_Values -
+        level2b_hqla_subtractive_values) -
+        adjusted_level2_cap_excess_amount
+        - 0.1765 * ((adjusted_level_1_HQLA_additive_values - level_1_hqla_subtractive_values)
+        +0.85 * (adjusted_Level2A_HQLA_Additive_Values - level_2a_hqla_subtractive_values)))
 
 total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
 total_net_cash_outflows outflow_adjustment_percentage outflows inflows =
