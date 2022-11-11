@@ -14,6 +14,7 @@
 
 module Regulation.US.LCR.Calculations exposing (..)
 
+import Basics as Math
 import Morphir.SDK.Dict as Dict exposing (Dict)
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets)
@@ -40,45 +41,45 @@ import Tuple exposing (second)
    Formulas from: https://www.federalreserve.gov/reportforms/formsreview/Appendix%20VI%20and%20VII.pdf
 -}
 
-lcr : DataTables -> Balance
-lcr data =
-    hqla_amount data / total_net_cash_outflows
+lcr : DataTables -> Float -> Balance
+lcr data outflow_adjustment_percentage =
+    (hqla_amount data) / (total_net_cash_outflows outflow_adjustment_percentage data.outflows data.inflows)
 
 hqla_amount : DataTables -> Balance
-hqla_amount =
-     (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
-     + 0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
-     + 0.5 * (level_2B_HQLA_additive_values - level_2A_HQLA_additive_values)
-     + Math.max unadjusted_excess_HQLA adjusted_excess_HQLA
+hqla_amount data =
+     ((level_1_HQLA_additive_values data) - (level_1_HQLA_subtractive_values data))
+     + 0.85 * ((level_2A_HQLA_additive_values data) - (level_2A_HQLA_subtractive_values data))
+     + 0.5 * ((level_2B_HQLA_additive_values data) - (level_2A_HQLA_additive_values data))
+     + Math.max (unadjusted_excess_HQLA data) (adjusted_excess_HQLA data)
 
 unadjusted_excess_HQLA : DataTables -> Balance
-unadjusted_excess_HQLA =
-     level_2_cap_excess_amount + level_2B_cap_excess_amount
+unadjusted_excess_HQLA data =
+     (level_2_cap_excess_amount data) + (level_2B_cap_excess_amount data)
 
 level_2_cap_excess_amount : DataTables -> Balance
-level_2_cap_excess_amount =
+level_2_cap_excess_amount data =
  let
      amount =
-         0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
-         + 0.5 * (level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values)
-         - 0.6667 (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
+         0.85 * ((level_2A_HQLA_additive_values data) - (level_2A_HQLA_subtractive_values data))
+         + 0.5 * ((level_2B_HQLA_additive_values data) - (level_2B_HQLA_subtractive_values data))
+         - 0.6667 * ((level_1_HQLA_additive_values data) - (level_1_HQLA_subtractive_values data))
  in
-     Basics.max 0 amount
+     Math.max 0 amount
 
 level_2B_cap_excess_amount : DataTables -> Balance
-level_2B_cap_excess_amount =
+level_2B_cap_excess_amount data =
  let
      amount =
-         0.5 * (level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values)
-         - level_2_cap_excess_amount
-         + 0.1765 * (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
-         - 0.85 (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values)
+         0.5 * ((level_2B_HQLA_additive_values data) - (level_2B_HQLA_subtractive_values data))
+         - (level_2_cap_excess_amount data)
+         + 0.1765 * ((level_1_HQLA_additive_values data) - (level_1_HQLA_subtractive_values data))
+         - 0.85 * ((level_2A_HQLA_additive_values data) - (level_2A_HQLA_subtractive_values data))
  in
      Basics.max 0 amount
 
 adjusted_level_1_HQLA_additive_values : DataTables -> Balance
-adjusted_level_1_HQLA_additive_values =
-    level_1_HQLA_additive_values + secured_lending_unwind_maturity_amounts
+adjusted_level_1_HQLA_additive_values data =
+    (level_1_HQLA_additive_values data) + secured_lending_unwind_maturity_amounts
  -- TODO do more
 
 
@@ -130,7 +131,7 @@ adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchang
             List.map (\( v, u ) -> u) assetCollateral
                 |> List.sum
     in
-    level_2A_HQLA_additive_values - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    (level_2A_HQLA_additive_values data) - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
@@ -198,29 +199,31 @@ adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchang
             List.map (\( u, v ) -> v) securedFund
                 |> List.sum
     in
-    level_2B_HQLA_additive_values - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    (level_2B_HQLA_additive_values data) - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
 
 
 
 adjusted_excess_HQLA : Balance
 adjusted_excess_HQLA = adjusted_level2_cap_excess_amount + adjusted_level2b_cap_excess_amount
 
-adjusted_level2_cap_excess_amount =
+adjusted_level2_cap_excess_amount : DataTables -> Balance
+adjusted_level2_cap_excess_amount data =
     Math.max 0
-    (0.85 * (adjusted_Level2A_HQLA_Additive_Values -
-    level_2A_HQLA_subtractive_values) +
-    0.5 * (adjusted_Level2B_HQLA_Additive_Values -
-    level_2B_HQLA_subtractive_values) -
-    0.6667 * (adjusted_level_1_HQLA_additive_values -
-    level_1_HQLA_subtractive_values))
+    (0.85 * ((adjusted_Level2A_HQLA_Additive_Values data) -
+    (level_2A_HQLA_subtractive_values data)) +
+    0.5 * ((adjusted_Level2B_HQLA_Additive_Values data) -
+    (level_2B_HQLA_subtractive_values data)) -
+    0.6667 * ((adjusted_level_1_HQLA_additive_values data) -
+    (level_1_HQLA_subtractive_values data)))
 
-adjusted_level2b_cap_excess_amount =
+adjusted_level2b_cap_excess_amount : DataTables -> Balance
+adjusted_level2b_cap_excess_amount data =
     Math.max 0
-        (0.5 * (adjusted_Level2b_HQLA_Additive_Values -
-        level_2B_HQLA_subtractive_values) -
-        adjusted_level2_cap_excess_amount
-        - 0.1765 * ((adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
-        +0.85 * (adjusted_Level2A_HQLA_Additive_Values - level_2A_HQLA_subtractive_values)))
+        (0.5 * ((adjusted_Level2B_HQLA_Additive_Values data) -
+        (level_2B_HQLA_subtractive_values data)) -
+        (adjusted_level2_cap_excess_amount data)
+        - 0.1765 * (((adjusted_level_1_HQLA_additive_values data) - (level_1_HQLA_subtractive_values data))
+        +0.85 * ((adjusted_Level2A_HQLA_Additive_Values data) - (level_2A_HQLA_subtractive_values data))))
 
 
 level_1_HQLA_additive_values : DataTables -> Balance
