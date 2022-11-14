@@ -77,6 +77,7 @@ level_2B_cap_excess_amount data =
  in
      Basics.max 0 amount
 
+
 adjusted_level_1_HQLA_additive_values : DataTables -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
     let
@@ -118,6 +119,7 @@ adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetEx
         + secured_funding_unwind_collateral_values_with_level_1_collateral_class
         + asset_exchange_unwind_maturity_amounts_with_level_1_subproduct
         - asset_exchange_unwind_collateral_values_with_level_1_collateral_class
+
 
 adjusted_Level2A_HQLA_Additive_Values : Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
 adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
