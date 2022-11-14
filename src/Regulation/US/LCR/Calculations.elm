@@ -91,7 +91,7 @@ level_2B_cap_excess_amount data =
 
 
 adjusted_level_1_HQLA_additive_values : DataTables -> Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
-adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetExchangeUnwind assetExchangeUnwindCollateral =
     let
         hqla_add_values : Balance
         hqla_add_values =
@@ -129,8 +129,8 @@ adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetEx
                 |> List.map (\( v, u ) -> u)
                 |> List.sum
 
-        asset_exchange_unwind_maturity_amounts_with_level_1_subproduct : Float
-        asset_exchange_unwind_maturity_amounts_with_level_1_subproduct =
+        asset_exchange_unwind_maturity_amounts_with_level_1_subProduct : Float
+        asset_exchange_unwind_maturity_amounts_with_level_1_subProduct =
             Flows.inflowRules assetExchangeUnwind
                 |> Rules.findAll
                     [ "21(c)(todo)" ]
@@ -139,7 +139,7 @@ adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetEx
 
         asset_exchange_unwind_collateral_values_with_level_1_collateral_class : Float
         asset_exchange_unwind_collateral_values_with_level_1_collateral_class =
-            Flows.inflowRules assetExunwindcollateral
+            Flows.inflowRules assetExchangeUnwindCollateral
                 |> Rules.findAll
                     [ "33(f)(2)(i)" ]
                 |> List.map (\( v, u ) -> u)
@@ -150,12 +150,12 @@ adjusted_level_1_HQLA_additive_values data securedLending securedFunding assetEx
         - secured_lending_unwind_collateral_values_with_level_1_collateral_class
         - secured_funding_unwind_maturity_amounts
         + secured_funding_unwind_collateral_values_with_level_1_collateral_class
-        + asset_exchange_unwind_maturity_amounts_with_level_1_subproduct
+        + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct
         - asset_exchange_unwind_collateral_values_with_level_1_collateral_class
 
 
 adjusted_Level2A_HQLA_Additive_Values : Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
-adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExchangeUnwindCollateral =
     let
         securedFunds : List Flow
         securedFunds =
@@ -174,8 +174,8 @@ adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchang
                 |> Rules.findAll
                     [ "33(f)(1)(iv)" ]
 
-        securedlendings : Float
-        securedlendings =
+        securedLendings : Float
+        securedLendings =
             List.map (\( v, u ) -> u) securedLen
                 |> List.sum
 
@@ -192,16 +192,16 @@ adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchang
 
         assetCollateral : List Flow
         assetCollateral =
-            Flows.inflowRules assetExunwindcollateral
+            Flows.inflowRules assetExchangeUnwindCollateral
                 |> Rules.findAll
                     [ "33(f)(2)(i)" ]
 
-        assetExcahngeUnwindColl : Float
-        assetExcahngeUnwindColl =
+        assetExchangeUnwindColl : Float
+        assetExchangeUnwindColl =
             List.map (\( v, u ) -> u) assetCollateral
                 |> List.sum
     in
-    level_2A_HQLA_additive_values data - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    level_2A_HQLA_additive_values data - securedLendings + securedFundings + assetExchange - assetExchangeUnwindColl
 
 
 
@@ -223,7 +223,7 @@ adjusted_Level2A_HQLA_Additive_Values securedLending securedFunding assetExchang
 
 
 adjusted_Level2B_HQLA_Additive_Values : DataTables.Inflows -> DataTables.Outflows -> Inflows -> Inflows -> Float
-adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExunwindcollateral =
+adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchangeUnwind assetExchangeUnwindCollateral =
     let
         securedLen : List Flow
         securedLen =
@@ -231,8 +231,8 @@ adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchang
                 |> Rules.findAll
                     [ "33(f)(1)(v)" ]
 
-        securedlendings : Float
-        securedlendings =
+        securedLendings : Float
+        securedLendings =
             List.map (\( v, u ) -> u) securedLen
                 |> List.sum
 
@@ -249,12 +249,12 @@ adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchang
 
         assetCollateral : List Flow
         assetCollateral =
-            Flows.inflowRules assetExunwindcollateral
+            Flows.inflowRules assetExchangeUnwindCollateral
                 |> Rules.findAll
                     [ "33(f)(2)(i)" ]
 
-        assetExcahngeUnwindColl : Float
-        assetExcahngeUnwindColl =
+        assetExchangeUnwindColl : Float
+        assetExchangeUnwindColl =
             List.map (\( v, u ) -> u) assetCollateral
                 |> List.sum
 
@@ -269,7 +269,7 @@ adjusted_Level2B_HQLA_Additive_Values securedLending securedFunding assetExchang
             List.map (\( u, v ) -> v) securedFund
                 |> List.sum
     in
-    level_2B_HQLA_additive_values data - securedlendings + securedFundings + assetExchange - assetExcahngeUnwindColl
+    level_2B_HQLA_additive_values data - securedLendings + securedFundings + assetExchange - assetExchangeUnwindColl
 
 
 adjusted_excess_HQLA : DataTables -> Balance
@@ -353,8 +353,8 @@ level_1_HQLA_additive_values data =
         inflowAmount =
             List.sum (List.map (\f -> second f) inflow_rules)
 
-        supplemantal_rules : List Flow
-        supplemantal_rules =
+        supplemental_rules : List Flow
+        supplemental_rules =
             Flows.supplementalRules level_1_supplementals
                 |> Rules.findAll
                     [ "20(a)(1)"
@@ -365,7 +365,7 @@ level_1_HQLA_additive_values data =
 
         supplementalAmount : Float
         supplementalAmount =
-            List.sum (List.map (\f -> second f) supplemantal_rules)
+            List.sum (List.map (\f -> second f) supplemental_rules)
     in
     inflowAmount + supplementalAmount
 
@@ -412,8 +412,8 @@ level_2A_HQLA_additive_values data =
         inflowAmount =
             List.sum (List.map (\f -> second f) inflow_rules)
 
-        supplemantal_rules : List Flow
-        supplemantal_rules =
+        supplemental_rules : List Flow
+        supplemental_rules =
             Flows.supplementalRules level_2A_supplementals
                 |> Rules.findAll
                     [ "20(a)(1)"
@@ -424,7 +424,7 @@ level_2A_HQLA_additive_values data =
 
         supplementalAmount : Float
         supplementalAmount =
-            List.sum (List.map (\f -> second f) supplemantal_rules)
+            List.sum (List.map (\f -> second f) supplemental_rules)
     in
     inflowAmount + supplementalAmount
 
@@ -471,8 +471,8 @@ level_2B_HQLA_additive_values data =
         inflowAmount =
             List.sum (List.map (\f -> second f) inflow_rules)
 
-        supplemantal_rules : List Flow
-        supplemantal_rules =
+        supplemental_rules : List Flow
+        supplemental_rules =
             Flows.supplementalRules level_2B_supplementals
                 |> Rules.findAll
                     [ "20(a)(1)"
@@ -483,7 +483,7 @@ level_2B_HQLA_additive_values data =
 
         supplementalAmount : Float
         supplementalAmount =
-            List.sum (List.map (\f -> second f) supplemantal_rules)
+            List.sum (List.map (\f -> second f) supplemental_rules)
     in
     inflowAmount + supplementalAmount
 
@@ -496,8 +496,8 @@ level_1_HQLA_subtractive_values data =
             data.supplemental.liquidityRiskMeasurement
 
         --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
-        level_1_suplementals : DataTables.Supplemental
-        level_1_suplementals =
+        level_1_supplementals : DataTables.Supplemental
+        level_1_supplementals =
             { informational = [], derivativesCollateral = [], liquidityRiskMeasurement = level_1_supplemental_LiquidityRiskMeasurement, balanceSheet = [], foreignExchange = [] }
 
         level_1_supplemental_DerivativesCollateral : List DerivativesCollateral
@@ -505,8 +505,8 @@ level_1_HQLA_subtractive_values data =
             data.supplemental.derivativesCollateral
 
         --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
-        level_1_suplementals_derivates : DataTables.Supplemental
-        level_1_suplementals_derivates =
+        level_1_supplementals_derivatives : DataTables.Supplemental
+        level_1_supplementals_derivatives =
             { informational = [], derivativesCollateral = level_1_supplemental_DerivativesCollateral, liquidityRiskMeasurement = [], balanceSheet = [], foreignExchange = [] }
 
         --level_1_inflow_secured : List Inflows.Secured
@@ -523,7 +523,7 @@ level_1_HQLA_subtractive_values data =
         ----
         supplemental_rules_liquidity_risk : List Flow
         supplemental_rules_liquidity_risk =
-            Flows.supplementalRules level_1_suplementals
+            Flows.supplementalRules level_1_supplementals
                 |> Rules.findAll
                     [ "22(b)(3)L1"
                     , "22(a)(3)L1"
@@ -533,17 +533,17 @@ level_1_HQLA_subtractive_values data =
         liquidity_risk_amount =
             List.sum (List.map (\f -> second f) supplemental_rules_liquidity_risk)
 
-        supplemental_rules_derivaties_collateral : List Flow
-        supplemental_rules_derivaties_collateral =
-            Flows.supplementalRules level_1_suplementals_derivates
+        supplemental_rules_derivatives_collateral : List Flow
+        supplemental_rules_derivatives_collateral =
+            Flows.supplementalRules level_1_supplementals_derivatives
                 |> Rules.findAll
                     [ "22(b)(5)L1" ]
 
-        deravativesCollectoralAmt : Float
-        deravativesCollectoralAmt =
-            List.sum (List.map (\f -> second f) supplemental_rules_derivaties_collateral)
+        derivatives_collateral_amount : Float
+        derivatives_collateral_amount =
+            List.sum (List.map (\f -> second f) supplemental_rules_derivatives_collateral)
     in
-    deravativesCollectoralAmt + liquidity_risk_amount
+    derivatives_collateral_amount + liquidity_risk_amount
 
 
 level_2A_HQLA_subtractive_values : DataTables -> Balance
@@ -554,8 +554,8 @@ level_2A_HQLA_subtractive_values data =
             data.supplemental.liquidityRiskMeasurement
 
         --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
-        level_2A_suplementals : DataTables.Supplemental
-        level_2A_suplementals =
+        level_2A_supplementals : DataTables.Supplemental
+        level_2A_supplementals =
             { informational = [], derivativesCollateral = [], liquidityRiskMeasurement = level_2A_supplemental_LiquidityRiskMeasurement, balanceSheet = [], foreignExchange = [] }
 
         level_2A_supplemental_DerivativesCollateral : List DerivativesCollateral
@@ -563,8 +563,8 @@ level_2A_HQLA_subtractive_values data =
             data.supplemental.derivativesCollateral
 
         --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
-        level_2A_suplementals_derivates : DataTables.Supplemental
-        level_2A_suplementals_derivates =
+        level_2A_supplementals_derivatives : DataTables.Supplemental
+        level_2A_supplementals_derivatives =
             { informational = [], derivativesCollateral = level_2A_supplemental_DerivativesCollateral, liquidityRiskMeasurement = [], balanceSheet = [], foreignExchange = [] }
 
         --level_1_inflow_secured : List Inflows.Secured
@@ -581,7 +581,7 @@ level_2A_HQLA_subtractive_values data =
         ----
         supplemental_rules_liquidity_risk : List Flow
         supplemental_rules_liquidity_risk =
-            Flows.supplementalRules level_2A_suplementals
+            Flows.supplementalRules level_2A_supplementals
                 |> Rules.findAll
                     [ "22(b)(3)L2a"
                     , "22(a)(3)L2a"
@@ -591,17 +591,17 @@ level_2A_HQLA_subtractive_values data =
         liquidity_risk_amount =
             List.sum (List.map (\f -> second f) supplemental_rules_liquidity_risk)
 
-        supplemental_rules_derivaties_collateral : List Flow
-        supplemental_rules_derivaties_collateral =
-            Flows.supplementalRules level_2A_suplementals_derivates
+        supplemental_rules_derivatives_collateral : List Flow
+        supplemental_rules_derivatives_collateral =
+            Flows.supplementalRules level_2A_supplementals_derivatives
                 |> Rules.findAll
                     [ "22(b)(5)L2a" ]
 
-        deravativesCollectoralAmt : Float
-        deravativesCollectoralAmt =
-            List.sum (List.map (\f -> second f) supplemental_rules_derivaties_collateral)
+        derivatives_collateral_amount : Float
+        derivatives_collateral_amount =
+            List.sum (List.map (\f -> second f) supplemental_rules_derivatives_collateral)
     in
-    deravativesCollectoralAmt + liquidity_risk_amount
+    derivatives_collateral_amount + liquidity_risk_amount
 
 
 level_2B_HQLA_subtractive_values : DataTables -> Balance
@@ -612,8 +612,8 @@ level_2B_HQLA_subtractive_values data =
             data.supplemental.liquidityRiskMeasurement
 
         --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
-        level_2B_suplementals : DataTables.Supplemental
-        level_2B_suplementals =
+        level_2B_supplementals : DataTables.Supplemental
+        level_2B_supplementals =
             { informational = [], derivativesCollateral = [], liquidityRiskMeasurement = level_2B_supplemental_LiquidityRiskMeasurement, balanceSheet = [], foreignExchange = [] }
 
         level_2B_supplemental_DerivativesCollateral : List DerivativesCollateral
@@ -621,8 +621,8 @@ level_2B_HQLA_subtractive_values data =
             data.supplemental.derivativesCollateral
 
         --    |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel1)
-        level_2B_suplementals_derivates : DataTables.Supplemental
-        level_2B_suplementals_derivates =
+        level_2B_supplementals_derivatives : DataTables.Supplemental
+        level_2B_supplementals_derivatives =
             { informational = [], derivativesCollateral = level_2B_supplemental_DerivativesCollateral, liquidityRiskMeasurement = [], balanceSheet = [], foreignExchange = [] }
 
         --level_1_inflow_secured : List Inflows.Secured
@@ -639,7 +639,7 @@ level_2B_HQLA_subtractive_values data =
         ----
         supplemental_rules_liquidity_risk : List Flow
         supplemental_rules_liquidity_risk =
-            Flows.supplementalRules level_2B_suplementals
+            Flows.supplementalRules level_2B_supplementals
                 |> Rules.findAll
                     [ "22(b)(3)L2b"
                     , "22(a)(3)L2b"
@@ -649,17 +649,17 @@ level_2B_HQLA_subtractive_values data =
         liquidity_risk_amount =
             List.sum (List.map (\f -> second f) supplemental_rules_liquidity_risk)
 
-        supplemental_rules_derivaties_collateral : List Flow
-        supplemental_rules_derivaties_collateral =
-            Flows.supplementalRules level_2B_suplementals_derivates
+        supplemental_rules_derivatives_collateral : List Flow
+        supplemental_rules_derivatives_collateral =
+            Flows.supplementalRules level_2B_supplementals_derivatives
                 |> Rules.findAll
                     [ "22(b)(5)L2b" ]
 
-        deravativesCollectoralAmt : Float
-        deravativesCollectoralAmt =
-            List.sum (List.map (\f -> second f) supplemental_rules_derivaties_collateral)
+        derivatives_collateral_amount : Float
+        derivatives_collateral_amount =
+            List.sum (List.map (\f -> second f) supplemental_rules_derivatives_collateral)
     in
-    deravativesCollectoralAmt + liquidity_risk_amount
+    derivatives_collateral_amount + liquidity_risk_amount
 
 
 total_net_cash_outflows : Float -> DataTables.Outflows -> DataTables.Inflows -> Balance
