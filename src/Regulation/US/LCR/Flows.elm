@@ -15,6 +15,7 @@
 module Regulation.US.LCR.Flows exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (..)
+import Regulation.US.FR2052A.DataTables.Supplemental exposing (Supplemental(..))
 import Regulation.US.LCR.Inflows.Assets as Assets
 import Regulation.US.LCR.Inflows.Other as InOther
 import Regulation.US.LCR.Inflows.Secured as InSecured
@@ -23,6 +24,8 @@ import Regulation.US.LCR.Outflows.Deposits as Deposits
 import Regulation.US.LCR.Outflows.Other as OutOther
 import Regulation.US.LCR.Outflows.Secured as OutSecured
 import Regulation.US.LCR.Outflows.Wholesale as Wholesales
+import Regulation.US.LCR.Supplemental.DerivativesCollateral as DerivativesCollateral
+import Regulation.US.LCR.Supplemental.LiquidityRiskMeasurement as LiquidityRiskMeasurement
 
 
 type alias Flow =
@@ -50,4 +53,13 @@ outflowRules outflows =
         , List.concatMap (\s -> OutSecured.applyRules s) outflows.secured
         , List.concatMap (\w -> Wholesales.applyRules w) outflows.wholesale
         , List.concatMap (\o -> OutOther.applyRules o) outflows.other
+        ]
+
+{-| The list of all rules pertaining to supplementals.
+-}
+supplementalRules : DataTables.Supplemental -> List Flow
+supplementalRules supplementals =
+    List.concat
+        [ List.concatMap (\d -> DerivativesCollateral.applyRules d) supplementals.derivativesCollateral
+        , List.concatMap (\l -> LiquidityRiskMeasurement.applyRules l) supplementals.liquidityRiskMeasurement
         ]
