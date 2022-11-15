@@ -14,6 +14,7 @@
 
 module Regulation.US.LCR.Rules exposing (..)
 
+import Regulation.US.LCR.Basics exposing (Balance)
 import Regulation.US.LCR.Flows exposing (Flow)
 
 
@@ -59,3 +60,10 @@ findAll : List String -> List Flow -> List Flow
 findAll rules flows =
     flows
         |> List.filter (\( rule, amount ) -> List.member rule rules)
+
+
+matchAndSum : List String -> List Flow -> Balance
+matchAndSum rules flows =
+    findAll rules flows
+        |> List.map (\( v, u ) -> u)
+        |> List.sum
