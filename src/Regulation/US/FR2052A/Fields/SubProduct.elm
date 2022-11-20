@@ -11,6 +11,7 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.FR2052A.Fields.SubProduct exposing (..)
 
 
@@ -81,3 +82,13 @@ isCustomerLong subProduct =
 isSpecificCentralBank : SubProduct -> Bool
 isSpecificCentralBank subProduct =
     subProduct == "Specific central bank"
+
+
+isSubProduct : Maybe SubProduct -> (SubProduct -> Bool) -> Bool
+isSubProduct subProduct filter =
+    case subProduct of
+        Just sp ->
+            filter sp
+
+        Nothing ->
+            False
