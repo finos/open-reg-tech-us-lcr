@@ -34,8 +34,8 @@ type alias Flow =
 
 {-| The list of all rules pertaining to inflows.
 -}
-inflowRules : DataTables.Inflows -> List Flow
-inflowRules inflows =
+applyInflowRules : DataTables.Inflows -> List Flow
+applyInflowRules inflows =
     List.concat
         [ List.concatMap (\a -> Assets.applyRules a) inflows.assets
         , List.concatMap (\u -> Unsecured.applyRules u) inflows.unsecured
@@ -46,8 +46,8 @@ inflowRules inflows =
 
 {-| The list of all rules pertaining to outflows.
 -}
-outflowRules : DataTables.Outflows -> List Flow
-outflowRules outflows =
+applyOutflowRules : DataTables.Outflows -> List Flow
+applyOutflowRules outflows =
     List.concat
         [ List.concatMap (\d -> Deposits.applyRules d) outflows.deposits
         , List.concatMap (\s -> OutSecured.applyRules s) outflows.secured
@@ -55,10 +55,11 @@ outflowRules outflows =
         , List.concatMap (\o -> OutOther.applyRules o) outflows.other
         ]
 
+
 {-| The list of all rules pertaining to supplementals.
 -}
-supplementalRules : DataTables.Supplemental -> List Flow
-supplementalRules supplementals =
+applySupplementalRules : DataTables.Supplemental -> List Flow
+applySupplementalRules supplementals =
     List.concat
         [ List.concatMap (\d -> DerivativesCollateral.applyRules d) supplementals.derivativesCollateral
         , List.concatMap (\l -> LiquidityRiskMeasurement.applyRules l) supplementals.liquidityRiskMeasurement

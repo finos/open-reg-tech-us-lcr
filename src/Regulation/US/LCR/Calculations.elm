@@ -14,11 +14,12 @@
 
 module Regulation.US.LCR.Calculations exposing (..)
 
-import Basics
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
 import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
+import Regulation.US.LCR.InflowValues exposing (..)
+import Regulation.US.LCR.OutflowValues exposing (..)
 import Regulation.US.LCR.Rules as Rules
 
 
@@ -28,14 +29,18 @@ import Regulation.US.LCR.Rules as Rules
 -}
 
 
-lcr : BankCategory -> DataTables -> Ratio
-lcr bankCategory data =
+endpoint : BankCategory -> DataTables -> Ratio
+endpoint bankCategory data =
     let
+        lcr : Balance
+        lcr =
+            hqla_amount / total_net_cash_outflows
+
         hqla_amount : Balance
         hqla_amount =
-            (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
-                + (0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values))
-                + (0.5 * (level_2B_HQLA_additive_values - level_2A_HQLA_additive_values))
+            (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
+                + (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+                + (0.5 * (level_2B_HQLA_additive_values data - level_2A_HQLA_additive_values data))
                 + max unadjusted_excess_HQLA adjusted_excess_HQLA
 
         unadjusted_excess_HQLA : Balance
@@ -45,82 +50,70 @@ lcr bankCategory data =
         level_2_cap_excess_amount : Balance
         level_2_cap_excess_amount =
             max 0
-                (0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values))
-                + (0.5 * (level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values))
-                - (0.6667 * (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values))
+                (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+                + (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+                - (0.6667 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
 
         level_2B_cap_excess_amount : Balance
         level_2B_cap_excess_amount =
             max 0
-                (0.5 * (level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values))
+                (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
                 - level_2_cap_excess_amount
-                + (0.1765 * (level_1_HQLA_additive_values - level_1_HQLA_subtractive_values))
-                - (0.85 * (level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values))
+                + (0.1765 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
+                - (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
 
         adjusted_level_1_HQLA_additive_values : Balance
         adjusted_level_1_HQLA_additive_values =
-            level_1_HQLA_additive_values
-                + secured_lending_unwind_maturity_amounts
-                - secured_lending_unwind_collateral_values_with_level_1_collateral_class
-                - secured_funding_unwind_maturity_amounts
-                + secured_funding_unwind_collateral_values_with_level_1_collateral_class
-                + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct
-                - asset_exchange_unwind_collateral_values_with_level_1_collateral_class
+            level_1_HQLA_additive_values data
+                + secured_lending_unwind_maturity_amounts data
+                - secured_lending_unwind_collateral_values_with_level_1_collateral_class data
+                - secured_funding_unwind_maturity_amounts data
+                + secured_funding_unwind_collateral_values_with_level_1_collateral_class data
+                + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct data
+                - asset_exchange_unwind_collateral_values_with_level_1_collateral_class data
 
-        adjusted_Level2A_HQLA_additive_Values : Balance
-        adjusted_Level2A_HQLA_additive_Values =
-            level_2A_HQLA_additive_values
-                - secured_lending_unwind_collateral_values_with_level_2A_collateral_class
-                + secured_funding_unwind_collateral_values_with_level_2A_collateral_class
-                + asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct
-                - asset_exchange_unwind_collateral_values_with_level_2A_collateral_class
+        adjusted_level_2A_HQLA_additive_values : Balance
+        adjusted_level_2A_HQLA_additive_values =
+            level_2A_HQLA_additive_values data
+                - secured_lending_unwind_collateral_values_with_level_2A_collateral_class data
+                + secured_funding_unwind_collateral_values_with_level_2A_collateral_class data
+                + asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct data
+                - asset_exchange_unwind_collateral_values_with_level_2A_collateral_class data
 
-        adjusted_Level2B_HQLA_additive_Values : Balance
-        adjusted_Level2B_HQLA_additive_Values =
-            level_2B_HQLA_additive_values
-                - secured_lending_unwind_collateral_values_with_level_2B_collateral_class
-                + secured_funding_unwind_collateral_values_with_level_2B_collateral_class
-                + asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct
-                - asset_exchange_unwind_collateral_values_with_level_2B_collateral_class
+        adjusted_level_2B_HQLA_additive_values : Balance
+        adjusted_level_2B_HQLA_additive_values =
+            level_2B_HQLA_additive_values data
+                - secured_lending_unwind_collateral_values_with_level_2B_collateral_class data
+                + secured_funding_unwind_collateral_values_with_level_2B_collateral_class data
+                + asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct data
+                - asset_exchange_unwind_collateral_values_with_level_2B_collateral_class data
 
         adjusted_excess_HQLA : Balance
         adjusted_excess_HQLA =
-            adjusted_level2_cap_excess_amount + adjusted_level2B_cap_excess_amount
+            adjusted_level_2_cap_excess_amount + adjusted_level_2B_cap_excess_amount
 
-        adjusted_level2_cap_excess_amount : Balance
-        adjusted_level2_cap_excess_amount =
-            Basics.max 0
-                (0.85 * (adjusted_Level2A_HQLA_additive_Values - level_2A_HQLA_subtractive_values))
-                + (0.5 * (adjusted_Level2B_HQLA_additive_Values - level_2B_HQLA_subtractive_values))
-                - (0.6667 * (adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values))
+        adjusted_level_2_cap_excess_amount : Balance
+        adjusted_level_2_cap_excess_amount =
+            max 0
+                (0.85 * (adjusted_level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values data))
+                + (0.5 * (adjusted_level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values data))
+                - (0.6667 * (adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values data))
 
-        adjusted_level2B_cap_excess_amount : Balance
-        adjusted_level2B_cap_excess_amount =
-            Basics.max 0
-                (0.5 * (adjusted_Level2B_HQLA_additive_Values - level_2B_HQLA_subtractive_values))
-                - adjusted_level2_cap_excess_amount
+        adjusted_level_2B_cap_excess_amount : Balance
+        adjusted_level_2B_cap_excess_amount =
+            max 0
+                (0.5 * (adjusted_level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values data))
+                - adjusted_level_2_cap_excess_amount
                 - (0.1765
-                    * (adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values)
-                    + (0.85 * (adjusted_Level2A_HQLA_additive_Values - level_2A_HQLA_subtractive_values))
+                    * (adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values data)
+                    + (0.85 * (adjusted_level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values data))
                   )
 
         total_net_cash_outflows : Balance
         total_net_cash_outflows =
-            --let
-            --outflows_summed : Float
-            --outflows_summed =
-            --    List.map (\o -> second o) (Flows.outflowRules data.outflows)
-            --        |> List.sum
-            --
-            --inflows_summed : Float
-            --inflows_summed =
-            --    List.map (\o -> second o) (Flows.inflowRules data.inflows)
-            --        |> List.sum
-            --in
             outflow_adjustment_percentage bankCategory
-                * (outflow_values
-                    - min (inflow_values * respective_inflow_rates)
-                        (0.75 * (outflow_values * respective_outflow_rates))
+                * (outflow_values data.outflows
+                    - min (inflow_values data.inflows) (0.75 * outflow_values data.outflows)
                     + maturity_mismatch_add_on
                   )
 
@@ -128,115 +121,8 @@ lcr bankCategory data =
         maturity_mismatch_add_on =
             max 0 (largest_net_cumulative_maturity_outflow_amount data)
                 - max 0 (net_day30_cumulative_maturity_outflow_amount data)
-
-        --let
-        --    cum_outflow : Balance
-        --    cum_outflow =
-        --        max 0 (net_day30_cumulative_maturity_outflow_amount out inf)
-        --
-        --    largest_outflow : Balance
-        --    largest_outflow =
-        --        max 0 (largest_net_cumulative_maturity_outflow_amount out inf)
-        --in
-        --largest_outflow - cum_outflow
-        ---- Missing Functions
-        level_1_HQLA_additive_values : Balance
-        level_1_HQLA_additive_values =
-            HQLAAmountValues.level_1_HQLA_additive_values data
-
-        level_2A_HQLA_additive_values : Balance
-        level_2A_HQLA_additive_values =
-            HQLAAmountValues.level_2A_HQLA_additive_values data
-
-        level_2B_HQLA_additive_values : Balance
-        level_2B_HQLA_additive_values =
-            HQLAAmountValues.level_2B_HQLA_additive_values data
-
-        level_1_HQLA_subtractive_values : Balance
-        level_1_HQLA_subtractive_values =
-            HQLAAmountValues.level_1_HQLA_additive_values data
-
-        level_2A_HQLA_subtractive_values : Balance
-        level_2A_HQLA_subtractive_values =
-            HQLAAmountValues.level_2A_HQLA_additive_values data
-
-        level_2B_HQLA_subtractive_values : Balance
-        level_2B_HQLA_subtractive_values =
-            HQLAAmountValues.level_2B_HQLA_additive_values data
-
-        secured_lending_unwind_maturity_amounts : Balance
-        secured_lending_unwind_maturity_amounts =
-            HQLAAmountValues.secured_lending_unwind_maturity_amounts data
-
-        secured_lending_unwind_collateral_values_with_level_1_collateral_class : Balance
-        secured_lending_unwind_collateral_values_with_level_1_collateral_class =
-            HQLAAmountValues.secured_lending_unwind_collateral_values_with_level_1_collateral_class data
-
-        secured_funding_unwind_maturity_amounts : Balance
-        secured_funding_unwind_maturity_amounts =
-            HQLAAmountValues.secured_funding_unwind_maturity_amounts data
-
-        secured_funding_unwind_collateral_values_with_level_1_collateral_class : Balance
-        secured_funding_unwind_collateral_values_with_level_1_collateral_class =
-            HQLAAmountValues.secured_funding_unwind_collateral_values_with_level_1_collateral_class data
-
-        asset_exchange_unwind_maturity_amounts_with_level_1_subProduct : Balance
-        asset_exchange_unwind_maturity_amounts_with_level_1_subProduct =
-            HQLAAmountValues.asset_exchange_unwind_maturity_amounts_with_level_1_subProduct data
-
-        asset_exchange_unwind_collateral_values_with_level_1_collateral_class : Balance
-        asset_exchange_unwind_collateral_values_with_level_1_collateral_class =
-            HQLAAmountValues.asset_exchange_unwind_collateral_values_with_level_1_collateral_class data
-
-        secured_lending_unwind_collateral_values_with_level_2A_collateral_class : Balance
-        secured_lending_unwind_collateral_values_with_level_2A_collateral_class =
-            HQLAAmountValues.secured_lending_unwind_collateral_values_with_level_2A_collateral_class data
-
-        secured_funding_unwind_collateral_values_with_level_2A_collateral_class : Balance
-        secured_funding_unwind_collateral_values_with_level_2A_collateral_class =
-            HQLAAmountValues.secured_funding_unwind_collateral_values_with_level_2A_collateral_class data
-
-        asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct : Balance
-        asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct =
-            HQLAAmountValues.asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct data
-
-        asset_exchange_unwind_collateral_values_with_level_2A_collateral_class : Balance
-        asset_exchange_unwind_collateral_values_with_level_2A_collateral_class =
-            HQLAAmountValues.asset_exchange_unwind_collateral_values_with_level_2A_collateral_class data
-
-        secured_lending_unwind_collateral_values_with_level_2B_collateral_class : Balance
-        secured_lending_unwind_collateral_values_with_level_2B_collateral_class =
-            HQLAAmountValues.secured_lending_unwind_collateral_values_with_level_2B_collateral_class data
-
-        secured_funding_unwind_collateral_values_with_level_2B_collateral_class : Balance
-        secured_funding_unwind_collateral_values_with_level_2B_collateral_class =
-            HQLAAmountValues.secured_funding_unwind_collateral_values_with_level_2B_collateral_class data
-
-        asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct : Balance
-        asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct =
-            HQLAAmountValues.asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct data
-
-        asset_exchange_unwind_collateral_values_with_level_2B_collateral_class : Balance
-        asset_exchange_unwind_collateral_values_with_level_2B_collateral_class =
-            HQLAAmountValues.asset_exchange_unwind_collateral_values_with_level_2B_collateral_class data
-
-        inflow_values : Balance
-        inflow_values =
-            1
-
-        respective_inflow_rates : Balance
-        respective_inflow_rates =
-            1
-
-        outflow_values : Balance
-        outflow_values =
-            1
-
-        respective_outflow_rates : Balance
-        respective_outflow_rates =
-            1
     in
-    hqla_amount / total_net_cash_outflows
+    lcr
 
 
 cumulative_outflow_amount_from_one_to_m : Int -> DataTables -> Balance
@@ -246,16 +132,10 @@ cumulative_outflow_amount_from_one_to_m m data =
         applicable_buckets =
             List.range 1 m
 
-        --maturity_buckets : Dict MaturityBucket (List Outflows)
-        --maturity_buckets =
-        --    Dict.empty
-        --
-        --outflows_flattened : List Outflows
-        --outflows_flattened =
-        --    deconstruct_outflows out
+        --TODO apply accumulation over maturity buckets
         outflow_amount : Balance
         outflow_amount =
-            Flows.outflowRules data.outflows
+            Flows.applyOutflowRules data.outflows
                 |> Rules.matchAndSum
                     [ "32(g)(1)"
                     , "32(g)(2)"
@@ -276,7 +156,7 @@ cumulative_outflow_amount_from_one_to_m m data =
 
         inflow_amount : Balance
         inflow_amount =
-            Flows.inflowRules data.inflows
+            Flows.applyInflowRules data.inflows
                 |> Rules.matchAndSum [ "33(c)", "33(d)", "33(e)", "33(f)" ]
     in
     outflow_amount - inflow_amount
