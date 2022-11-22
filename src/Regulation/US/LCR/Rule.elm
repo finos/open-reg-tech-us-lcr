@@ -17,6 +17,7 @@ module Regulation.US.LCR.Rule exposing (..)
 
 applyRule : Bool -> String -> Float -> List ( String, Float )
 applyRule flag label amount =
+    -- TODO add haircut
     if flag then
         [ ( label, amount ) ]
 

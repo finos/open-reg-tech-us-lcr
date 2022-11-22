@@ -21,3 +21,7 @@ type alias Balance =
 
 type alias Ratio =
     Float
+
+
+type alias Haircut =
+    Float
