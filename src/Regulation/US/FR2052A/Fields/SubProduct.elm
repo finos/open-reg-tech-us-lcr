@@ -19,9 +19,14 @@ type alias SubProduct =
     String
 
 
+currency_and_coin : String
+currency_and_coin =
+    "Currency and Coin"
+
+
 isCurrencyAndCoin : SubProduct -> Bool
 isCurrencyAndCoin subProduct =
-    subProduct == "Currency and Coin"
+    subProduct == currency_and_coin
 
 
 isHQLA : SubProduct -> Bool
@@ -29,59 +34,114 @@ isHQLA subProduct =
     isHQLALevel1 subProduct || isHQLALevel2A subProduct || isHQLALevel2B subProduct
 
 
+level_1 : String
+level_1 =
+    "Level 1"
+
+
 isHQLALevel1 : SubProduct -> Bool
 isHQLALevel1 subProduct =
-    subProduct == "Level 1"
+    subProduct == level_1
+
+
+level_2A : String
+level_2A =
+    "Level 2a"
 
 
 isHQLALevel2A : SubProduct -> Bool
 isHQLALevel2A subProduct =
-    subProduct == "Level 2a"
+    subProduct == level_2A
+
+
+level_2B : String
+level_2B =
+    "Level 2b"
 
 
 isHQLALevel2B : SubProduct -> Bool
 isHQLALevel2B subProduct =
-    subProduct == "Level 2b"
+    subProduct == level_2B
+
+
+non_HQLA : String
+non_HQLA =
+    "Non-HQLA"
 
 
 isNonHQLA : SubProduct -> Bool
 isNonHQLA subProduct =
-    subProduct == "Non-HQLA"
+    subProduct == non_HQLA
+
+
+no_collateral_pledged : String
+no_collateral_pledged =
+    "No Collateral Pledged"
 
 
 isNoCollateralPledged : SubProduct -> Bool
 isNoCollateralPledged subProduct =
-    subProduct == "No Collateral Pledged"
+    subProduct == no_collateral_pledged
+
+
+rehypothecateable_collateral_unencumbered : String
+rehypothecateable_collateral_unencumbered =
+    "Rehypothecateable Collateral Unencumbered"
 
 
 isRehypothecateableCollateralUnencumbered : SubProduct -> Bool
 isRehypothecateableCollateralUnencumbered subProduct =
-    subProduct == "Rehypothecateable Collateral Unencumbered"
+    subProduct == rehypothecateable_collateral_unencumbered
+
+
+unsettled_regular_way : String
+unsettled_regular_way =
+    "Unsettled (Regular Way)"
 
 
 isUnsettledRegularWay : SubProduct -> Bool
 isUnsettledRegularWay subProduct =
-    subProduct == "Unsettled (Regular Way)"
+    subProduct == unsettled_regular_way
+
+
+unsettled_forward : String
+unsettled_forward =
+    "Unsettled (Forward)"
 
 
 isUnsettledForward : SubProduct -> Bool
 isUnsettledForward subProduct =
-    subProduct == "Unsettled (Forward)"
+    subProduct == unsettled_forward
+
+
+firm_long : String
+firm_long =
+    "firm long"
 
 
 isFirmLong : SubProduct -> Bool
 isFirmLong subProduct =
-    subProduct == "firm long"
+    subProduct == firm_long
+
+
+customer_long : String
+customer_long =
+    "Customer long"
 
 
 isCustomerLong : SubProduct -> Bool
 isCustomerLong subProduct =
-    subProduct == "Customer long"
+    subProduct == customer_long
+
+
+specific_central_bank : String
+specific_central_bank =
+    "Specific central bank"
 
 
 isSpecificCentralBank : SubProduct -> Bool
 isSpecificCentralBank subProduct =
-    subProduct == "Specific central bank"
+    subProduct == specific_central_bank
 
 
 isSubProduct : Maybe SubProduct -> (SubProduct -> Bool) -> Bool
