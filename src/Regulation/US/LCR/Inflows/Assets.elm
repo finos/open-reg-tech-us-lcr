@@ -12,16 +12,15 @@
 -}
 
 
-module Regulation.US.LCR.Inflows.Assets exposing (applyRules, sumRules)
+module Regulation.US.LCR.Inflows.Assets exposing (applyRules)
 
-import Morphir.SDK.Aggregate as Agg exposing (..)
+import Morphir.SDK.Aggregate as Aggregate exposing (..)
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.Insured as Insured
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct exposing (currency_and_coin)
 import Regulation.US.LCR.AmountCalculations exposing (..)
-import Regulation.US.LCR.Basics exposing (Balance)
 import Regulation.US.LCR.Rule exposing (applyRule)
 
 
@@ -57,55 +56,18 @@ sumToRule assetsList =
                         "33(d)(1)"
 
                     else
-                        ""
+                        "foo"
                 , value = asset.marketValue
                 }
             )
-        |> List.filter (\a -> a.label == "")
-        |> Agg.groupBy .label
-        |> Agg.aggregate
+        |> List.filter (\a -> a.label /= "")
+        |> Aggregate.groupBy .label
+        |> Aggregate.aggregate
             (\key values ->
                 { label = key
-                , value = values (sumOf .value)
+                , value = values (Aggregate.sumOf .value)
                 }
             )
-
-
-
---sumToRule : List Assets -> List Flow
---sumToRule assetsList =
---    assetsList
---        |> List.map
---            (\asset ->
---                { flows =
---                    if match_rule_1_section_20_a_1_C asset then
---                        Flow "20(a)(1)-C" asset.marketValue
---
---                    else if match_rule_1_section_20_a_1 asset then
---                        Flow "20(a)(1)" asset.marketValue
---
---                    else if match_rule_1_section_20_b_1 asset then
---                        Flow "20(b)(1)" asset.marketValue
---
---                    else if match_rule_1_section_20_c_1 asset then
---                        Flow "20(c)(1)" asset.marketValue
---
---                    else if match_rule_107_section_33_d_1 asset then
---                        Flow "33(d)(1)" asset.marketValue
---
---                    else
---                        Flow "" 0
---                }
---            )
---        |> List.map .flows
---        |> List.filter (\a -> a.label == "")
---        |> Agg.groupBy .label
---        |> Agg.aggregate
---            (\key values ->
---                { label = key
---                , value = values (sumOf .value)
---                }
---            )
 
 
 applyRules : Assets -> List ( String, Float )
@@ -119,7 +81,7 @@ applyRules flow =
         ]
 
 
-rule_1_section_20_a_1_C : List Assets -> Balance
+rule_1_section_20_a_1_C : List Assets -> Float
 rule_1_section_20_a_1_C assets =
     assets
         |> List.filter match_rule_1_section_20_a_1_C
@@ -127,7 +89,7 @@ rule_1_section_20_a_1_C assets =
         |> List.sum
 
 
-rule_1_section_20_a_1 : List Assets -> Balance
+rule_1_section_20_a_1 : List Assets -> Float
 rule_1_section_20_a_1 assets =
     assets
         |> List.filter match_rule_1_section_20_a_1
@@ -135,7 +97,7 @@ rule_1_section_20_a_1 assets =
         |> List.sum
 
 
-rule_1_section_20_b_1 : List Assets -> Balance
+rule_1_section_20_b_1 : List Assets -> Float
 rule_1_section_20_b_1 assets =
     assets
         |> List.filter match_rule_1_section_20_b_1
@@ -143,7 +105,7 @@ rule_1_section_20_b_1 assets =
         |> List.sum
 
 
-rule_1_section_20_c_1 : List Assets -> Balance
+rule_1_section_20_c_1 : List Assets -> Float
 rule_1_section_20_c_1 assets =
     assets
         |> List.filter match_rule_1_section_20_c_1
@@ -151,7 +113,7 @@ rule_1_section_20_c_1 assets =
         |> List.sum
 
 
-rule_107_section_33_d_1 : List Assets -> Balance
+rule_107_section_33_d_1 : List Assets -> Float
 rule_107_section_33_d_1 assets =
     assets
         |> List.filter match_rule_107_section_33_d_1
