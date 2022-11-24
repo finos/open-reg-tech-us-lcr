@@ -56,7 +56,7 @@ sumToRule assetsList =
                         "33(d)(1)"
 
                     else
-                        "foo"
+                        ""
                 , value = asset.marketValue
                 }
             )
