@@ -21,21 +21,6 @@ import Regulation.US.LCR.Inflows.Assets exposing (rule_1_section_20_a_1_C)
 import Test exposing (Test, test)
 
 
-testExpectTrue : Test
-testExpectTrue =
-    test "Expect.true test" <|
-        \() ->
-            True
-                |> Expect.true "Expected true"
-
-
-testExpectNotEqual : Test
-testExpectNotEqual =
-    test "Expect Not Equal" <|
-        \() ->
-            Expect.notEqual "foo" "foobar"
-
-
 assets : List Assets
 assets =
     [ { currency = USD

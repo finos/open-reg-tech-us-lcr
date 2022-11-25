@@ -1,4 +1,4 @@
-import regulation.us.lcr.inflows.rules.SparkJobs
+import regulation.us.lcr.inflows.applyrules.{SparkJobs => Jobs}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{BooleanType, DoubleType, FloatType, IntegerType, StringType, StructType}
 import org.scalatest.FunSuite
@@ -62,7 +62,7 @@ class SparkJobs extends FunSuite {
       .schema(new StructType().add("marketValue", FloatType, nullable = false))
       .load("./open_reg_tech_us_lcr/test/test_data/rule1Section20A1C_expected_results.csv")
 
-    val df_actual_results = SparkJobs.rule1Section20A1C(assetsDF)
+    val df_actual_results = Jobs.rule1Section20A1C(assetsDF)
 
     df_actual_results.show()
     df_expected_results.show()
