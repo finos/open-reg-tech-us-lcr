@@ -26,6 +26,9 @@ morphir-hashes.json
 /dist/
 /spark/out/
 /spark/.idea/
-spark
+
+# Maven generated Scala files will be ignored
 src/main
+
+# Maven generated compiled scala will be ignored
 target
