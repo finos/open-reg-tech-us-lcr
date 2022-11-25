@@ -24,3 +24,5 @@ morphir-ir.json
 morphir-hashes.json
 /elm-stuff/
 /dist/
+/spark/out/
+/spark/.idea/
