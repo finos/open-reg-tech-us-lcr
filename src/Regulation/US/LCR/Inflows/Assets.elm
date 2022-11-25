@@ -12,7 +12,7 @@
 -}
 
 
-module Regulation.US.LCR.Inflows.Assets exposing (applyRules)
+module Regulation.US.LCR.Inflows.Assets exposing (..)
 
 import Morphir.SDK.Aggregate as Aggregate exposing (..)
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
@@ -130,9 +130,9 @@ match_rule_1_section_20_a_1_C flow =
         --&& (flow.subProduct |> Maybe.map (\subProduct -> not (SubProduct.isCurrencyAndCoin subProduct)) |> Maybe.withDefault True)
         && (flow.subProduct /= Just currency_and_coin)
         ---- Maturity Bucket: Open
-        --&& MaturityBucket.isOpen flow.maturityBucket
+        && MaturityBucket.isOpen flow.maturityBucket
         ---- Collateral Class: A-0-Q
-        --&& CollateralClass.isCash flow.collateralClass
+        && CollateralClass.isCash flow.collateralClass
         -- Forward Start Amount: NULL
         && (flow.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
@@ -172,7 +172,7 @@ match_rule_1_section_20_b_1 flow =
         --&& (flow.subProduct |> Maybe.map (\subProduct -> not (SubProduct.isCurrencyAndCoin subProduct)) |> Maybe.withDefault True)
         && (flow.subProduct /= Just currency_and_coin)
         ---- Collateral Class: G-1-Q; G-2-Q; G-3-Q; S-5-Q; S-6-Q; S-7-Q; CB-3-Q
-        --&& CollateralClass.isHQLALevel2A flow.collateralClass
+        && CollateralClass.isHQLALevel2A flow.collateralClass
         -- Forward Start Amount: NULL
         && (flow.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
@@ -192,7 +192,7 @@ match_rule_1_section_20_c_1 flow =
         --&& (flow.subProduct |> Maybe.map (\subProduct -> not (SubProduct.isCurrencyAndCoin subProduct)) |> Maybe.withDefault True)
         && (flow.subProduct /= Just currency_and_coin)
         ---- Collateral Class: E-1-Q; E-2-Q; IG-1-Q; IG-2-Q
-        --&& CollateralClass.isHQLALevel2B flow.collateralClass
+        && CollateralClass.isHQLALevel2B flow.collateralClass
         -- Forward Start Amount: NULL
         && (flow.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
@@ -211,7 +211,7 @@ match_rule_107_section_33_d_1 flow =
         -- Maturity Bucket: <= 30 calendar days but not Open
         --&& (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && not (MaturityBucket.isOpen flow.maturityBucket))
         ---- Collateral Class: A-0-Q
-        --&& CollateralClass.isCash flow.collateralClass
+        && CollateralClass.isCash flow.collateralClass
         -- Forward Start Amount: NULL
         && (flow.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
