@@ -1,0 +1,99 @@
+# Copyright 2022 Databricks
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Release Spark
+
+env:
+  CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
+  CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
+  CI_GPG_PASSPHRASE: ${{ secrets.CI_GPG_PASSPHRASE }}
+  MAVEN_OPTS: -Xmx4g
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "New release version"
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+
+      # The first step is obviously to check out the repository
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.FINOS_GITHUB_TOKEN }}
+
+        # The next step is to install a JDK and maven environment
+        # A settings.xml file with credentials will be created and stored in that folder
+        # See next step for settings.xml creation
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+        # The next step is to install a JDK and maven environment
+        # A settings.xml file with credentials will be created and stored in that folder
+        # See next step for settings.xml creation
+      - name: Set up Maven
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+          server-id: ossrh
+          server-username: CI_DEPLOY_USERNAME
+          server-password: CI_DEPLOY_PASSWORD
+          gpg-private-key: ${{ secrets.CI_GPG_PRIVATE_KEY }}
+          gpg-passphrase: CI_GPG_PASSPHRASE
+
+        # Because release:prepare actually commit, it’s necessary to configure the user and email
+      - name: Configure git
+        run: |
+          git config --global user.email "37706051+finos-admin@users.noreply.github.com"
+          git config --global user.name "FINOS Administrator"
+
+        # We decide to set up releases as manual actions
+        # Given a tag specified as input action, we extract MAJOR.MINOR.PATCH numbers
+        # Tag will become our master RELEASE and incremented for next SNAPSHOT as part of the maven release plugin
+      - name: Compute next development version
+        run: |
+          releaseVersion=${{ github.event.inputs.releaseVersion }}
+          n=${releaseVersion//[!0-9]/ }
+          a=(${n//\./ })
+          nextPatch=$((${a[2]} + 1))
+          developmentVersion="${a[0]}.${a[1]}.${nextPatch}-SNAPSHOT"
+          echo "DEVELOPMENT_VERSION=${developmentVersion}" >> $GITHUB_ENV
+
+        # See more information about maven release plugin, but essentially does the following
+        # - Change the version in the POM from x-SNAPSHOT to a new version
+        # - Transform the SCM information in the POM to include the final destination of the tag
+        # - Commit the modified POM
+        # - Tag the code in the SCM with a version name
+        # - Bump the version in the POM to a new value y-SNAPSHOT
+        # - Commit the modified POM
+        # Plugin will use the credentials found in the generated settings.xml file and the GITHUB_TOKEN env variable
+      - name: Prepare release
+        run: mvn -B -DpreparationGoals=clean release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }} -P release
+
+        # See more information about maven release plugin, but essentially does the following
+        # - Checkout from an SCM URL with optional tag
+        # - Run the predefined Maven deploy goal
+        # The deploy phase will make use of the GITHUB_TOKEN env variable and the <distributionManagement> on pom.xml
+      - name: Perform release
+        run: mvn -B release:perform -P release

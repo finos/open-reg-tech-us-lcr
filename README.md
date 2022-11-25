@@ -15,6 +15,22 @@ docker run --name morphir-lcr-container -p 3000:3000 morphir-lcr:latest
 docker rm morphir-lcr-container
 ```
 
+## Compile to Scala over Spark
+
+Morphir compilation has been abstracted away through maven (see [pom.xml](./pom.xml)) so that *.elm files can be 
+directly generated to Scala and subsequently compiled as a jar file. 
+The generated jar file can be easily pushed to CI/CD processes and be used in a spark based environment natively 
+through the `--packages` or `--jars` options. 
+
+```shell
+mvn clean package
+spark-shell --jars target/open-reg-tech-us-lcr-spark-1.0-SNAPSHOT.jar [../..]
+```
+
+Ideally, the same would be published to maven central, github package or enterprise repository (e.g. nexus) to be made
+available across different environments. To deploy a new release to maven central, please refer to github 
+workflow [release-spark.yaml](./.github/workflows/release-spark.yml)
+
 ## Tentative Roadmap
 
 1. Agree on the regulation (LCR)

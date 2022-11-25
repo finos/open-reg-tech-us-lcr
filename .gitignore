@@ -26,3 +26,9 @@ morphir-hashes.json
 /dist/
 /spark/out/
 /spark/.idea/
+<<<<<<< Updated upstream
+=======
+spark
+src/main
+target
+>>>>>>> Stashed changes
