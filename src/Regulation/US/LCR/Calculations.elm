@@ -15,10 +15,10 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
+import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
 import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
-import Regulation.US.LCR.InflowValues exposing (..)
 import Regulation.US.LCR.OutflowValues exposing (..)
 import Regulation.US.LCR.Rules as Rules
 
@@ -157,7 +157,12 @@ cumulative_outflow_amount_from_one_to_m m data =
         inflow_amount : Balance
         inflow_amount =
             Flows.applyInflowRules data.inflows
-                |> Rules.matchAndSum [ "33(c)", "33(d)", "33(e)", "33(f)" ]
+                |> Rules.matchAndSum
+                    [ "33(c)"
+                    , "33(d)"
+                    , "33(e)"
+                    , "33(f)"
+                    ]
     in
     outflow_amount - inflow_amount
 

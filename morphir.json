@@ -1,5 +1,5 @@
 {
   "name": "Regulation",
   "sourceDirectory": "src"
-  ,"exposedModules": ["US.LCR.Inflows.Assets"]
+  ,"exposedModules": ["US.LCR.AggregatedRuleBalances"]
 }
