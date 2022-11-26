@@ -29,11 +29,7 @@ inflow_values inflows =
         , InflowSecured.toRuleBalances inflows.secured
         , Unsecured.toRuleBalances inflows.unsecured
         ]
-        |> Aggregate.groupBy .rule
-        |> Aggregate.aggregate
-            (\key balances ->
-                RuleBalance key (balances (Aggregate.sumOf .amount))
-            )
+        |> aggregateRuleBalances
 
 
 
@@ -47,8 +43,14 @@ inflow_values inflows =
 --        --, OutflowSecured.toRuleBalances outflows.secured
 --        --, Wholesale.toRuleBalances outflows.wholesale
 --        ]
---        |> Aggregate.groupBy .rule
---        |> Aggregate.aggregate
---            (\key balances ->
---                RuleBalance key (balances (Aggregate.sumOf .amount))
---            )
+--    |> aggregateRuleBalances
+
+
+aggregateRuleBalances : List RuleBalance -> List RuleBalance
+aggregateRuleBalances ruleBalances =
+    ruleBalances
+        |> Aggregate.groupBy .rule
+        |> Aggregate.aggregate
+            (\key balances ->
+                RuleBalance key (balances (Aggregate.sumOf .amount))
+            )

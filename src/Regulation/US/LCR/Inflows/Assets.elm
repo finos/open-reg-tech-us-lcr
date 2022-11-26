@@ -14,7 +14,6 @@
 
 module Regulation.US.LCR.Inflows.Assets exposing (..)
 
-import Morphir.SDK.Aggregate as Aggregate exposing (..)
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
@@ -53,17 +52,6 @@ toRuleBalances assetsList =
                 }
             )
         |> List.filter (\rb -> rb.rule /= "")
-
-
-sumToRule : List Assets -> List RuleBalance
-sumToRule assetsList =
-    assetsList
-        |> matchToRule
-        |> Aggregate.groupBy .rule
-        |> Aggregate.aggregate
-            (\key balances ->
-                RuleBalance key (balances (Aggregate.sumOf .amount))
-            )
 
 
 applyRules : Assets -> List RuleBalance
@@ -148,7 +136,8 @@ match_rule_1_section_20_a_1 flow =
         --&& (flow.subProduct |> Maybe.map (\subProduct -> not (SubProduct.isCurrencyAndCoin subProduct)) |> Maybe.withDefault True)
         && (flow.subProduct /= Just currency_and_coin)
         ---- Collateral Class: A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q
-        && (CollateralClass.isHQLALevel1 flow.collateralClass && not (CollateralClass.isCash flow.collateralClass))
+        -- TODO
+        --&& (CollateralClass.isHQLALevel1 flow.collateralClass && not (CollateralClass.isCash flow.collateralClass))
         -- Forward Start Amount: NULL
         && (flow.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
