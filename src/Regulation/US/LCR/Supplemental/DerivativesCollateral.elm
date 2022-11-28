@@ -21,6 +21,15 @@ import Regulation.US.LCR.Rule exposing (applyRule)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
+rule_20_a_1 : DerivativesCollateral -> Maybe Float
+rule_20_a_1 assets =
+    if match_rule_3_section_20_a_1 assets then
+        Just assets.marketValue
+
+    else
+        Nothing
+
+
 applyRules : DerivativesCollateral -> List RuleBalance
 applyRules flow =
     List.concat
@@ -60,8 +69,7 @@ match_rule_3_section_20_a_1 flow =
         -- Sub-Product: Rehypthecatable - Unencumbered
         && (flow.subProduct |> Maybe.map (\subProduct -> SubProduct.isRehypothecateableCollateralUnencumbered subProduct) |> Maybe.withDefault False)
         -- Collateral Class: A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q
-        -- TODO
-        --&& (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel1 class && not (CollateralClass.isCash class)) |> Maybe.withDefault False)
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel1 class && not (CollateralClass.isCash class)) |> Maybe.withDefault False)
         -- Treasury Control: Y
         && (flow.treasuryControl == Just True)
 
@@ -131,10 +139,7 @@ match_rule_33_section_32_f_2 : DerivativesCollateral -> Bool
 match_rule_33_section_32_f_2 flow =
     List.member flow.product [ s_DC_5, s_DC_6, s_DC_8, s_DC_9 ]
         -- Collateral Class: Not level 1 HQLA
-        -- TODO
         && (flow.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLALevel1 class)) |> Maybe.withDefault True)
-        -- TODO
-        && True
 
 
 {-| (35) Collateral Deliverables (§.32(f)(4))
@@ -143,10 +148,7 @@ match_rule_35_section_32_f_4 : DerivativesCollateral -> Bool
 match_rule_35_section_32_f_4 flow =
     List.member flow.product [ s_DC_15 ]
         -- Collateral Class: Non-HQLA or Other
-        -- TODO
-        --&& (flow.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLA class) || CollateralClass.isOther class) |> Maybe.withDefault False)
-        -- TODO
-        && True
+        && (flow.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLA class) || CollateralClass.isOther class) |> Maybe.withDefault False)
 
 
 {-| (36) Collateral Deliverables (§.32(f)(4))

@@ -47,8 +47,7 @@ match_rule_8_section_21_b_todo : Secured -> Bool
 match_rule_8_section_21_b_todo secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_3, o_S_4, o_S_5, o_S_6, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Unsettled (Regular Way) or Unsettled (Forward), # otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: A-0-Q; A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q; G-1-Q; G-2-Q; G-3-Q; S-5-Q; S-6-Q; S-7-Q; CB-3-Q; E-1-Q; E-2-Q; IG-1-Q; IG-2-Q
@@ -67,8 +66,7 @@ match_rule_16_section_32_a_5 : Secured -> Bool
 match_rule_16_section_32_a_5 secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Unsettled (Regular Way) or Unsettled (Forward), # otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Forward Start Amount: NULL
         && (secured.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
@@ -111,8 +109,7 @@ match_rule_65_section_32_j_1_i : Secured -> Bool
 match_rule_65_section_32_j_1_i secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_3, o_S_5, o_S_6, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Unsettled (Regular Way) or Unsettled (Forward), # otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Level 1 HQLA
@@ -129,8 +126,7 @@ match_rule_68_section_32_j_1_ii : Secured -> Bool
 match_rule_68_section_32_j_1_ii secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_3, o_S_5, o_S_6, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Unsettled (Regular Way) or Unsettled (Forward), # otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Level 2A HQLA
@@ -147,8 +143,7 @@ match_rule_71_section_32_j_1_iii : Secured -> Bool
 match_rule_71_section_32_j_1_iii secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_3, o_S_5, o_S_6, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Unsettled (Regular Way) or Unsettled (Forward), # otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Level 2B HQLA or Non-HQLA
@@ -165,8 +160,7 @@ match_rule_74_section_32_j_1_iv : Secured -> Bool
 match_rule_74_section_32_j_1_iv secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_3, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Unsettled (Regular Way) or Unsettled (Forward), # otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Level 2B HQLA
@@ -187,8 +181,7 @@ match_rule_76_section_32_j_1_v secured =
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Non-HQLA
-        -- TODO
-        --&& not (CollateralClass.isHQLA secured.collateralClass)
+        && not (CollateralClass.isHQLA secured.collateralClass)
         -- Forward Start Amount: NULL
         && (secured.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
@@ -201,13 +194,11 @@ match_rule_79_section_32_j_1_vi : Secured -> Bool
 match_rule_79_section_32_j_1_vi secured =
     List.member secured.product [ o_S_1, o_S_2, o_S_3, o_S_7, o_S_11 ]
         -- Sub-Product: For O.S.7, cannot be Customer Long, Unsettled (Regular Way) or Unsettled (Forward); #otherwise
-        -- TODO
-        --&& (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isCustomerLong subProduct || SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
+        && (secured.subProduct |> Maybe.map (\subProduct -> secured.product /= o_S_7 || not (SubProduct.isCustomerLong subProduct || SubProduct.isUnsettledRegularWay subProduct || SubProduct.isUnsettledForward subProduct)) |> Maybe.withDefault False)
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Non-HQLA
-        -- TODO
-        --&& not (CollateralClass.isHQLA secured.collateralClass)
+        && not (CollateralClass.isHQLA secured.collateralClass)
         -- Forward Start Amount: NULL
         && (secured.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL
@@ -224,8 +215,7 @@ match_rule_82_section_32_j_2 secured =
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days secured.maturityBucket
         -- Collateral Class: Level 2B HQLA or Non-HQLA
-        -- TODO
-        --&& (CollateralClass.isHQLALevel2B secured.collateralClass || not (CollateralClass.isHQLA secured.collateralClass))
+        && (CollateralClass.isHQLALevel2B secured.collateralClass || not (CollateralClass.isHQLA secured.collateralClass))
         -- Forward Start Amount: NULL
         && (secured.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL

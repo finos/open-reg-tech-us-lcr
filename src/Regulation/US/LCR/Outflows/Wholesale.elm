@@ -170,8 +170,7 @@ match_rule_80_section_32_j_1_vi wholesale =
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days wholesale.maturityBucket
         -- Collateral Class: Non-HQLA
-        -- TODO
-        --&& (wholesale.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLA class)) |> Maybe.withDefault False)
+        && (wholesale.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLA class)) |> Maybe.withDefault False)
         -- Forward Start Amount: NULL
         && (wholesale.forwardStartAmount == Nothing)
         -- Forward Start Bucket: NULL

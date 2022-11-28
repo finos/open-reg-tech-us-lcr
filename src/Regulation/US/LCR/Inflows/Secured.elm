@@ -39,147 +39,148 @@ toRuleBalances flows =
 
                     else if match_rule_2_section_20_c_1 flow then
                         "20(c)(1)"
-                        --else if match_rule_7_section_21_a_todo flow then
-                        --    "21(a)(todo)"
-                        --
-                        --else if match_rule_9_section_21_c_todo flow then
-                        --    "21(c)(todo)"
-                        --
-                        --else if match_rule_85_section_32_j_3_i flow then
-                        --    "32(j)(3)(i)"
-                        --
-                        --else if match_rule_86_section_32_j_3_ii flow then
-                        --    "32(j)(3)(ii)"
-                        --
-                        --else if match_rule_87_section_32_j_3_iii flow then
-                        --    "32(j)(3)(iii)"
-                        --
-                        --else if match_rule_88_section_32_j_3_iv flow then
-                        --    "32(j)(3)(iv)"
-                        --
-                        --else if match_rule_89_section_32_j_3_v flow then
-                        --    "32(j)(3)(v)"
-                        --
-                        --else if match_rule_90_section_32_j_3_vi flow then
-                        --    "32(j)(3)(vi)"
-                        --
-                        --else if match_rule_91_section_32_j_3_vii flow then
-                        --    "32(j)(3)(vii)"
-                        --
-                        --else if match_rule_92_section_32_j_3_viii flow then
-                        --    "32(j)(3)(viii)"
-                        --
-                        --else if match_rule_93_section_32_j_3_ix flow then
-                        --    "32(j)(3)(ix)"
-                        --
-                        --else if match_rule_94_section_32_j_3_x flow then
-                        --    "32(j)(3)(x)"
-                        --
-                        --else if match_rule_95_section_32_j_3_xi flow then
-                        --    "32(j)(3)(xi)"
-                        --
-                        --else if match_rule_96_section_32_j_3_xii flow then
-                        --    "32(j)(3)(xii)"
-                        --
-                        --else if match_rule_97_section_32_j_3_xiii flow then
-                        --    "32(j)(3)(xiii)"
-                        --
-                        --else if match_rule_105_section_33_c flow then
-                        --    "33(c)"
-                        --
-                        --else if match_rule_108_section_33_d_1 flow then
-                        --    "33(d)(1)"
-                        --
-                        --else if match_rule_110_section_33_d_2 flow then
-                        --    "33(d)(2)"
-                        --
-                        --else if match_rule_113_section_33_f_1_i flow then
-                        --    "33(f)(1)(i)"
-                        --
-                        --else if match_rule_114_section_33_f_1_ii flow then
-                        --    "33(f)(1)(ii)"
-                        --
-                        --else if match_rule_115_section_33_f_1_ii flow then
-                        --    "33(f)(1)(ii)"
-                        --
-                        --else if match_rule_116_section_33_f_1_ii flow then
-                        --    "33(f)(1)(ii)"
-                        --
-                        --else if match_rule_117_section_33_f_1_iii flow then
-                        --    "33(f)(1)(iii)"
-                        --
-                        --else if match_rule_118_section_33_f_1_iii flow then
-                        --    "33(f)(1)(iii)"
-                        --
-                        --else if match_rule_119_section_33_f_1_iv flow then
-                        --    "33(f)(1)(iv)"
-                        --
-                        --else if match_rule_120_section_33_f_1_iv flow then
-                        --    "33(f)(1)(iv)"
-                        --
-                        --else if match_rule_121_section_33_f_1_v flow then
-                        --    "33(f)(1)(v)"
-                        --
-                        --else if match_rule_122_section_33_f_1_v flow then
-                        --    "33(f)(1)(v)"
-                        --
-                        --else if match_rule_123_section_33_f_1_vi flow then
-                        --    "33(f)(1)(vi)"
-                        --
-                        --else if match_rule_124_section_33_f_1_vii flow then
-                        --    "33(f)(1)(vii)"
-                        --
-                        --else if match_rule_125_section_33_f_2_i flow then
-                        --    "33(f)(2)(i)"
-                        --
-                        --else if match_rule_126_section_33_f_2_ii flow then
-                        --    "33(f)(2)(ii)"
-                        --
-                        --else if match_rule_127_section_33_f_2_iii flow then
-                        --    "33(f)(2)(iii)"
-                        --
-                        --else if match_rule_128_section_33_f_2_iv flow then
-                        --    "33(f)(2)(iv)"
-                        --
-                        --else if match_rule_129_section_33_f_2_v flow then
-                        --    "33(f)(2)(v)"
-                        --
-                        --else if match_rule_130_section_33_f_2_vi flow then
-                        --    "33(f)(2)(vi)"
-                        --
-                        --else if match_rule_131_section_33_f_2_vii flow then
-                        --    "33(f)(2)(vii)"
-                        --
-                        --else if match_rule_132_section_33_f_2_viii flow then
-                        --    "33(f)(2)(viii)"
-                        --
-                        --else if match_rule_133_section_33_f_2_ix flow then
-                        --    "33(f)(2)(ix)"
-                        --
-                        --else if match_rule_134_section_33_f_2_x flow then
-                        --    "33(f)(2)(x)"
+
+                    else if match_rule_7_section_21_a_todo flow then
+                        "21(a)(todo)"
+
+                    else if match_rule_9_section_21_c_todo flow then
+                        "21(c)(todo)"
+
+                    else if match_rule_85_section_32_j_3_i flow then
+                        "32(j)(3)(i)"
+
+                    else if match_rule_86_section_32_j_3_ii flow then
+                        "32(j)(3)(ii)"
+
+                    else if match_rule_87_section_32_j_3_iii flow then
+                        "32(j)(3)(iii)"
+
+                    else if match_rule_88_section_32_j_3_iv flow then
+                        "32(j)(3)(iv)"
+
+                    else if match_rule_89_section_32_j_3_v flow then
+                        "32(j)(3)(v)"
+
+                    else if match_rule_90_section_32_j_3_vi flow then
+                        "32(j)(3)(vi)"
+
+                    else if match_rule_91_section_32_j_3_vii flow then
+                        "32(j)(3)(vii)"
+
+                    else if match_rule_92_section_32_j_3_viii flow then
+                        "32(j)(3)(viii)"
+
+                    else if match_rule_93_section_32_j_3_ix flow then
+                        "32(j)(3)(ix)"
+
+                    else if match_rule_94_section_32_j_3_x flow then
+                        "32(j)(3)(x)"
+
+                    else if match_rule_95_section_32_j_3_xi flow then
+                        "32(j)(3)(xi)"
+
+                    else if match_rule_96_section_32_j_3_xii flow then
+                        "32(j)(3)(xii)"
+
+                    else if match_rule_97_section_32_j_3_xiii flow then
+                        "32(j)(3)(xiii)"
+
+                    else if match_rule_105_section_33_c flow then
+                        "33(c)"
+
+                    else if match_rule_108_section_33_d_1 flow then
+                        "33(d)(1)"
+
+                    else if match_rule_110_section_33_d_2 flow then
+                        "33(d)(2)"
+
+                    else if match_rule_113_section_33_f_1_i flow then
+                        "33(f)(1)(i)"
+
+                    else if match_rule_114_section_33_f_1_ii flow then
+                        "33(f)(1)(ii)"
+
+                    else if match_rule_115_section_33_f_1_ii flow then
+                        "33(f)(1)(ii)"
+
+                    else if match_rule_116_section_33_f_1_ii flow then
+                        "33(f)(1)(ii)"
+
+                    else if match_rule_117_section_33_f_1_iii flow then
+                        "33(f)(1)(iii)"
+
+                    else if match_rule_118_section_33_f_1_iii flow then
+                        "33(f)(1)(iii)"
+
+                    else if match_rule_119_section_33_f_1_iv flow then
+                        "33(f)(1)(iv)"
+
+                    else if match_rule_120_section_33_f_1_iv flow then
+                        "33(f)(1)(iv)"
+
+                    else if match_rule_121_section_33_f_1_v flow then
+                        "33(f)(1)(v)"
+
+                    else if match_rule_122_section_33_f_1_v flow then
+                        "33(f)(1)(v)"
+
+                    else if match_rule_123_section_33_f_1_vi flow then
+                        "33(f)(1)(vi)"
+
+                    else if match_rule_124_section_33_f_1_vii flow then
+                        "33(f)(1)(vii)"
+
+                    else if match_rule_125_section_33_f_2_i flow then
+                        "33(f)(2)(i)"
+
+                    else if match_rule_126_section_33_f_2_ii flow then
+                        "33(f)(2)(ii)"
+
+                    else if match_rule_127_section_33_f_2_iii flow then
+                        "33(f)(2)(iii)"
+
+                    else if match_rule_128_section_33_f_2_iv flow then
+                        "33(f)(2)(iv)"
+
+                    else if match_rule_129_section_33_f_2_v flow then
+                        "33(f)(2)(v)"
+
+                    else if match_rule_130_section_33_f_2_vi flow then
+                        "33(f)(2)(vi)"
+
+                    else if match_rule_131_section_33_f_2_vii flow then
+                        "33(f)(2)(vii)"
+
+                    else if match_rule_132_section_33_f_2_viii flow then
+                        "33(f)(2)(viii)"
+
+                    else if match_rule_133_section_33_f_2_ix flow then
+                        "33(f)(2)(ix)"
+
+                    else if match_rule_134_section_33_f_2_x flow then
+                        "33(f)(2)(x)"
 
                     else
                         ""
                 , amount =
-                    --if
-                    --    match_rule_2_section_20_a_1 flow
-                    --        || match_rule_2_section_20_b_1 flow
-                    --        || match_rule_2_section_20_c_1 flow
-                    --        || match_rule_85_section_32_j_3_i flow
-                    --        || match_rule_86_section_32_j_3_ii flow
-                    --        || match_rule_87_section_32_j_3_iii flow
-                    --        || match_rule_88_section_32_j_3_iv flow
-                    --        || match_rule_89_section_32_j_3_v flow
-                    --        || match_rule_90_section_32_j_3_vi flow
-                    --        || match_rule_91_section_32_j_3_vii flow
-                    --        || match_rule_92_section_32_j_3_viii flow
-                    --        || match_rule_93_section_32_j_3_ix flow
-                    --then
-                    --    flow.collateralValue
-                    --
-                    --else
-                    flow.maturityAmount
+                    if
+                        match_rule_2_section_20_a_1 flow
+                            || match_rule_2_section_20_b_1 flow
+                            || match_rule_2_section_20_c_1 flow
+                            || match_rule_85_section_32_j_3_i flow
+                            || match_rule_86_section_32_j_3_ii flow
+                            || match_rule_87_section_32_j_3_iii flow
+                            || match_rule_88_section_32_j_3_iv flow
+                            || match_rule_89_section_32_j_3_v flow
+                            || match_rule_90_section_32_j_3_vi flow
+                            || match_rule_91_section_32_j_3_vii flow
+                            || match_rule_92_section_32_j_3_viii flow
+                            || match_rule_93_section_32_j_3_ix flow
+                    then
+                        flow.collateralValue
+
+                    else
+                        flow.maturityAmount
                 }
             )
         |> List.filter (\rb -> rb.rule /= "")

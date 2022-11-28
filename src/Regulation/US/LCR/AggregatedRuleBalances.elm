@@ -19,14 +19,19 @@ import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 inflow_values : DataTables.Inflows -> Balance
 inflow_values inflows =
-    List.concat
-        [ Assets.toRuleBalances inflows.assets
-        , InflowOther.toRuleBalances inflows.other
-        , InflowSecured.toRuleBalances inflows.secured
+    (List.concat
+        [ --Assets.toRuleBalances inflows.assets
+          --,
+          --  InflowOther.toRuleBalances inflows.other
+          --,
+          InflowSecured.toRuleBalances inflows.secured
         , Unsecured.toRuleBalances inflows.unsecured
         ]
         |> aggregateRuleBalances
         |> sum
+    )
+        + Assets.apply_rules inflows.assets
+        + InflowOther.apply_rules inflows.other
 
 
 outflow_values : DataTables.Outflows -> Balance

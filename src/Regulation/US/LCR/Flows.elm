@@ -15,7 +15,9 @@
 module Regulation.US.LCR.Flows exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (..)
+import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets)
 import Regulation.US.FR2052A.DataTables.Supplemental exposing (Supplemental(..))
+import Regulation.US.FR2052A.DataTables.Supplemental.DerivativesCollateral exposing (DerivativesCollateral)
 import Regulation.US.LCR.Inflows.Assets as Assets
 import Regulation.US.LCR.Inflows.Other as InOther
 import Regulation.US.LCR.Inflows.Secured as InSecured
@@ -29,6 +31,26 @@ import Regulation.US.LCR.Supplemental.DerivativesCollateral as DerivativesCollat
 import Regulation.US.LCR.Supplemental.LiquidityRiskMeasurement as LiquidityRiskMeasurement
 
 
+
+--type Input_20_a_1
+--    = Assets (List Assets)
+--    | DerivativesCollateral (List DerivativesCollateral)
+--
+--
+--rule_20_a_1 : Input_20_a_1 -> Float
+--rule_20_a_1 input =
+--    case input of
+--        Assets assets ->
+--            assets
+--                |> List.filterMap Assets.rule_20_a_1
+--                |> List.sum
+--
+--        DerivativesCollateral derivatives ->
+--            derivatives
+--                |> List.filterMap DerivativesCollateral.rule_20_a_1
+--                |> List.sum
+
+
 type alias Flow =
     { label : String, value : Float }
 
@@ -38,10 +60,12 @@ type alias Flow =
 applyInflowRules : DataTables.Inflows -> List RuleBalance
 applyInflowRules inflows =
     List.concat
-        [ List.concatMap (\a -> Assets.applyRules a) inflows.assets
-        , List.concatMap (\u -> Unsecured.applyRules u) inflows.unsecured
+        [ --List.concatMap (\a -> Assets.applyRules a) inflows.assets
+          --,
+          List.concatMap (\u -> Unsecured.applyRules u) inflows.unsecured
         , List.concatMap (\s -> InSecured.applyRules s) inflows.secured
-        , List.concatMap (\o -> InOther.applyRules o) inflows.other
+
+        --, List.concatMap (\o -> InOther.applyRules o) inflows.other
         ]
 
 
