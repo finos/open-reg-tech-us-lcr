@@ -28,11 +28,18 @@ import Regulation.US.LCR.Rules as Rules
 -}
 
 
+{-| The lcr function is the top-most calculation for executing the Liquidity Coverage Ratio.
+-}
 lcr : BankCategory -> DataTables -> Ratio
 lcr bankCategory data =
     hqla_amount data / total_net_cash_outflows data bankCategory
 
 
+{-| Calculates the High Quality Liquid Assets (HQLA) to be considered for the numerator of the LCR.
+
+see: <https://www.federalreserve.gov/reportforms/forms/FR_2052a20220429_f.pdf#APPENDIX+VI:+LCR+to+FR+2052a+Mapping>
+
+-}
 hqla_amount : DataTables -> Balance
 hqla_amount data =
     (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
@@ -116,6 +123,11 @@ adjusted_level_2B_cap_excess_amount data =
           )
 
 
+{-| Calculates the Total Net Cash Outflows to be considered for the denominator of the LCR.
+
+see: <https://www.federalreserve.gov/reportforms/forms/FR_2052a20220429_f.pdf#APPENDIX+VI:+LCR+to+FR+2052a+Mapping>
+
+-}
 total_net_cash_outflows : DataTables -> BankCategory -> Balance
 total_net_cash_outflows data bankCategory =
     outflow_adjustment_percentage bankCategory
