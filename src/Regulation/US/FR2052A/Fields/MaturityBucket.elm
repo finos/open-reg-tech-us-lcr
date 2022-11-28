@@ -11,6 +11,7 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
 
 --type MaturityBucket
@@ -18,23 +19,28 @@ module Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
 --    | Day Int
 
 
-type alias MaturityBucket
-    = Int
+type alias MaturityBucket =
+    Int
+
+
+open : MaturityBucket
+open =
+    0
+
 
 isOpen : MaturityBucket -> Bool
 isOpen maturityBucket =
-    maturityBucket == 0
+    maturityBucket == open
 
 
 isGreaterThan30Days : MaturityBucket -> Bool
 isGreaterThan30Days maturityBucket =
-     maturityBucket  > 30
+    maturityBucket > 30
 
 
 isLessThanOrEqual30Days : MaturityBucket -> Bool
 isLessThanOrEqual30Days maturityBucket =
-     maturityBucket > 0 && maturityBucket <= 30
-
+    maturityBucket > 0 && maturityBucket <= 30
 
 
 fromInt : Int -> MaturityBucket

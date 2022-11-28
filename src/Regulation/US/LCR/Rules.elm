@@ -15,15 +15,24 @@
 module Regulation.US.LCR.Rules exposing (..)
 
 import Regulation.US.LCR.Basics exposing (Balance)
-import Regulation.US.LCR.Flows exposing (Flow)
 
 
 type alias Weight =
     Float
 
 
+type alias RuleName =
+    String
+
+
+type alias RuleBalance =
+    { rule : RuleName
+    , amount : Balance
+    }
+
+
 type alias Rule a =
-    { name : String
+    { name : RuleName
     , weight : Weight
     , applies : a -> Bool
     }
@@ -56,14 +65,14 @@ find name rules =
         |> List.head
 
 
-findAll : List String -> List Flow -> List Flow
+findAll : List RuleName -> List RuleBalance -> List RuleBalance
 findAll rules flows =
     flows
-        |> List.filter (\( rule, amount ) -> List.member rule rules)
+        |> List.filter (\ruleBalance -> List.member ruleBalance.rule rules)
 
 
-matchAndSum : List String -> List Flow -> Balance
+matchAndSum : List String -> List RuleBalance -> Balance
 matchAndSum rules flows =
     findAll rules flows
-        |> List.map (\( v, u ) -> u)
+        |> List.map .amount
         |> List.sum

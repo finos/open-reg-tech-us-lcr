@@ -14,12 +14,14 @@
 
 module Regulation.US.LCR.Rule exposing (..)
 
+import Regulation.US.LCR.Basics exposing (Balance)
+import Regulation.US.LCR.Rules exposing (RuleBalance, RuleName)
 
-applyRule : Bool -> String -> Float -> List ( String, Float )
+
+applyRule : Bool -> RuleName -> Balance -> List RuleBalance
 applyRule flag label amount =
-    -- TODO add haircut
     if flag then
-        [ ( label, amount ) ]
+        [ RuleBalance label amount ]
 
     else
         []

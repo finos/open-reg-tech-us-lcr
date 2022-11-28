@@ -24,17 +24,18 @@ import Regulation.US.LCR.Outflows.Deposits as Deposits
 import Regulation.US.LCR.Outflows.Other as OutOther
 import Regulation.US.LCR.Outflows.Secured as OutSecured
 import Regulation.US.LCR.Outflows.Wholesale as Wholesales
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 import Regulation.US.LCR.Supplemental.DerivativesCollateral as DerivativesCollateral
 import Regulation.US.LCR.Supplemental.LiquidityRiskMeasurement as LiquidityRiskMeasurement
 
 
 type alias Flow =
-    ( String, Float )
+    { label : String, value : Float }
 
 
 {-| The list of all rules pertaining to inflows.
 -}
-applyInflowRules : DataTables.Inflows -> List Flow
+applyInflowRules : DataTables.Inflows -> List RuleBalance
 applyInflowRules inflows =
     List.concat
         [ List.concatMap (\a -> Assets.applyRules a) inflows.assets
@@ -46,7 +47,7 @@ applyInflowRules inflows =
 
 {-| The list of all rules pertaining to outflows.
 -}
-applyOutflowRules : DataTables.Outflows -> List Flow
+applyOutflowRules : DataTables.Outflows -> List RuleBalance
 applyOutflowRules outflows =
     List.concat
         [ List.concatMap (\d -> Deposits.applyRules d) outflows.deposits
@@ -58,7 +59,7 @@ applyOutflowRules outflows =
 
 {-| The list of all rules pertaining to supplementals.
 -}
-applySupplementalRules : DataTables.Supplemental -> List Flow
+applySupplementalRules : DataTables.Supplemental -> List RuleBalance
 applySupplementalRules supplementals =
     List.concat
         [ List.concatMap (\d -> DerivativesCollateral.applyRules d) supplementals.derivativesCollateral
