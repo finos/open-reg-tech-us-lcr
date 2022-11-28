@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "keywords": [
     "finos",
-	"morphir",
-	"lcr"
+    "morphir",
+    "lcr"
   ],
   "scripts": {
     "build": "npm run morphir-elm-make-clean && npm run morphir-gen-spark-with-config",

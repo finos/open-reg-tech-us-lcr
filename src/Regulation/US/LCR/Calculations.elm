@@ -19,7 +19,6 @@ import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
 import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
-import Regulation.US.LCR.OutflowValues exposing (..)
 import Regulation.US.LCR.Rules as Rules
 
 
