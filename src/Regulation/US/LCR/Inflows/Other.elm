@@ -11,85 +11,129 @@
    limitations under the License.
 -}
 
-module Regulation.US.LCR.Inflows.Other exposing (..)
 
+module Regulation.US.LCR.Inflows.Other exposing (..)
 
 import Regulation.US.FR2052A.DataTables.Inflows.Other exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
-import Regulation.US.FR2052A.Fields.Insured as Insured
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
-import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
-import Regulation.US.LCR.AmountCalculations exposing (..)
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
-applyRules : Other -> List ( String, Float )
-applyRules flow =
-    List.concat
-        [ applyRule (match_rule_103_section_33_b flow) "33(b)" flow.maturityAmount
-        , applyRule (match_rule_111_section_33_e flow) "33(e)" flow.maturityAmount
-        , applyRule (match_rule_112_section_33_e flow) "33(e)" flow.maturityAmount
-        , applyRule (match_rule_135_section_33_g flow) "33(g)" flow.maturityAmount
-        , applyRule (match_rule_136_section_33_h flow) "33(h)" flow.maturityAmount
-        ]
+{-| Given a list of Others, applies the applicable rule for each assets along with the relevant amount
+-}
+apply_rules : List Other -> Float
+apply_rules list =
+    list
+        |> List.map (\x -> apply_rule x)
+        |> List.sum
+
+
+orElse : Maybe b -> Maybe b -> Maybe b
+orElse check fallback =
+    case check of
+        Just value ->
+            Just value
+
+        Nothing ->
+            fallback
+
+
+apply_rule : Other -> Float
+apply_rule flow =
+    rule_33_b flow
+        |> orElse (rule_111_x_33_e flow)
+        |> orElse (rule_112_x_33_e flow)
+        |> orElse (rule_33_g flow)
+        |> orElse (rule_33_h flow)
+        |> Maybe.withDefault 0
 
 
 {-| (103) Net Derivatives Cash Inflow Amount (§.33(b))
 -}
-match_rule_103_section_33_b : Other -> Bool
-match_rule_103_section_33_b flow =
-    List.member flow.product [ i_O_7 ]
+rule_33_b : Other -> Maybe Float
+rule_33_b flow =
+    if List.member flow.product [ i_O_7 ] then
+        Just flow.maturityAmount
+
+    else
+        Nothing
 
 
 {-| (111) Securities Cash Inflow Amount (§.33(e))
 -}
-match_rule_111_section_33_e : Other -> Bool
-match_rule_111_section_33_e flow =
-    List.member flow.product [ i_O_6, i_O_8 ]
-    -- Maturity Bucket: <= 30 calendar days but not Open
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && not (MaturityBucket.isOpen flow.maturityBucket))
-    -- Collateral Class: Non-HQLA securities
-    && (flow.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLA class)) |> Maybe.withDefault False)
-    -- Forward Start Amount: NULL
-    && (flow.forwardStartAmount == Nothing)
-    -- Forward Start Bucket: NULL
-    && (flow.forwardStartBucket == Nothing)
+rule_111_x_33_e : Other -> Maybe Float
+rule_111_x_33_e flow =
+    if
+        List.member flow.product [ i_O_6, i_O_8 ]
+            -- Maturity Bucket: <= 30 calendar days but not Open
+            && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && flow.maturityBucket /= MaturityBucket.open)
+            -- Collateral Class: Non-HQLA securities
+            && (flow.collateralClass |> Maybe.map (\class -> not (CollateralClass.isHQLA class)) |> Maybe.withDefault False)
+            -- Forward Start Amount: NULL
+            && (flow.forwardStartAmount == Nothing)
+            -- Forward Start Bucket: NULL
+            && (flow.forwardStartBucket == Nothing)
+    then
+        Just flow.maturityAmount
+
+    else
+        Nothing
 
 
 {-| (112) Securities Cash Inflow Amount (§.33(e))
 -}
-match_rule_112_section_33_e : Other -> Bool
-match_rule_112_section_33_e flow =
-    List.member flow.product [ i_O_6, i_O_8 ]
-    -- Maturity Bucket: <= 30 calendar days but not Open
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && not (MaturityBucket.isOpen flow.maturityBucket))
-    -- Collateral Class: HQLA
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLA class) |> Maybe.withDefault False)
-    -- Forward Start Amount: NULL
-    && (flow.forwardStartAmount == Nothing)
-    -- Forward Start Bucket: NULL
-    && (flow.forwardStartBucket == Nothing)
-    -- Treasury Control: N
-    && (flow.treasuryControl == False)
+rule_112_x_33_e : Other -> Maybe Float
+rule_112_x_33_e flow =
+    if
+        List.member flow.product [ i_O_6, i_O_8 ]
+            -- Maturity Bucket: <= 30 calendar days but not Open
+            && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && flow.maturityBucket /= MaturityBucket.open)
+            -- Collateral Class: HQLA
+            && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLA class) |> Maybe.withDefault False)
+            -- Forward Start Amount: NULL
+            && (flow.forwardStartAmount == Nothing)
+            -- Forward Start Bucket: NULL
+            && (flow.forwardStartBucket == Nothing)
+            -- Treasury Control: N
+            && (flow.treasuryControl == False)
+    then
+        Just flow.maturityAmount
+
+    else
+        Nothing
 
 
 {-| (135) Broker-Dealer Segregated Account Inflow Amount (§.33(g))
 -}
-match_rule_135_section_33_g : Other -> Bool
-match_rule_135_section_33_g flow =
-    List.member flow.product [ i_O_5 ]
-    -- Maturity Bucket: <= 30 calendar days
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket)
+rule_33_g : Other -> Maybe Float
+rule_33_g flow =
+    if
+        List.member flow.product [ i_O_5 ]
+            -- Maturity Bucket: <= 30 calendar days
+            && MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket
+    then
+        Just flow.maturityAmount
+
+    else
+        Nothing
 
 
 {-| (136) Other Cash Inflow Amount (§.33(h))
 -}
-match_rule_136_section_33_h : Other -> Bool
-match_rule_136_section_33_h flow =
-    List.member flow.product [ i_O_9 ]
-    -- Maturity Bucket: <= 30 calendar days but not Open
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && not (MaturityBucket.isOpen flow.maturityBucket))
-    -- Forward Start Amount: NULL
-    && (flow.forwardStartAmount == Nothing)
-    -- Forward Start Bucket: NULL
-    && (flow.forwardStartBucket == Nothing)
+rule_33_h : Other -> Maybe Float
+rule_33_h flow =
+    if
+        List.member flow.product [ i_O_9 ]
+            -- Maturity Bucket: <= 30 calendar days but not Open
+            && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && flow.maturityBucket /= MaturityBucket.open)
+            -- Forward Start Amount: NULL
+            && (flow.forwardStartAmount == Nothing)
+            -- Forward Start Bucket: NULL
+            && (flow.forwardStartBucket == Nothing)
+    then
+        Just flow.maturityAmount
+
+    else
+        Nothing

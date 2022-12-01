@@ -18,9 +18,10 @@ import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (..)
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.LCR.AmountCalculations exposing (..)
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
-applyRules : Other -> List ( String, Float )
+applyRules : Other -> List RuleBalance
 applyRules other =
     List.concat
         [ applyRule (match_rule_15_section_32_a_5 other) "32(a)(5)" other.maturityAmount

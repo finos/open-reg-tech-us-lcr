@@ -19,9 +19,10 @@ import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
-applyRules : Secured -> List ( String, Float )
+applyRules : Secured -> List RuleBalance
 applyRules secured =
     List.concat
         [ applyRule (match_rule_8_section_21_b_todo secured) "21(b)(todo)" secured.maturityAmount

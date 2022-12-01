@@ -24,3 +24,11 @@ morphir-ir.json
 morphir-hashes.json
 /elm-stuff/
 /dist/
+/spark/out/
+/spark/.idea/
+
+# Maven generated Scala files will be ignored
+src/main
+
+# Maven generated compiled scala will be ignored
+target
