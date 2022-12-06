@@ -11,6 +11,7 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.LCR.AmountCalculations exposing (..)
 
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass exposing (CollateralClass)
@@ -26,17 +27,22 @@ note_4 : Maybe CollateralClass -> Maybe CollateralValue -> Float -> Float
 note_4 maybeCollateralClass maybeCollateralValue amount =
     case ( maybeCollateralClass, maybeCollateralValue ) of
         ( Just collateralClass, Just collateralValue ) ->
-            if collateralClass == CollateralClass.g_2_Q then
-                amount - (collateralValue * 0.85)
-
-            else if collateralClass == CollateralClass.s_1_Q then
-                amount - collateralValue
-
-            else
-                amount
+            applyNote4 collateralClass collateralValue amount
 
         _ ->
             amount
+
+
+applyNote4 : CollateralClass -> CollateralValue -> Float -> Float
+applyNote4 collateralClass collateralValue amount =
+    if collateralClass == CollateralClass.g_2_Q then
+        amount - (collateralValue * 0.85)
+
+    else if collateralClass == CollateralClass.s_1_Q then
+        amount - collateralValue
+
+    else
+        amount
 
 
 {-| To the extent the Collateral Value is less than the Maturity Amount, treat the Maturity Amount less the Collateral

@@ -101,13 +101,14 @@ toRuleBalances flows =
 
                     else if match_rule_67_section_32_j_1_ii flow then
                         "32(j)(1)(ii)"
+
+                    else if match_rule_70_section_32_j_1_iii flow then
+                        "32(j)(1)(iii)"
+
+                    else if match_rule_72_section_32_j_1_iv flow then
+                        "32(j)(1)(iv)"
+
                         --TODO
-                        --                    else if match_rule_70_section_32_j_1_iii flow then
-                        --                        "32(j)(1)(iii)"
-                        --
-                        --                    else if match_rule_72_section_32_j_1_iv flow then
-                        --                        "32(j)(1)(iv)"
-                        --
                         --                    else if match_rule_73_section_32_j_1_iv flow then
                         --                        "32(j)(1)(iv)"
                         --
@@ -166,6 +167,7 @@ applyRules deposits =
         , applyRule (match_rule_67_section_32_j_1_ii deposits) "32(j)(1)(ii)" deposits.maturityAmount
         , applyRule (match_rule_70_section_32_j_1_iii deposits) "32(j)(1)(iii)" deposits.maturityAmount
         , applyRule (match_rule_72_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
+        --, apply_rule_72_section_32_j_1_iv deposits
         , applyRule (match_rule_73_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
         , applyRule (match_rule_77_section_32_j_1_vi deposits) "32(j)(1)(vi)" deposits.maturityAmount
         , applyRule (match_rule_78_section_32_j_1_vi deposits) "32(j)(1)(vi)" deposits.maturityAmount
@@ -412,9 +414,45 @@ match_rule_72_section_32_j_1_iv deposits =
     List.member deposits.product [ o_D_4, o_D_7 ]
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days deposits.maturityBucket
+        -- Counterparty
+        && List.member deposits.counterparty
+            ["Non-Financial Corporate"
+            , "PSE"
+            , "Other Supranational"
+            , "Pension Fund"
+            , "Bank"
+            , "Broker-Dealer"
+            , "Investment Company or Advisor"
+            , "Financial Market"
+            , "Utility"
+            , "Other Supervised Non-Bank Financial Entity"
+            , "Non-Regulated Fund"
+            , "Debt Issuing SPE"
+            , "Other"
+            ]
         -- Collateral Class: Level 2B HQLA
         && (deposits.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
+        -- Rehopythecated: Y
+        && deposits.rehypothecated == Just True
 
+rule_72_section_32_j_1_iv_amount : Deposits -> List RuleBalance
+rule_72_section_32_j_1_iv_amount deposits =
+    case (deposits.collateralValue) of
+        (Just collateralValue) ->
+            if collateralValue < deposits.maturityAmount then
+                [ RuleBalance "32(j)(1)(iv))" deposits.maturityAmount
+                , RuleBalance "32(h)" (deposits.maturityAmount - collateralValue)
+                ]
+            else
+                [ RuleBalance "32(j)(1)(iv))" deposits.maturityAmount ]
+        _ -> []
+
+apply_rule_72_section_32_j_1_iv : Deposits -> List RuleBalance
+apply_rule_72_section_32_j_1_iv deposits =
+    if match_rule_72_section_32_j_1_iv deposits then
+        rule_72_section_32_j_1_iv_amount deposits
+    else
+        []
 
 {-| (73) Secured Funding L2B (§.32(j)(1)(iv))
 -}
