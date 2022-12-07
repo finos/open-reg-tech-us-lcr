@@ -18,19 +18,22 @@ docker rm morphir-lcr-container
 ## Update ECS cluster
 - Access ECS Cluster on https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters and select the LCR cluster
 - Access the `Task Definitions` menu item and select the `lcr-interactive` task
-- Click on `Create new revision`
+- Click on the latest task definition, then on `Create new revision`
 - Scroll down and click on `Add container`
   - container name: `lcr-morphir`
-  - image: `finos/lcr-interactive:main` (replace `main` with the name of the code branch)
+  - image: `finos/lcr-interactive@sha256:<sha>` (replace `<sha>` with the number taken from the [LCR Docker image]() you'd like to deploy)
   - port mappings: `3000, tcp`
   - Keep other values as they are and complete the form to add the container
   - Remove the other container from the list
   - Keep other values as they are and complete the form to add a new task definition revision
-- Select the LCR service and click on the Update button
+- Click on `Clusters` and select again the LCR one
+- Select the `morphir-lcr-interactive` service and click on the Update button
   - Update the task definition revision
+  - Check `Force new deployment`
   - Keep other values as they are and complete the form to update the service
 - Access the `Tasks` tab of the cluster service
-- Keep only one Task running, remove all tasks with older task definitions
+- Wait for the new task to reach `RUNNING` status
+- Keep only one Task running, by stopping the task with older task definitions
 
 ## Tentative Roadmap
 
