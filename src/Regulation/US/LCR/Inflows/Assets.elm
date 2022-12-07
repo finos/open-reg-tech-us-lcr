@@ -14,11 +14,46 @@
 
 module Regulation.US.LCR.Inflows.Assets exposing (..)
 
+import Morphir.SDK.Aggregate as Aggregate
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.FR2052A.Fields.SubProduct exposing (currency_and_coin)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
+
+
+{-| Given a list of Assets, applies the applicable rule for each assets along with the relevant amount
+-}
+toRuleBalances : List Assets -> List RuleBalance
+toRuleBalances assetsList =
+    -- temp: remove after demo
+    assetsList
+        |> List.map
+            (\asset ->
+                { rule =
+                    if rule_20_a_1_C asset /= Nothing then
+                        "20(a)(1)-C"
+
+                    else if rule_20_a_1 asset  /= Nothing then
+                        "20(a)(1)"
+
+                    else if rule_20_b_1 asset  /= Nothing then
+                        "20(b)(1)"
+
+                    else if rule_20_c_1 asset /= Nothing then
+                        "20(c)(1)"
+
+                    else if rule_33_d_1 asset /= Nothing then
+                        "33(d)(1)"
+
+                    else
+                        ""
+                , amount =
+                    asset.marketValue
+                }
+            )
+        |> List.filter (\rb -> rb.rule /= "")
 
 apply_rules : List Assets -> Float
 apply_rules list =
