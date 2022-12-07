@@ -166,8 +166,8 @@ applyRules deposits =
         , applyRule (match_rule_64_section_32_j_1_i deposits) "32(j)(1)(i)" deposits.maturityAmount
         , applyRule (match_rule_67_section_32_j_1_ii deposits) "32(j)(1)(ii)" deposits.maturityAmount
         , applyRule (match_rule_70_section_32_j_1_iii deposits) "32(j)(1)(iii)" deposits.maturityAmount
-        , applyRule (match_rule_72_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
-        --, apply_rule_72_section_32_j_1_iv deposits
+        -- , applyRule (match_rule_72_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
+        , apply_rule_72_section_32_j_1_iv deposits
         , applyRule (match_rule_73_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
         , applyRule (match_rule_77_section_32_j_1_vi deposits) "32(j)(1)(vi)" deposits.maturityAmount
         , applyRule (match_rule_78_section_32_j_1_vi deposits) "32(j)(1)(vi)" deposits.maturityAmount
@@ -440,8 +440,8 @@ rule_72_section_32_j_1_iv_amount deposits =
     case (deposits.collateralValue) of
         (Just collateralValue) ->
             if collateralValue < deposits.maturityAmount then
-                [ RuleBalance "32(j)(1)(iv))" deposits.maturityAmount
-                , RuleBalance "32(h)" (deposits.maturityAmount - collateralValue)
+                [ RuleBalance "32(h)" (deposits.maturityAmount - collateralValue)
+                -- , RuleBalance "32(j)(1)(iv))" deposits.maturityAmount
                 ]
             else
                 [ RuleBalance "32(j)(1)(iv))" deposits.maturityAmount ]

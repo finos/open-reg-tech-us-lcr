@@ -17,6 +17,125 @@
                     "r"
                 ],
                 [
+                    "amount",
+                    "calculations"
+                ]
+            ],
+            [
+                "apply",
+                "note",
+                "4"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    "G-2-Q",
+                    100,
+                    800
+                ],
+                "expectedOutput": 715,
+                "description": "G-2-Q"
+            },
+            {
+                "inputs": [
+                    "A-0-1",
+                    100,
+                    800
+                ],
+                "expectedOutput": 800,
+                "description": "A-0-1"
+            },
+            {
+                "inputs": [
+                    "S-1-Q",
+                    100,
+                    800
+                ],
+                "expectedOutput": 700,
+                "description": "S-1-Q"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
+                    "other"
+                ]
+            ],
+            [
+                "rule",
+                "33",
+                "b"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": false,
+                        "reportingEntity": ".",
+                        "product": [
+                            "net30DayDerivativeReceivables"
+                        ],
+                        "maturityAmount": 20000,
+                        "maturityBucket": 2,
+                        "forwardStartAmount": null,
+                        "forwardStartBucket": null,
+                        "collateralClass": ".",
+                        "collateralValue": 111133,
+                        "treasuryControl": true,
+                        "counterparty": ".",
+                        "gSIB": null,
+                        "internal": ".",
+                        "internalCounterparty": null,
+                        "businessLine": "."
+                    }
+                ],
+                "expectedOutput": 20000,
+                "description": "match"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
                     "outflows"
                 ],
                 [
@@ -101,12 +220,12 @@
                 ],
                 "expectedOutput": [
                     {
-                        "rule": "32(j)(1)(iv))",
-                        "amount": 8000
-                    },
-                    {
                         "rule": "32(h)",
                         "amount": 7000
+                    },
+                    {
+                        "rule": "32(j)(1)(iv))",
+                        "amount": 8000
                     }
                 ],
                 "description": "32(h)"
