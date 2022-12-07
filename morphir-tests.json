@@ -78,6 +78,102 @@
                     "inflows"
                 ],
                 [
+                    "assets"
+                ]
+            ],
+            [
+                "to",
+                "rule",
+                "balances"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    [
+                        {
+                            "currency": [
+                                "cAD"
+                            ],
+                            "converted": true,
+                            "reportingEntity": ".",
+                            "product": [
+                                "capacity"
+                            ],
+                            "subProduct": "not cash",
+                            "marketValue": 10000,
+                            "lendableValue": "200",
+                            "maturityBucket": 2,
+                            "forwardStartAmount": null,
+                            "forwardStartBucket": null,
+                            "collateralClass": "A-1-Q",
+                            "treasuryControl": true,
+                            "accountingDesignation": ".",
+                            "effectiveMaturityBucket": null,
+                            "encumbranceType": null,
+                            "internalCounterparty": null,
+                            "businessLine": "."
+                        },
+                        {
+                            "currency": [
+                                "aUD"
+                            ],
+                            "converted": true,
+                            "reportingEntity": ".",
+                            "product": [
+                                "unencumberedAssets"
+                            ],
+                            "subProduct": "not coin",
+                            "marketValue": 20000,
+                            "lendableValue": "20000",
+                            "maturityBucket": 13,
+                            "forwardStartAmount": null,
+                            "forwardStartBucket": null,
+                            "collateralClass": "S-6-Q",
+                            "treasuryControl": true,
+                            "accountingDesignation": ".",
+                            "effectiveMaturityBucket": null,
+                            "encumbranceType": null,
+                            "internalCounterparty": null,
+                            "businessLine": "."
+                        }
+                    ]
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "20(a)(1)",
+                        "amount": 10000
+                    },
+                    {
+                        "rule": "20(b)(1)",
+                        "amount": 20000
+                    }
+                ],
+                "description": "sample"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
                     "other"
                 ]
             ],
