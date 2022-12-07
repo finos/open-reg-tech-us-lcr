@@ -1,0 +1,116 @@
+[
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "outflows"
+                ],
+                [
+                    "deposits"
+                ]
+            ],
+            [
+                "rule",
+                "72",
+                "section",
+                "32",
+                "j",
+                "1",
+                "iv",
+                "amount"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": false,
+                        "reportingEntity": ".",
+                        "product": [
+                            "operationalAccountBalances"
+                        ],
+                        "counterparty": ".",
+                        "gSIB": ".",
+                        "maturityAmount": 800,
+                        "maturityBucket": 20,
+                        "maturityOptionality": null,
+                        "collateralClass": ".",
+                        "collateralValue": 1000,
+                        "insured": [
+                            "other"
+                        ],
+                        "trigger": ".",
+                        "rehypothecated": true,
+                        "businessLine": ".",
+                        "internal": ".",
+                        "internalCounterparty": null
+                    }
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "32(j)(1)(iv))",
+                        "amount": 800
+                    }
+                ],
+                "description": "Just 32(j)"
+            },
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": false,
+                        "reportingEntity": ".",
+                        "product": [
+                            "operationalAccountBalances"
+                        ],
+                        "counterparty": ".",
+                        "gSIB": ".",
+                        "maturityAmount": 8000,
+                        "maturityBucket": 20,
+                        "maturityOptionality": null,
+                        "collateralClass": ".",
+                        "collateralValue": 1000,
+                        "insured": [
+                            "other"
+                        ],
+                        "trigger": ".",
+                        "rehypothecated": true,
+                        "businessLine": ".",
+                        "internal": ".",
+                        "internalCounterparty": null
+                    }
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "32(j)(1)(iv))",
+                        "amount": 8000
+                    },
+                    {
+                        "rule": "32(h)",
+                        "amount": 7000
+                    }
+                ],
+                "description": "32(h)"
+            }
+        ]
+    ]
+]
