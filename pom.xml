@@ -117,6 +117,22 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>morphir-install</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>-g</argument>
+                                <argument>morphir-elm</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>morphir-ir</id>
                         <phase>generate-sources</phase>
                         <goals>
