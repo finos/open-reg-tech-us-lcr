@@ -32,19 +32,19 @@ toRuleBalances assetsList =
         |> List.map
             (\asset ->
                 { rule =
-                    if rule_20_a_1_C asset /= Nothing then
+                    if rule_1_section_20_a_1_C asset /= Nothing then
                         "20(a)(1)-C"
 
-                    else if rule_20_a_1 asset  /= Nothing then
+                    else if rule_1_section_20_a_1 asset  /= Nothing then
                         "20(a)(1)"
 
-                    else if rule_20_b_1 asset  /= Nothing then
+                    else if rule_1_section_20_b_1 asset  /= Nothing then
                         "20(b)(1)"
 
-                    else if rule_20_c_1 asset /= Nothing then
+                    else if rule_1_section_20_c_1 asset /= Nothing then
                         "20(c)(1)"
 
-                    else if rule_33_d_1 asset /= Nothing then
+                    else if rule_107_section_33_d_1 asset /= Nothing then
                         "33(d)(1)"
 
                     else
@@ -60,11 +60,11 @@ apply_rules list =
     list
         |> List.map
             (\asset ->
-                [ rule_20_a_1_C asset
-                , rule_20_a_1 asset
-                , rule_20_b_1 asset
-                , rule_20_c_1 asset
-                , rule_33_d_1 asset
+                [ rule_1_section_20_a_1_C asset
+                , rule_1_section_20_a_1 asset
+                , rule_1_section_20_b_1 asset
+                , rule_1_section_20_c_1 asset
+                , rule_107_section_33_d_1 asset
                 ]
                     |> List.filterMap identity
                     |> List.sum
@@ -74,8 +74,8 @@ apply_rules list =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_20_a_1_C : Assets -> Maybe Float
-rule_20_a_1_C flow =
+rule_1_section_20_a_1_C : Assets -> Maybe Float
+rule_1_section_20_a_1_C flow =
     if
         List.member flow.product [ i_A_3 ]
             -- Sub-Product: Not Currency and Coin
@@ -102,8 +102,8 @@ rule_20_a_1_C flow =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_20_a_1 : Assets -> Maybe Float
-rule_20_a_1 flow =
+rule_1_section_20_a_1 : Assets -> Maybe Float
+rule_1_section_20_a_1 flow =
     if
         List.member flow.product [ i_A_1, i_A_2 ]
             -- Sub-Product: Not Currency and Coin
@@ -128,8 +128,8 @@ rule_20_a_1 flow =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_20_b_1 : Assets -> Maybe Float
-rule_20_b_1 flow =
+rule_1_section_20_b_1 : Assets -> Maybe Float
+rule_1_section_20_b_1 flow =
     if
         List.member flow.product [ i_A_1, i_A_2 ]
             -- Sub-Product: Not Currency and Coin
@@ -154,8 +154,8 @@ rule_20_b_1 flow =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_20_c_1 : Assets -> Maybe Float
-rule_20_c_1 flow =
+rule_1_section_20_c_1 : Assets -> Maybe Float
+rule_1_section_20_c_1 flow =
     if
         List.member flow.product [ i_A_1, i_A_2 ]
             -- Sub-Product: Not Currency and Coin
@@ -180,8 +180,8 @@ rule_20_c_1 flow =
 
 {-| (107) Financial and Central Bank Cash Inflow Amount (§.33(d)(1))
 -}
-rule_33_d_1 : Assets -> Maybe Float
-rule_33_d_1 flow =
+rule_107_section_33_d_1 : Assets -> Maybe Float
+rule_107_section_33_d_1 flow =
     if
         List.member flow.product [ i_A_3 ]
             -- Maturity Bucket: <= 30 calendar days but not Open
