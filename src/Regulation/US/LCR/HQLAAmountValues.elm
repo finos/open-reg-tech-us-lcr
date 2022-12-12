@@ -39,15 +39,18 @@ level_1_HQLA_additive_values data =
         level_1_supplementals =
             { balanceSheet = [], derivativesCollateral = level_1_supplemental_derivativesCollateral, foreignExchange = [], informational = [], liquidityRiskMeasurement = [] }
 
-        --Flows.applyInflowRules level_1_inflows
-        --    |> Rules.matchAndSum
-        --        [ "33(c)"
-        --        , "33(d)(1)"
-        --        , "33(d)(2)"
-        --        , "20(a)(1)"
-        --        , "20(b)(1)"
-        --        , "20(c)(1)"
-        --        ]
+        inflow_amount : Balance
+        inflow_amount =
+            Flows.applyInflowRules level_1_inflows
+                |> Rules.matchAndSum
+                    [ "33(c)"
+                    , "33(d)(1)"
+                    , "33(d)(2)"
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    ]
+
         supplemental_amount : Balance
         supplemental_amount =
             Flows.applySupplementalRules level_1_supplementals
@@ -58,14 +61,7 @@ level_1_HQLA_additive_values data =
                     , "20(a)(1)C"
                     ]
     in
-    inflow_amountx level_1_inflow_assets + supplemental_amount
-
-
-inflow_amountx : List Assets -> Balance
-inflow_amountx level_1_inflow_assets =
-    level_1_inflow_assets
-        |> List.filterMap (\a -> Assets.rule_20_a_1 a)
-        |> List.sum
+    inflow_amount + supplemental_amount
 
 
 level_2A_HQLA_additive_values : DataTables -> Balance
