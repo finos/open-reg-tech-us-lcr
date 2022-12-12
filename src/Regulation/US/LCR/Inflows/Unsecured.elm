@@ -11,19 +11,41 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.LCR.Inflows.Unsecured exposing (..)
 
-
 import Regulation.US.FR2052A.DataTables.Inflows.Unsecured exposing (..)
-import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
-import Regulation.US.FR2052A.Fields.Insured as Insured
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
-import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
-import Regulation.US.LCR.AmountCalculations exposing (..)
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
-applyRules : Unsecured -> List ( String, Float )
+{-| Given a list, applies the applicable rule for each assets along with the relevant amount
+-}
+toRuleBalances : List Unsecured -> List RuleBalance
+toRuleBalances flows =
+    flows
+        |> List.map
+            (\flow ->
+                { rule =
+                    if match_rule_104_section_33_c flow then
+                        "33(c)"
+
+                    else if match_rule_106_section_33_d_1 flow then
+                        "33(d)(1)"
+
+                    else if match_rule_109_section_33_d_2 flow then
+                        "33(d)(2)"
+
+                    else
+                        ""
+                , amount = flow.maturityAmount
+                }
+            )
+        |> List.filter (\rb -> rb.rule /= "")
+
+
+applyRules : Unsecured -> List RuleBalance
 applyRules flow =
     List.concat
         [ applyRule (match_rule_104_section_33_c flow) "33(c)" flow.maturityAmount
@@ -37,12 +59,12 @@ applyRules flow =
 match_rule_104_section_33_c : Unsecured -> Bool
 match_rule_104_section_33_c flow =
     List.member flow.product [ i_U_5, i_U_6 ]
-    -- Maturity Bucket: <= 30 calendar days but not Open
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && not (MaturityBucket.isOpen flow.maturityBucket))
-    -- Forward Start Amount: NULL
-    && (flow.forwardStartAmount == Nothing)
-    -- Forward Start Bucket: NULL
-    && (flow.forwardStartBucket == Nothing)
+        -- Maturity Bucket: <= 30 calendar days but not Open
+        && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && flow.maturityBucket /= MaturityBucket.open)
+        -- Forward Start Amount: NULL
+        && (flow.forwardStartAmount == Nothing)
+        -- Forward Start Bucket: NULL
+        && (flow.forwardStartBucket == Nothing)
 
 
 {-| (106) Financial and Central Bank Cash Inflow Amount (§.33(d)(1))
@@ -50,12 +72,12 @@ match_rule_104_section_33_c flow =
 match_rule_106_section_33_d_1 : Unsecured -> Bool
 match_rule_106_section_33_d_1 flow =
     List.member flow.product [ i_U_1, i_U_2, i_U_4, i_U_5, i_U_6, i_U_8 ]
-    -- Maturity Bucket: <= 30 calendar days
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket)
-    -- Forward Start Amount: NULL
-    && (flow.forwardStartAmount == Nothing)
-    -- Forward Start Bucket: NULL
-    && (flow.forwardStartBucket == Nothing)
+        -- Maturity Bucket: <= 30 calendar days
+        && MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket
+        -- Forward Start Amount: NULL
+        && (flow.forwardStartAmount == Nothing)
+        -- Forward Start Bucket: NULL
+        && (flow.forwardStartBucket == Nothing)
 
 
 {-| (109) Non-Financial Wholesale Cash Inflow Amount (§.33(d)(2))
@@ -63,9 +85,9 @@ match_rule_106_section_33_d_1 flow =
 match_rule_109_section_33_d_2 : Unsecured -> Bool
 match_rule_109_section_33_d_2 flow =
     List.member flow.product [ i_U_1, i_U_2, i_U_6 ]
-    -- Maturity Bucket: <= 30 calendar days
-    && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket)
-    -- Forward Start Amount: NULL
-    && (flow.forwardStartAmount == Nothing)
-    -- Forward Start Bucket: NULL
-    && (flow.forwardStartBucket == Nothing)
+        -- Maturity Bucket: <= 30 calendar days
+        && MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket
+        -- Forward Start Amount: NULL
+        && (flow.forwardStartAmount == Nothing)
+        -- Forward Start Bucket: NULL
+        && (flow.forwardStartBucket == Nothing)

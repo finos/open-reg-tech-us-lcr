@@ -11,7 +11,7 @@
    limitations under the License.
 -}
 
-module Regulation.US.FR2052A.DataTables exposing (DataTables)
+module Regulation.US.FR2052A.DataTables exposing (..)
 
 {-| TODO: extract documentation from FED document
 -}

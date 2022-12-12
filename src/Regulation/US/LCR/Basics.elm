@@ -11,21 +11,17 @@
    limitations under the License.
 -}
 
-module Tests exposing (..)
 
-import Expect
-import Test exposing (Test, test)
-
-testExpectTrue : Test
-testExpectTrue =
-    test "Expect.true test" <|
-        \() ->
-            True
-                |> Expect.true "Expected true"
+module Regulation.US.LCR.Basics exposing (..)
 
 
-testExpectNotEqual : Test
-testExpectNotEqual =
-    test "Expect Not Equal" <|
-        \() ->
-            Expect.notEqual "foo" "foobar"
+type alias Balance =
+    Float
+
+
+type alias Ratio =
+    Float
+
+
+type alias Haircut =
+    Float
