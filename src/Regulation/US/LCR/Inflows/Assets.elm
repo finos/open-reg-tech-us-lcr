@@ -14,6 +14,7 @@
 
 module Regulation.US.LCR.Inflows.Assets exposing (..)
 
+import Morphir.SDK.Aggregate as Aggregate
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
@@ -52,6 +53,11 @@ toRuleBalances assetsList =
                 }
             )
         |> List.filter (\rb -> rb.rule /= "")
+        |> Aggregate.groupBy .rule
+        |> Aggregate.aggregate
+            (\key balances ->
+                { rule=key, amount=(balances (Aggregate.sumOf .amount)) }
+            )
 
 
 applyRules : Assets -> List RuleBalance
