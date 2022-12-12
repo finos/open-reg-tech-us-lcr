@@ -15,11 +15,10 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
+import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
 import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
-import Regulation.US.LCR.InflowValues exposing (..)
-import Regulation.US.LCR.OutflowValues exposing (..)
 import Regulation.US.LCR.Rules as Rules
 
 
@@ -29,100 +28,119 @@ import Regulation.US.LCR.Rules as Rules
 -}
 
 
-endpoint : BankCategory -> DataTables -> Ratio
-endpoint bankCategory data =
-    let
-        lcr : Balance
-        lcr =
-            hqla_amount / total_net_cash_outflows
+{-| The lcr function is the top-most calculation for executing the Liquidity Coverage Ratio.
+-}
+lcr : BankCategory -> DataTables -> Float
+lcr bankCategory data =
+    hqla_amount data / total_net_cash_outflows data bankCategory
 
-        hqla_amount : Balance
-        hqla_amount =
-            (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
-                + (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
-                + (0.5 * (level_2B_HQLA_additive_values data - level_2A_HQLA_additive_values data))
-                + max unadjusted_excess_HQLA adjusted_excess_HQLA
 
-        unadjusted_excess_HQLA : Balance
-        unadjusted_excess_HQLA =
-            level_2_cap_excess_amount + level_2B_cap_excess_amount
+{-| Calculates the High Quality Liquid Assets (HQLA) to be considered for the numerator of the LCR.
 
-        level_2_cap_excess_amount : Balance
-        level_2_cap_excess_amount =
-            max 0
-                (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
-                + (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
-                - (0.6667 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
+see: <https://www.federalreserve.gov/reportforms/forms/FR_2052a20220429_f.pdf#APPENDIX+VI:+LCR+to+FR+2052a+Mapping>
 
-        level_2B_cap_excess_amount : Balance
-        level_2B_cap_excess_amount =
-            max 0
-                (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
-                - level_2_cap_excess_amount
-                + (0.1765 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
-                - (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+-}
+hqla_amount : DataTables -> Float
+hqla_amount data =
+    (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
+        + (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+        + (0.5 * (level_2B_HQLA_additive_values data - level_2A_HQLA_additive_values data))
+        + max (unadjusted_excess_HQLA data) (adjusted_excess_HQLA data)
 
-        adjusted_level_1_HQLA_additive_values : Balance
-        adjusted_level_1_HQLA_additive_values =
-            level_1_HQLA_additive_values data
-                + secured_lending_unwind_maturity_amounts data
-                - secured_lending_unwind_collateral_values_with_level_1_collateral_class data
-                - secured_funding_unwind_maturity_amounts data
-                + secured_funding_unwind_collateral_values_with_level_1_collateral_class data
-                + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct data
-                - asset_exchange_unwind_collateral_values_with_level_1_collateral_class data
 
-        adjusted_level_2A_HQLA_additive_values : Balance
-        adjusted_level_2A_HQLA_additive_values =
-            level_2A_HQLA_additive_values data
-                - secured_lending_unwind_collateral_values_with_level_2A_collateral_class data
-                + secured_funding_unwind_collateral_values_with_level_2A_collateral_class data
-                + asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct data
-                - asset_exchange_unwind_collateral_values_with_level_2A_collateral_class data
+unadjusted_excess_HQLA : DataTables -> Balance
+unadjusted_excess_HQLA data =
+    level_2_cap_excess_amount data + level_2B_cap_excess_amount data
 
-        adjusted_level_2B_HQLA_additive_values : Balance
-        adjusted_level_2B_HQLA_additive_values =
-            level_2B_HQLA_additive_values data
-                - secured_lending_unwind_collateral_values_with_level_2B_collateral_class data
-                + secured_funding_unwind_collateral_values_with_level_2B_collateral_class data
-                + asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct data
-                - asset_exchange_unwind_collateral_values_with_level_2B_collateral_class data
 
-        adjusted_excess_HQLA : Balance
-        adjusted_excess_HQLA =
-            adjusted_level_2_cap_excess_amount + adjusted_level_2B_cap_excess_amount
+level_2_cap_excess_amount : DataTables -> Balance
+level_2_cap_excess_amount data =
+    max 0
+        (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+        + (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+        - (0.6667 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
 
-        adjusted_level_2_cap_excess_amount : Balance
-        adjusted_level_2_cap_excess_amount =
-            max 0
-                (0.85 * (adjusted_level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values data))
-                + (0.5 * (adjusted_level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values data))
-                - (0.6667 * (adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values data))
 
-        adjusted_level_2B_cap_excess_amount : Balance
-        adjusted_level_2B_cap_excess_amount =
-            max 0
-                (0.5 * (adjusted_level_2B_HQLA_additive_values - level_2B_HQLA_subtractive_values data))
-                - adjusted_level_2_cap_excess_amount
-                - (0.1765
-                    * (adjusted_level_1_HQLA_additive_values - level_1_HQLA_subtractive_values data)
-                    + (0.85 * (adjusted_level_2A_HQLA_additive_values - level_2A_HQLA_subtractive_values data))
-                  )
+level_2B_cap_excess_amount : DataTables -> Balance
+level_2B_cap_excess_amount data =
+    max 0
+        (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+        - level_2_cap_excess_amount data
+        + (0.1765 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
+        - (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
 
-        total_net_cash_outflows : Balance
-        total_net_cash_outflows =
-            outflow_adjustment_percentage bankCategory
-                * (outflow_values data.outflows
-                    - min (inflow_values data.inflows) (0.75 * outflow_values data.outflows)
-                    + maturity_mismatch_add_on
-                  )
 
-        maturity_mismatch_add_on : Balance
-        maturity_mismatch_add_on =
-            max 0 (largest_net_cumulative_maturity_outflow_amount data)
-                - max 0 (net_day30_cumulative_maturity_outflow_amount data)
-    in
-    lcr
+adjusted_level_1_HQLA_additive_values : DataTables -> Balance
+adjusted_level_1_HQLA_additive_values data =
+    level_1_HQLA_additive_values data
+        + secured_lending_unwind_maturity_amounts data
+        - secured_lending_unwind_collateral_values_with_level_1_collateral_class data
+        - secured_funding_unwind_maturity_amounts data
+        + secured_funding_unwind_collateral_values_with_level_1_collateral_class data
+        + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct data
+        - asset_exchange_unwind_collateral_values_with_level_1_collateral_class data
+
+
+adjusted_level_2A_HQLA_additive_values : DataTables -> Balance
+adjusted_level_2A_HQLA_additive_values data =
+    level_2A_HQLA_additive_values data
+        - secured_lending_unwind_collateral_values_with_level_2A_collateral_class data
+        + secured_funding_unwind_collateral_values_with_level_2A_collateral_class data
+        + asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct data
+        - asset_exchange_unwind_collateral_values_with_level_2A_collateral_class data
+
+
+adjusted_level_2B_HQLA_additive_values : DataTables -> Balance
+adjusted_level_2B_HQLA_additive_values data =
+    level_2B_HQLA_additive_values data
+        - secured_lending_unwind_collateral_values_with_level_2B_collateral_class data
+        + secured_funding_unwind_collateral_values_with_level_2B_collateral_class data
+        + asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct data
+        - asset_exchange_unwind_collateral_values_with_level_2B_collateral_class data
+
+
+adjusted_excess_HQLA : DataTables -> Balance
+adjusted_excess_HQLA data =
+    adjusted_level_2_cap_excess_amount data + adjusted_level_2B_cap_excess_amount data
+
+
+adjusted_level_2_cap_excess_amount : DataTables -> Balance
+adjusted_level_2_cap_excess_amount data =
+    max 0
+        (0.85 * (adjusted_level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+        + (0.5 * (adjusted_level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+        - (0.6667 * (adjusted_level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
+
+
+adjusted_level_2B_cap_excess_amount : DataTables -> Balance
+adjusted_level_2B_cap_excess_amount data =
+    max 0
+        (0.5 * (adjusted_level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+        - adjusted_level_2_cap_excess_amount data
+        - (0.1765
+            * (adjusted_level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
+            + (0.85 * (adjusted_level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+          )
+
+
+{-| Calculates the Total Net Cash Outflows to be considered for the denominator of the LCR.
+
+see: <https://www.federalreserve.gov/reportforms/forms/FR_2052a20220429_f.pdf#APPENDIX+VI:+LCR+to+FR+2052a+Mapping>
+
+-}
+total_net_cash_outflows : DataTables -> BankCategory -> Float
+total_net_cash_outflows data bankCategory =
+    outflow_adjustment_percentage bankCategory
+        * (outflow_values data.outflows
+            - min (inflow_values data.inflows) (0.75 * outflow_values data.outflows)
+            + maturity_mismatch_add_on data
+          )
+
+
+maturity_mismatch_add_on : DataTables -> Balance
+maturity_mismatch_add_on data =
+    max 0 (largest_net_cumulative_maturity_outflow_amount data)
+        - max 0 (net_day30_cumulative_maturity_outflow_amount data)
 
 
 cumulative_outflow_amount_from_one_to_m : Int -> DataTables -> Balance
@@ -157,7 +175,12 @@ cumulative_outflow_amount_from_one_to_m m data =
         inflow_amount : Balance
         inflow_amount =
             Flows.applyInflowRules data.inflows
-                |> Rules.matchAndSum [ "33(c)", "33(d)", "33(e)", "33(f)" ]
+                |> Rules.matchAndSum
+                    [ "33(c)"
+                    , "33(d)"
+                    , "33(e)"
+                    , "33(f)"
+                    ]
     in
     outflow_amount - inflow_amount
 

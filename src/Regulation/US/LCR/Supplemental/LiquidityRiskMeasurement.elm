@@ -11,19 +11,16 @@
    limitations under the License.
 -}
 
-module Regulation.US.LCR.Supplemental.LiquidityRiskMeasurement exposing (..)
 
+module Regulation.US.LCR.Supplemental.LiquidityRiskMeasurement exposing (..)
 
 import Regulation.US.FR2052A.DataTables.Supplemental.LiquidityRiskMeasurement exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
-import Regulation.US.FR2052A.Fields.Insured as Insured
-import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
-import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
-import Regulation.US.LCR.AmountCalculations exposing (..)
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
-applyRules : LiquidityRiskMeasurement -> List ( String, Float )
+applyRules : LiquidityRiskMeasurement -> List RuleBalance
 applyRules flow =
     List.concat
         [ applyRule (match_rule_4_section_22_b_3_L1 flow) "22(b)(3)L1" flow.marketValue
@@ -41,27 +38,30 @@ applyRules flow =
 -}
 match_rule_4_section_22_b_3_L1 : LiquidityRiskMeasurement -> Bool
 match_rule_4_section_22_b_3_L1 flow =
-    flow.product == s_L_1
-    -- Collateral Class: A-0-Q; A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel1 class) |> Maybe.withDefault False)
+    flow.product
+        == s_L_1
+        -- Collateral Class: A-0-Q; A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel1 class) |> Maybe.withDefault False)
 
 
 {-| (4) Excluded Sub HQLA (§.22(b)(3)and(4))
 -}
 match_rule_4_section_22_b_3_L2a : LiquidityRiskMeasurement -> Bool
 match_rule_4_section_22_b_3_L2a flow =
-    flow.product == s_L_1
-    -- Collateral Class: G-1-Q; G-2-Q; G-3-Q; S-5-Q; S-6-Q; S-7-Q; CB-3-Q
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2A class) |> Maybe.withDefault False)
+    flow.product
+        == s_L_1
+        -- Collateral Class: G-1-Q; G-2-Q; G-3-Q; S-5-Q; S-6-Q; S-7-Q; CB-3-Q
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2A class) |> Maybe.withDefault False)
 
 
 {-| (4) Excluded Sub HQLA (§.22(b)(3)and(4))
 -}
 match_rule_4_section_22_b_3_L2b : LiquidityRiskMeasurement -> Bool
 match_rule_4_section_22_b_3_L2b flow =
-    flow.product == s_L_1
-    -- Collateral Class: E-1-Q; E-2-Q; IG-1-Q; IG-2-Q
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
+    flow.product
+        == s_L_1
+        -- Collateral Class: E-1-Q; E-2-Q; IG-1-Q; IG-2-Q
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
 
 
 {-| (5) Early Hedge Termination Outflows (§.22(a)(3))
@@ -69,8 +69,8 @@ match_rule_4_section_22_b_3_L2b flow =
 match_rule_5_section_22_a_3_L1 : LiquidityRiskMeasurement -> Bool
 match_rule_5_section_22_a_3_L1 flow =
     List.member flow.product [ s_L_3 ]
-    -- Collateral Class: A-0-Q; A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel1 class) |> Maybe.withDefault False)
+        -- Collateral Class: A-0-Q; A-1-Q; A-2-Q; A-3-Q; A-4-Q; A-5-Q; S-1-Q; S-2-Q; S-3-Q; S-4-Q; CB-1-Q; CB-2-Q
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel1 class) |> Maybe.withDefault False)
 
 
 {-| (5) Early Hedge Termination Outflows (§.22(a)(3))
@@ -78,8 +78,8 @@ match_rule_5_section_22_a_3_L1 flow =
 match_rule_5_section_22_a_3_L2a : LiquidityRiskMeasurement -> Bool
 match_rule_5_section_22_a_3_L2a flow =
     List.member flow.product [ s_L_3 ]
-    -- Collateral Class: G-1-Q; G-2-Q; G-3-Q; S-5-Q; S-6-Q; S-7-Q; CB-3-Q
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2A class) |> Maybe.withDefault False)
+        -- Collateral Class: G-1-Q; G-2-Q; G-3-Q; S-5-Q; S-6-Q; S-7-Q; CB-3-Q
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2A class) |> Maybe.withDefault False)
 
 
 {-| (5) Early Hedge Termination Outflows (§.22(a)(3))
@@ -87,8 +87,8 @@ match_rule_5_section_22_a_3_L2a flow =
 match_rule_5_section_22_a_3_L2b : LiquidityRiskMeasurement -> Bool
 match_rule_5_section_22_a_3_L2b flow =
     List.member flow.product [ s_L_3 ]
-    -- Collateral Class: E-1-Q; E-2-Q; IG-1-Q; IG-2-Q
-    && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
+        -- Collateral Class: E-1-Q; E-2-Q; IG-1-Q; IG-2-Q
+        && (flow.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
 
 
 {-| (62) Issued Not Structured Debt Securities Maturing Outside 30 Days when Primary Market Maker (§.32(i)(1))

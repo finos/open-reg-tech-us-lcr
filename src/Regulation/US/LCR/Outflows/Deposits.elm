@@ -19,9 +19,126 @@ import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.Insured as Insured
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.LCR.Rule exposing (applyRule)
+import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
-applyRules : Deposits -> List ( String, Float )
+{-| Given a list, applies the applicable rule for each assets along with the relevant amount
+-}
+toRuleBalances : List Deposits -> List RuleBalance
+toRuleBalances flows =
+    flows
+        |> List.map
+            (\flow ->
+                { rule =
+                    if match_rule_10_section_32_a_1 flow then
+                        "32(a)(1)"
+
+                    else if match_rule_11_section_32_a_2 flow then
+                        "32(a)(2)"
+
+                    else if match_rule_12_section_32_a_3 flow then
+                        "32(a)(3)"
+
+                    else if match_rule_13_section_32_a_4 flow then
+                        "32(a)(4)"
+
+                    else if match_rule_14_section_32_a_5 flow then
+                        "32(a)(5)"
+
+                    else if match_rule_39_section_32_g_1 flow then
+                        "32(g)(1)"
+
+                    else if match_rule_40_section_32_g_2 flow then
+                        "32(g)(2)"
+
+                    else if match_rule_41_section_32_g_3 flow then
+                        "32(g)(3)"
+
+                    else if match_rule_42_section_32_g_4 flow then
+                        "32(g)(4)"
+
+                    else if match_rule_43_section_32_g_5 flow then
+                        "32(g)(5)"
+
+                    else if match_rule_44_section_32_g_6 flow then
+                        "32(g)(6)"
+
+                    else if match_rule_45_section_32_g_7 flow then
+                        "32(g)(7)"
+
+                    else if match_rule_46_section_32_g_8 flow then
+                        "32(g)(8)"
+
+                    else if match_rule_47_section_32_g_9 flow then
+                        "32(g)(9)"
+
+                    else if match_rule_48_section_32_h_1_i flow then
+                        "32(h)(1)(i)"
+
+                    else if match_rule_49_section_32_h_1_ii_A flow then
+                        "32(h)(1)(ii)(A)"
+
+                    else if match_rule_52_section_32_h_1_ii_B flow then
+                        "32(h)(1)(ii)(B)"
+
+                    else if match_rule_53_section_32_h_2 flow then
+                        "32(h)(2)"
+
+                    else if match_rule_57_section_32_h_3 flow then
+                        "32(h)(3)"
+
+                    else if match_rule_58_section_32_h_4 flow then
+                        "32(h)(4)"
+
+                    else if match_rule_59_section_32_h_4 flow then
+                        "32(h)(4)"
+
+                    else if match_rule_60_section_32_h_5 flow then
+                        "32(h)(5)"
+
+                    else if match_rule_64_section_32_j_1_i flow then
+                        "32(j)(1)(i)"
+
+                    else if match_rule_67_section_32_j_1_ii flow then
+                        "32(j)(1)(ii)"
+
+                    else if match_rule_70_section_32_j_1_iii flow then
+                        "32(j)(1)(iii)"
+
+                    else if match_rule_72_section_32_j_1_iv flow then
+                        "32(j)(1)(iv)"
+
+                        --TODO
+                        --                    else if match_rule_73_section_32_j_1_iv flow then
+                        --                        "32(j)(1)(iv)"
+                        --
+                        --                    else if match_rule_77_section_32_j_1_vi flow then
+                        --                        "32(j)(1)(vi)"
+                        --
+                        --                    else if match_rule_78_section_32_j_1_vi flow then
+                        --                        "32(j)(1)(vi)"
+                        --
+                        --                    else if match_rule_81_section_32_j_2 flow then
+                        --                        "32(j)(2)"
+                        --
+                        --                    else if match_rule_83_section_32_j_2 flow then
+                        --                        "32(j)(2)"
+                        --
+                        --                    else if match_rule_84_section_32_j_2 flow then
+                        --                        "32(j)(2)"
+                        --
+                        --                    else if match_rule_98_section_32_k flow then
+                        --                        "32(k)"
+
+                    else
+                        ""
+                , amount = flow.maturityAmount
+                }
+            )
+        |> List.filter (\rb -> rb.rule /= "")
+
+
+applyRules : Deposits -> List RuleBalance
 applyRules deposits =
     List.concat
         [ applyRule (match_rule_10_section_32_a_1 deposits) "32(a)(1)" deposits.maturityAmount
@@ -49,7 +166,8 @@ applyRules deposits =
         , applyRule (match_rule_64_section_32_j_1_i deposits) "32(j)(1)(i)" deposits.maturityAmount
         , applyRule (match_rule_67_section_32_j_1_ii deposits) "32(j)(1)(ii)" deposits.maturityAmount
         , applyRule (match_rule_70_section_32_j_1_iii deposits) "32(j)(1)(iii)" deposits.maturityAmount
-        , applyRule (match_rule_72_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
+        -- , applyRule (match_rule_72_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
+        , apply_rule_72_section_32_j_1_iv deposits
         , applyRule (match_rule_73_section_32_j_1_iv deposits) "32(j)(1)(iv)" deposits.maturityAmount
         , applyRule (match_rule_77_section_32_j_1_vi deposits) "32(j)(1)(vi)" deposits.maturityAmount
         , applyRule (match_rule_78_section_32_j_1_vi deposits) "32(j)(1)(vi)" deposits.maturityAmount
@@ -101,7 +219,7 @@ match_rule_39_section_32_g_1 : Deposits -> Bool
 match_rule_39_section_32_g_1 deposits =
     List.member deposits.product [ o_D_8 ]
         -- Maturity Bucket: <= 30 calendar days (but not open)
-        && (MaturityBucket.isLessThanOrEqual30Days deposits.maturityBucket && not (MaturityBucket.isOpen deposits.maturityBucket))
+        && (MaturityBucket.isLessThanOrEqual30Days deposits.maturityBucket && deposits.maturityBucket /= MaturityBucket.open)
 
 
 {-| (40) Other Brokered Retail Deposits Maturing later than 30 days (§.32(g)(2))
@@ -119,7 +237,8 @@ match_rule_41_section_32_g_3 : Deposits -> Bool
 match_rule_41_section_32_g_3 deposits =
     List.member deposits.product [ o_D_8 ]
         -- Maturity Bucket: Open
-        && MaturityBucket.isOpen deposits.maturityBucket
+        && deposits.maturityBucket
+        == MaturityBucket.open
 
 
 {-| (42) Not Fully Insured Other Brokered Retail Deposits with No Maturity (§.32(g)(4))
@@ -128,7 +247,8 @@ match_rule_42_section_32_g_4 : Deposits -> Bool
 match_rule_42_section_32_g_4 deposits =
     List.member deposits.product [ o_D_8 ]
         -- Maturity Bucket: Open
-        && MaturityBucket.isOpen deposits.maturityBucket
+        && deposits.maturityBucket
+        == MaturityBucket.open
 
 
 {-| (43) Insured Reciprocal (§.32(g)(5))
@@ -294,9 +414,45 @@ match_rule_72_section_32_j_1_iv deposits =
     List.member deposits.product [ o_D_4, o_D_7 ]
         -- Maturity Bucket: <= 30 calendar days
         && MaturityBucket.isLessThanOrEqual30Days deposits.maturityBucket
+        -- Counterparty
+        && List.member deposits.counterparty
+            ["Non-Financial Corporate"
+            , "PSE"
+            , "Other Supranational"
+            , "Pension Fund"
+            , "Bank"
+            , "Broker-Dealer"
+            , "Investment Company or Advisor"
+            , "Financial Market"
+            , "Utility"
+            , "Other Supervised Non-Bank Financial Entity"
+            , "Non-Regulated Fund"
+            , "Debt Issuing SPE"
+            , "Other"
+            ]
         -- Collateral Class: Level 2B HQLA
         && (deposits.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
+        -- Rehopythecated: Y
+        && deposits.rehypothecated == Just True
 
+rule_72_section_32_j_1_iv_amount : Deposits -> List RuleBalance
+rule_72_section_32_j_1_iv_amount deposits =
+    case (deposits.collateralValue) of
+        (Just collateralValue) ->
+            if collateralValue < deposits.maturityAmount then
+                [ RuleBalance "32(h)" (deposits.maturityAmount - collateralValue)
+                -- , RuleBalance "32(j)(1)(iv))" deposits.maturityAmount
+                ]
+            else
+                [ RuleBalance "32(j)(1)(iv))" deposits.maturityAmount ]
+        _ -> []
+
+apply_rule_72_section_32_j_1_iv : Deposits -> List RuleBalance
+apply_rule_72_section_32_j_1_iv deposits =
+    if match_rule_72_section_32_j_1_iv deposits then
+        rule_72_section_32_j_1_iv_amount deposits
+    else
+        []
 
 {-| (73) Secured Funding L2B (§.32(j)(1)(iv))
 -}

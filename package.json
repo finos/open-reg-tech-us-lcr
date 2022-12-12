@@ -3,18 +3,23 @@
   "version": "0.0.1",
   "keywords": [
     "finos",
-	"morphir",
-	"lcr"
+    "morphir",
+    "lcr"
   ],
   "scripts": {
+    "build": "npm run morphir-elm-make-clean && npm run morphir-gen-spark-with-config",
     "morphir-elm-make": "morphir-elm make",
+    "morphir-elm-make-clean": "morphir-elm make -f",
+    "morphir-gen-spark": "morphir-elm gen -t Spark -o ./spark/open_reg_tech_us_lcr/src && echo SPARK GENERATED INTO spark/open_reg_tech_us_lcr/src",
+    "morphir-gen-spark-with-config": "morphir-elm gen -t Spark -o ./spark/open_reg_tech_us_lcr/src --custom-config spark.config.json && echo SPARK GENERATED INTO spark/open_reg_tech_us_lcr/src",
+    "test-spark": "cd spark && mill open_reg_tech_us_lcr.test",
     "test": "lobo  --framework=elm-test"
   },
   "devDependencies": {
     "lobo": "^1.0.0"
   },
   "dependencies": {
-    "morphir-elm": "^2.67.0"
+    "morphir-elm": "^2.69.0"
   },
   "files": [
     "morphir-ir.json"

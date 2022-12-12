@@ -1,0 +1,331 @@
+[
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "amount",
+                    "calculations"
+                ]
+            ],
+            [
+                "apply",
+                "note",
+                "4"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    "G-2-Q",
+                    100,
+                    800
+                ],
+                "expectedOutput": 715,
+                "description": "G-2-Q"
+            },
+            {
+                "inputs": [
+                    "A-0-1",
+                    100,
+                    800
+                ],
+                "expectedOutput": 800,
+                "description": "A-0-1"
+            },
+            {
+                "inputs": [
+                    "S-1-Q",
+                    100,
+                    800
+                ],
+                "expectedOutput": 700,
+                "description": "S-1-Q"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
+                    "assets"
+                ]
+            ],
+            [
+                "to",
+                "rule",
+                "balances"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    [
+                        {
+                            "currency": [
+                                "cAD"
+                            ],
+                            "converted": true,
+                            "reportingEntity": ".",
+                            "product": [
+                                "capacity"
+                            ],
+                            "subProduct": "not cash",
+                            "marketValue": 10000,
+                            "lendableValue": "200",
+                            "maturityBucket": 2,
+                            "forwardStartAmount": null,
+                            "forwardStartBucket": null,
+                            "collateralClass": "A-1-Q",
+                            "treasuryControl": true,
+                            "accountingDesignation": ".",
+                            "effectiveMaturityBucket": null,
+                            "encumbranceType": null,
+                            "internalCounterparty": null,
+                            "businessLine": "."
+                        },
+                        {
+                            "currency": [
+                                "aUD"
+                            ],
+                            "converted": true,
+                            "reportingEntity": ".",
+                            "product": [
+                                "unencumberedAssets"
+                            ],
+                            "subProduct": "not coin",
+                            "marketValue": 20000,
+                            "lendableValue": "20000",
+                            "maturityBucket": 13,
+                            "forwardStartAmount": null,
+                            "forwardStartBucket": null,
+                            "collateralClass": "S-6-Q",
+                            "treasuryControl": true,
+                            "accountingDesignation": ".",
+                            "effectiveMaturityBucket": null,
+                            "encumbranceType": null,
+                            "internalCounterparty": null,
+                            "businessLine": "."
+                        }
+                    ]
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "20(a)(1)",
+                        "amount": 10000
+                    },
+                    {
+                        "rule": "20(b)(1)",
+                        "amount": 20000
+                    }
+                ],
+                "description": "sample"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
+                    "other"
+                ]
+            ],
+            [
+                "rule",
+                "33",
+                "b"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": false,
+                        "reportingEntity": ".",
+                        "product": [
+                            "net30DayDerivativeReceivables"
+                        ],
+                        "maturityAmount": 20000,
+                        "maturityBucket": 2,
+                        "forwardStartAmount": null,
+                        "forwardStartBucket": null,
+                        "collateralClass": ".",
+                        "collateralValue": 111133,
+                        "treasuryControl": true,
+                        "counterparty": ".",
+                        "gSIB": null,
+                        "internal": ".",
+                        "internalCounterparty": null,
+                        "businessLine": "."
+                    }
+                ],
+                "expectedOutput": 20000,
+                "description": "match"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "outflows"
+                ],
+                [
+                    "deposits"
+                ]
+            ],
+            [
+                "rule",
+                "72",
+                "section",
+                "32",
+                "j",
+                "1",
+                "iv",
+                "amount"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": false,
+                        "reportingEntity": ".",
+                        "product": [
+                            "operationalAccountBalances"
+                        ],
+                        "counterparty": ".",
+                        "gSIB": ".",
+                        "maturityAmount": 800,
+                        "maturityBucket": 20,
+                        "maturityOptionality": null,
+                        "collateralClass": ".",
+                        "collateralValue": 1000,
+                        "insured": [
+                            "other"
+                        ],
+                        "trigger": ".",
+                        "rehypothecated": true,
+                        "businessLine": ".",
+                        "internal": ".",
+                        "internalCounterparty": null
+                    }
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "32(j)(1)(iv))",
+                        "amount": 800
+                    }
+                ],
+                "description": "Just 32(j)"
+            },
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": false,
+                        "reportingEntity": ".",
+                        "product": [
+                            "operationalAccountBalances"
+                        ],
+                        "counterparty": ".",
+                        "gSIB": ".",
+                        "maturityAmount": 8000,
+                        "maturityBucket": 20,
+                        "maturityOptionality": null,
+                        "collateralClass": ".",
+                        "collateralValue": 1000,
+                        "insured": [
+                            "other"
+                        ],
+                        "trigger": ".",
+                        "rehypothecated": true,
+                        "businessLine": ".",
+                        "internal": ".",
+                        "internalCounterparty": null
+                    }
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "32(h)",
+                        "amount": 7000
+                    },
+                    {
+                        "rule": "32(j)(1)(iv))",
+                        "amount": 8000
+                    }
+                ],
+                "description": "32(h)"
+            }
+        ]
+    ]
+]
