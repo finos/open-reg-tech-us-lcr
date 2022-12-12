@@ -32,4 +32,3 @@ src/main
 
 # Maven generated compiled scala will be ignored
 target
-/spark/open_reg_tech_us_lcr/src/
