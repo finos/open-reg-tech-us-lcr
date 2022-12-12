@@ -441,7 +441,7 @@ rule_72_section_32_j_1_iv_amount deposits =
         (Just collateralValue) ->
             if collateralValue < deposits.maturityAmount then
                 [ RuleBalance "32(h)" (deposits.maturityAmount - collateralValue)
-                -- , RuleBalance "32(j)(1)(iv))" deposits.maturityAmount
+                , RuleBalance "32(j)(1)(iv))" deposits.maturityAmount
                 ]
             else
                 [ RuleBalance "32(j)(1)(iv))" deposits.maturityAmount ]

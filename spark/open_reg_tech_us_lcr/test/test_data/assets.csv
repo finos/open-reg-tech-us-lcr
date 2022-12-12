@@ -1,5 +1,0 @@
-currency,converted,reportingEntity,product,subProduct,marketValue,lendableValue,maturityBucket,forwardStartAmount,forwardStartBucket,collateralClass,treasuryControl,accountingDesignation,effectiveMaturityBucket,encumbranceType,internalCounterparty,businessLine
-USD,true,LCR,UnencumberedAssets,,23.2,Valuable,3,,,Housing,false,None,,,,Trade
-USD,true,LCR,UnrestrictedReserveBalances,,3.0,Valuable,0,,,a_0_Q,true,None,,,,Trade
-EUR,true,LCR,UnrestrictedReserveBalances,,2.0,Valuable,0,,,a_0_Q,true,None,,,,Trade
-GBP,true,LCR,UnrestrictedReserveBalances,,1.0,Valuable,0,,,a_0_Q,true,None,,,,Trade
