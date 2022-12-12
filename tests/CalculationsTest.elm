@@ -58,5 +58,5 @@ endpoint : Test
 endpoint =
     test "endpoint" <|
         \_ ->
-            Calculations.endpoint Global_systemically_important_BHC_or_GSIB_depository_institution dataTables
+            Calculations.lcr Global_systemically_important_BHC_or_GSIB_depository_institution dataTables
                 |> Float.within (Absolute 0.000000001) 0.6
