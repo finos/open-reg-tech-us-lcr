@@ -3,53 +3,13 @@
 <img align="right" width="40%" src="https://github.com/finos/finos-landscape/blob/master/hosted_logos/open-reg-tech-us-lcr.svg">
 
 # FINOS Open Reg Tech - LCR
-
 Welcome to the Open Reg Tech implementation of the US Liquidity Coverage Ratio (LCR). The goal of the project is to establish the delivery and collaboration of regulations in code. 
 
-# Quick Start
-The LCR uses Morphir as its base technology. This version uses Elm as the main programming language with Morphir's Elm support.
-Morphir can be used to compile the project for execution and to generate interactive documentation.
+# Documentation
+[The Documentation](doc/README.md) Is a good place to read about the LCR regulation and how this project implements it.
 
-If you are new to Morphir, start with the [Morphir installation instructions](https://finos.github.io/morphir-elm/).
-Once Morphir is installed, you can use the following commands:
-
-### Build the LCR
-```
-morphir-elm make -f
-```
-
-### Browse the interactive documentation
-```
-morphir-elm develop -- follow the instructions or open [http://localhost:3000](http://localhost:3000) in your browser.
-```
-You can also view [the interactive pages of the latest](https://lcr-interactive.finos.org).
-
-
-# Interactive documentation with Docker
-You can also run using Docker, please [follow instructions](https://docs.docker.com/get-docker/) to install it locally, then run the following commands:
-
-```
-docker build . -t morphir-lcr
-docker run --name morphir-lcr-container -p 3000:3000 morphir-lcr:latest
-docker rm morphir-lcr-container
-```
-
-## Update ECS cluster
-- Access ECS Cluster on https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters and select the LCR cluster
-- Access the `Task Definitions` menu item and select the `lcr-interactive` task
-- Click on `Create new revision`
-- Scroll down and click on `Add container`
-  - container name: `lcr-morphir`
-  - image: `finos/lcr-interactive:main` (replace `main` with the name of the code branch)
-  - port mappings: `3000, tcp`
-  - Keep other values as they are and complete the form to add the container
-  - Remove the other container from the list
-  - Keep other values as they are and complete the form to add a new task definition revision
-- Select the LCR service and click on the Update button
-  - Update the task definition revision
-  - Keep other values as they are and complete the form to update the service
-- Access the `Tasks` tab of the cluster service
-- Keep only one Task running, remove all tasks with older task definitions
+In addition, FINOS runs a server with the [Latest Interactive LCR](https://lcr-interactive.finos.org/) to explore the 
+implementation for non-technical users.
 
 ## Tentative Roadmap
 
