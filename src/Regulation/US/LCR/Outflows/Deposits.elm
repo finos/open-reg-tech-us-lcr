@@ -16,6 +16,7 @@ module Regulation.US.LCR.Outflows.Deposits exposing (..)
 
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
+import Regulation.US.FR2052A.Fields.Counterparty as Counterparty
 import Regulation.US.FR2052A.Fields.Insured as Insured
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.LCR.Rule exposing (applyRule)
@@ -416,19 +417,18 @@ match_rule_72_section_32_j_1_iv deposits =
         && MaturityBucket.isLessThanOrEqual30Days deposits.maturityBucket
         -- Counterparty
         && List.member deposits.counterparty
-            ["Non-Financial Corporate"
-            , "PSE"
-            , "Other Supranational"
-            , "Pension Fund"
-            , "Bank"
-            , "Broker-Dealer"
-            , "Investment Company or Advisor"
-            , "Financial Market"
-            , "Utility"
-            , "Other Supervised Non-Bank Financial Entity"
-            , "Non-Regulated Fund"
-            , "Debt Issuing SPE"
-            , "Other"
+            [ Counterparty.Non_Financial_Corporate
+            , Counterparty.Public_Sector_Entity
+            , Counterparty.Other_Supranational
+            , Counterparty.Pension_Fund
+            , Counterparty.Bank
+            , Counterparty.Broker_Dealer
+            , Counterparty.Investment_Company_or_Advisor
+            , Counterparty.Financial_Market_Utility
+            , Counterparty.Other_Supervised_Non_Bank_Financial_Entity
+            , Counterparty.Non_Regulated_Fund
+            , Counterparty.Debt_Issuing_Special_Purpose_Entity
+            , Counterparty.Other
             ]
         -- Collateral Class: Level 2B HQLA
         && (deposits.collateralClass |> Maybe.map (\class -> CollateralClass.isHQLALevel2B class) |> Maybe.withDefault False)
