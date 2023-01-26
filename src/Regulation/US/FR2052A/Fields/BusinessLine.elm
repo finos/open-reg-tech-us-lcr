@@ -13,5 +13,11 @@
 
 module Regulation.US.FR2052A.Fields.BusinessLine exposing (..)
 
-
+{-|
+ This field is applicable to all tables except the Supplemental-LRM and Comments tables. U.S.
+ firms that are identified as Category I banking organizations are required to report this field.
+ Use this field to designate the business line responsible for or associated with all applicable
+ exposures. Coordinate with the supervisory team to determine the appropriate representative
+ values for this field.
+ -}
 type alias BusinessLine = String
