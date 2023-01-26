@@ -11,6 +11,9 @@ Welcome to the Open Reg Tech implementation of the US Liquidity Coverage Ratio (
 In addition, FINOS runs a server with the [Latest Interactive LCR](https://lcr-interactive.finos.org/) to explore the 
 implementation for non-technical users.
 
+## Status
+The current implementation is *almost* complete.  We've left a small portion incomplete so that we can finish the remainder as a community. This will provide experience and insight on the experience of the community collaborating on regulations.
+
 ## Tentative Roadmap
 
 1. Agree on the regulation (LCR)
