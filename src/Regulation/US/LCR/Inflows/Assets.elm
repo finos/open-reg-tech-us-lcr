@@ -66,7 +66,7 @@ apply_rules list =
                 , rule_1_section_20_c_1 asset
                 , rule_107_section_33_d_1 asset
                 ]
-                    |> List.filterMap identity
+                    |> List.filterMap (\a -> a)
                     |> List.sum
             )
         |> List.sum

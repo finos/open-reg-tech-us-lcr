@@ -216,18 +216,6 @@ net_day30_cumulative_maturity_outflow_amount data =
 
 ---------- Other
 
-
-{-| Helper function to accumulated steps of a sum across a list. This is used in calculating the maturity mismatch add-on.
--}
-accumulate : number -> List number -> List number
-accumulate starter list =
-    let
-        ( sum, acc ) =
-            List.foldl (\y ( x, xs ) -> ( x + y, (x + y) :: xs )) ( starter, [] ) list
-    in
-    List.reverse acc
-
-
 type BankCategory
     = Global_systemically_important_BHC_or_GSIB_depository_institution
     | Category_II_Board_regulated_institution
