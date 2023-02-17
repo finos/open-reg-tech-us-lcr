@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.finos</groupId>
-        <artifactId>finos</artifactId>
-        <version>4</version>
-    </parent>
+<!--    <parent>-->
+<!--        <groupId>org.finos</groupId>-->
+<!--        <artifactId>open-reg-tech-us-lcr</artifactId>-->
+<!--        <version>4</version>-->
+<!--    </parent>-->
 
     <groupId>org.finos.morphir</groupId>
     <artifactId>open-reg-tech-us-lcr-scala</artifactId>
@@ -31,10 +31,10 @@
         </license>
     </licenses>
 
-    <scm>
-        <developerConnection>scm:git:https://github.com/finos/open-reg-tech-us-lcr</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+<!--    <scm>-->
+<!--        <developerConnection>scm:git:https://github.com/finos/open-reg-tech-us-lcr</developerConnection>-->
+<!--        <tag>HEAD</tag>-->
+<!--    </scm>-->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,5 +1,4 @@
 {
   "name": "Regulation",
   "sourceDirectory": "src"
-  ,"exposedModules": ["US.LCR.Calculations"]
 }
