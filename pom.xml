@@ -53,7 +53,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
-        <scalaSrcDir>${project.basedir}/generated/scala/scr</scalaSrcDir>
+        <scalaSrcDir>${project.basedir}/generated/scala/src</scalaSrcDir>
         <scalaTestDir>${project.basedir}/generated/scala/test</scalaTestDir>
     </properties>
 
