@@ -35,10 +35,10 @@
         </developer>
     </developers>
 
-    <scm>
-        <developerConnection>scm:git:https://github.com/finos/open-reg-tech-us-lcr</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+    <!--    <scm>-->
+    <!--        <developerConnection>scm:git:https://github.com/finos/open-reg-tech-us-lcr</developerConnection>-->
+    <!--        <tag>HEAD</tag>-->
+    <!--    </scm>-->
 
     <distributionManagement>
         <snapshotRepository>
@@ -53,7 +53,7 @@
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <spark.version>3.2.1</spark.version>
-        <java.version>11</java.version>
+        <java.version>8</java.version>
         <scalaSrcDir>${project.basedir}/generated/scala/src</scalaSrcDir>
         <scalaTestDir>${project.basedir}/generated/scala/test</scalaTestDir>
     </properties>
