@@ -4,19 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-<!--    <parent>-->
-<!--        <groupId>org.finos</groupId>-->
-<!--        <artifactId>open-reg-tech-us-lcr</artifactId>-->
-<!--        <version>4</version>-->
-<!--    </parent>-->
-
     <groupId>org.finos.morphir</groupId>
     <artifactId>open-reg-tech-us-lcr-scala</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>open-reg-tech-us-lcr-scala</name>
     <description>LCR calculations as Morphir executable on Scala</description>
+    <url>https://github.com/finos/open-reg-tech-us-lcr</url>
     <inceptionYear>2022</inceptionYear>
 
     <organization>
@@ -26,23 +21,40 @@
 
     <licenses>
         <license>
-            <name>Apache-2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <name>The Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
-<!--    <scm>-->
-<!--        <developerConnection>scm:git:https://github.com/finos/open-reg-tech-us-lcr</developerConnection>-->
-<!--        <tag>HEAD</tag>-->
-<!--    </scm>-->
+    <developers>
+        <developer>
+            <name>Nwokafor Choongsaeng</name>
+            <email>frankchoongsaeng@gmail.com</email>
+            <organization>Morphir</organization>
+            <organizationUrl>https://morphir.finos.org</organizationUrl>
+        </developer>
+    </developers>
 
+    <!--    <scm>-->
+    <!--        <developerConnection>scm:git:https://github.com/finos/open-reg-tech-us-lcr</developerConnection>-->
+    <!--        <tag>HEAD</tag>-->
+    <!--    </scm>-->
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!-- using Scala 2.11.12 to match morphir scala dependency version -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.12.14</scala.version>
-        <scala.binary.version>2.12</scala.binary.version>
+        <scala.version>2.11.12</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <spark.version>3.2.1</spark.version>
-        <java.version>11</java.version>
-        <scalaSrcDir>${project.basedir}/generated/scala/scr</scalaSrcDir>
+        <java.version>8</java.version>
+        <scalaSrcDir>${project.basedir}/generated/scala/src</scalaSrcDir>
         <scalaTestDir>${project.basedir}/generated/scala/test</scalaTestDir>
     </properties>
 
@@ -60,10 +72,20 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.scalactic</groupId>
+            <artifactId>scalactic_${scala.binary.version}</artifactId>
+            <version>3.2.15</version>
+        </dependency>
+        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.binary.version}</artifactId>
-            <version>3.3.0-SNAP3</version>
+            <version>3.2.15</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.morphir</groupId>
+            <artifactId>morphir-sdk-core_2.11</artifactId>
+            <version>0.11.0</version>
         </dependency>
     </dependencies>
 
@@ -106,7 +128,6 @@
             <!-- ************************ -->
 
             <!-- Morphir compiler -->
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -127,38 +148,17 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>morphir-make</id>
+                        <id>npm-build</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>npx</executable>
+                            <executable>npm</executable>
                             <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
-                                <argument>morphir-elm</argument>
-                                <argument>make</argument>
-                                <argument>-f</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>morphir-generate-scala</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npx</executable>
-                            <workingDirectory>${project.basedir}</workingDirectory>
-                            <arguments>
-                                <argument>morphir-elm</argument>
-                                <argument>gen</argument>
-                                <argument>-c</argument>
-                                <argument>-t</argument>
-                                <argument>Scala</argument>
-                                <argument>-o</argument>
-                                <argument>${scalaSrcDir}</argument>
+                                <argument>run</argument>
+                                <argument>build</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -166,7 +166,6 @@
             </plugin>
 
             <!-- Java compiler -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -178,7 +177,6 @@
             </plugin>
 
             <!-- Scala compiler -->
-
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
@@ -198,36 +196,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- ************************ -->
-            <!-- RELEASE LOGIC -->
-            <!-- ************************ -->
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
 
         </plugins>
@@ -279,14 +247,74 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>morphir-elm</executable>
+                                    <executable>npm</executable>
                                     <workingDirectory>${project.basedir}</workingDirectory>
                                     <arguments>
-                                        <argument>test</argument>
+                                        <argument>run</argument>
+                                        <argument>morphir-test</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <!-- ************************ -->
+        <!-- RELEASE LOGIC -->
+        <!-- ************************ -->
+
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+
+                    <!-- GENERATING SOURCES -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+
+                    <!-- SIGNING COMPONENTS -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Publishing -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

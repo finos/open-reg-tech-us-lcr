@@ -7,17 +7,19 @@
     "lcr"
   ],
   "scripts": {
+    "build": "npm run morphir-make && npm run morphir-gen-scala",
     "morphir-make": "morphir-elm make -f",
-    "morphir-make-gen-scala": "morphir-elm gen -t Scala -c -o ./generated/scala/src",
+    "morphir-gen-scala": "morphir scala-gen -o ./generated/scala/src",
     "morphir-gen-spark": "morphir-elm gen -t Spark -o ./generated/spark/src",
     "morphir-gen-spark-with-config": "morphir-elm gen -t Spark -o ./spark/open_reg_tech_us_lcr/src --custom-config spark.config.json",
+    "morphir-test": "morphir-elm test",
     "test": "lobo  --framework=elm-test"
   },
   "devDependencies": {
     "lobo": "^1.0.0"
   },
   "dependencies": {
-    "morphir-elm": "^2.75.1"
+    "morphir-elm": "^2.75.2"
   },
   "files": [
     "morphir-ir.json"
