@@ -11,6 +11,7 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.LCR.MaturityBucket exposing (..)
 
 
@@ -23,11 +24,15 @@ type MaturityBucket
     | Perpetual
 
 
-isLessThanOrEqual30Days : MaturityBucket -> Bool
-isLessThanOrEqual30Days maturityBucket =
+type alias FromDate =
+    Int
+
+
+isLessThanOrEqual30Days : Int -> MaturityBucket -> Bool
+isLessThanOrEqual30Days fromDate maturityBucket =
     case maturityBucket of
         Day n ->
-            n <= 30
+            n - fromDate <= 30
 
         _ ->
             False

@@ -22,6 +22,7 @@ import Regulation.US.LCR.Inflows.Assets as Assets
 import Regulation.US.LCR.Inflows.Other as InOther
 import Regulation.US.LCR.Inflows.Secured as InSecured
 import Regulation.US.LCR.Inflows.Unsecured as Unsecured
+import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Outflows.Deposits as Deposits
 import Regulation.US.LCR.Outflows.Other as OutOther
 import Regulation.US.LCR.Outflows.Secured as OutSecured
@@ -57,13 +58,13 @@ type alias Flow =
 
 {-| The list of all rules pertaining to inflows.
 -}
-applyInflowRules : DataTables.Inflows -> List RuleBalance
-applyInflowRules inflows =
+applyInflowRules : FromDate -> DataTables.Inflows -> List RuleBalance
+applyInflowRules fromDate inflows =
     List.concat
         [ --List.concatMap (\a -> Assets.applyRules a) inflows.assets
           --,
-          List.concatMap (\u -> Unsecured.applyRules u) inflows.unsecured
-        , List.concatMap (\s -> InSecured.applyRules s) inflows.secured
+          List.concatMap (\u -> Unsecured.applyRules fromDate u) inflows.unsecured
+        , List.concatMap (\s -> InSecured.applyRules fromDate s) inflows.secured
 
         --, List.concatMap (\o -> InOther.applyRules o) inflows.other
         ]
@@ -71,13 +72,13 @@ applyInflowRules inflows =
 
 {-| The list of all rules pertaining to outflows.
 -}
-applyOutflowRules : DataTables.Outflows -> List RuleBalance
-applyOutflowRules outflows =
+applyOutflowRules : FromDate -> DataTables.Outflows -> List RuleBalance
+applyOutflowRules fromDate outflows =
     List.concat
-        [ List.concatMap (\d -> Deposits.applyRules d) outflows.deposits
-        , List.concatMap (\s -> OutSecured.applyRules s) outflows.secured
-        , List.concatMap (\w -> Wholesales.applyRules w) outflows.wholesale
-        , List.concatMap (\o -> OutOther.applyRules o) outflows.other
+        [ List.concatMap (\d -> Deposits.applyRules fromDate d) outflows.deposits
+        , List.concatMap (\s -> OutSecured.applyRules fromDate s) outflows.secured
+        , List.concatMap (\w -> Wholesales.applyRules fromDate w) outflows.wholesale
+        , List.concatMap (\o -> OutOther.applyRules fromDate o) outflows.other
         ]
 
 

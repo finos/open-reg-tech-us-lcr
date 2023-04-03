@@ -7,9 +7,8 @@ import Regulation.US.LCR.Inflows.Assets as Assets
 import Regulation.US.LCR.Inflows.Other as InflowOther
 import Regulation.US.LCR.Inflows.Secured as InflowSecured
 import Regulation.US.LCR.Inflows.Unsecured as Unsecured
+import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Outflows.Deposits as Deposits
-import Regulation.US.LCR.Outflows.Other as OutflowOther
-import Regulation.US.LCR.Outflows.Secured as OutflowSecured
 import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 
@@ -17,27 +16,27 @@ import Regulation.US.LCR.Rules exposing (RuleBalance)
 -- TODO Apply respective rule rates
 
 
-inflow_values : DataTables.Inflows -> Balance
-inflow_values inflows =
+inflow_values : FromDate -> DataTables.Inflows -> Balance
+inflow_values fromDate inflows =
     (List.concat
         [ --Assets.toRuleBalances inflows.assets
           --,
           --  InflowOther.toRuleBalances inflows.other
           --,
-          InflowSecured.toRuleBalances inflows.secured
-        , Unsecured.toRuleBalances inflows.unsecured
+          InflowSecured.toRuleBalances fromDate inflows.secured
+        , Unsecured.toRuleBalances fromDate inflows.unsecured
         ]
         |> aggregateRuleBalances
         |> sum
     )
-        + Assets.apply_rules inflows.assets
-        + InflowOther.apply_rules inflows.other
+        + Assets.apply_rules fromDate inflows.assets
+        + InflowOther.apply_rules fromDate inflows.other
 
 
-outflow_values : DataTables.Outflows -> Balance
-outflow_values outflows =
+outflow_values : FromDate -> DataTables.Outflows -> Balance
+outflow_values fromDate outflows =
     List.concat
-        [ Deposits.toRuleBalances outflows.deposits
+        [ Deposits.toRuleBalances fromDate outflows.deposits
 
         --, OutflowOther.toRuleBalances outflows.other
         --, OutflowSecured.toRuleBalances outflows.secured

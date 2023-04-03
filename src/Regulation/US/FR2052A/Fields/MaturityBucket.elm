@@ -19,30 +19,41 @@ module Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
 --    | Day Int
 
 
-type alias MaturityBucket =
-    Int
+type MaturityBucket
+    = Open
+    | Day Int
+    | DayRange Int Int
+    | YearRange Int Int
+    | YearAbove Int
+    | Perpetual
 
 
-open : MaturityBucket
-open =
-    0
+isLessThanOrEqual30Days : Int -> MaturityBucket -> Bool
+isLessThanOrEqual30Days fromDate maturityBucket =
+    case maturityBucket of
+        Day n ->
+            n - fromDate <= 30
+
+        _ ->
+            False
+
+
+isGreaterThan30Days : Int -> MaturityBucket -> Bool
+isGreaterThan30Days fromDate maturityBucket =
+    case maturityBucket of
+        Day n ->
+            n - fromDate > 30
+
+        _ ->
+            True
 
 
 isOpen : MaturityBucket -> Bool
 isOpen maturityBucket =
-    maturityBucket == open
+    maturityBucket == Open
 
 
-isGreaterThan30Days : MaturityBucket -> Bool
-isGreaterThan30Days maturityBucket =
-    maturityBucket > 30
 
-
-isLessThanOrEqual30Days : MaturityBucket -> Bool
-isLessThanOrEqual30Days maturityBucket =
-    maturityBucket > 0 && maturityBucket <= 30
-
-
-fromInt : Int -> MaturityBucket
-fromInt days =
-    days
+--fromInt : Int -> MaturityBucket
+--fromInt days =
+--    days

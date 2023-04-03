@@ -19,14 +19,14 @@ import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
 import Regulation.US.FR2052A.Fields.SubProduct exposing (currency_and_coin)
+import Regulation.US.LCR.MaturityBucket exposing (FromDate, MaturityBucket)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
-
 
 
 {-| Given a list of Assets, applies the applicable rule for each assets along with the relevant amount
 -}
-toRuleBalances : List Assets -> List RuleBalance
-toRuleBalances assetsList =
+toRuleBalances : FromDate -> List Assets -> List RuleBalance
+toRuleBalances fromDate assetsList =
     -- temp: remove after demo
     assetsList
         |> List.map
@@ -35,16 +35,16 @@ toRuleBalances assetsList =
                     if rule_1_section_20_a_1_C asset /= Nothing then
                         "20(a)(1)-C"
 
-                    else if rule_1_section_20_a_1 asset  /= Nothing then
+                    else if rule_1_section_20_a_1 asset /= Nothing then
                         "20(a)(1)"
 
-                    else if rule_1_section_20_b_1 asset  /= Nothing then
+                    else if rule_1_section_20_b_1 asset /= Nothing then
                         "20(b)(1)"
 
                     else if rule_1_section_20_c_1 asset /= Nothing then
                         "20(c)(1)"
 
-                    else if rule_107_section_33_d_1 asset /= Nothing then
+                    else if rule_107_section_33_d_1 fromDate asset /= Nothing then
                         "33(d)(1)"
 
                     else
@@ -55,8 +55,9 @@ toRuleBalances assetsList =
             )
         |> List.filter (\rb -> rb.rule /= "")
 
-apply_rules : List Assets -> Float
-apply_rules list =
+
+apply_rules : FromDate -> List Assets -> Float
+apply_rules fromDate list =
     list
         |> List.map
             (\asset ->
@@ -64,7 +65,7 @@ apply_rules list =
                 , rule_1_section_20_a_1 asset
                 , rule_1_section_20_b_1 asset
                 , rule_1_section_20_c_1 asset
-                , rule_107_section_33_d_1 asset
+                , rule_107_section_33_d_1 fromDate asset
                 ]
                     |> List.filterMap (\a -> a)
                     |> List.sum
@@ -180,12 +181,12 @@ rule_1_section_20_c_1 flow =
 
 {-| (107) Financial and Central Bank Cash Inflow Amount (§.33(d)(1))
 -}
-rule_107_section_33_d_1 : Assets -> Maybe Float
-rule_107_section_33_d_1 flow =
+rule_107_section_33_d_1 : FromDate -> Assets -> Maybe Float
+rule_107_section_33_d_1 fromDate flow =
     if
         List.member flow.product [ i_A_3 ]
             -- Maturity Bucket: <= 30 calendar days but not Open
-            && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && flow.maturityBucket /= MaturityBucket.open)
+            && (MaturityBucket.isLessThanOrEqual30Days fromDate flow.maturityBucket && flow.maturityBucket /= MaturityBucket.Open)
             ---- Collateral Class: A-0-Q
             && CollateralClass.isCash flow.collateralClass
             -- Forward Start Amount: NULL
