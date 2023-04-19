@@ -5,9 +5,15 @@ import regulation.us.fr2052a.datatables.outflows
 import regulation.us.fr2052a.fields.CollateralClass.CollateralClass
 import regulation.us.fr2052a.fields.CollateralValue.CollateralValue
 import regulation.us.fr2052a.fields.Converted.Converted
+import regulation.us.fr2052a.fields.Counterparty.Counterparty
 import regulation.us.fr2052a.fields.Currency.Currency
+import regulation.us.fr2052a.fields.EffectiveMaturityBucket.EffectiveMaturityBucket
+import regulation.us.fr2052a.fields.ForwardStartAmount.ForwardStartAmount
+import regulation.us.fr2052a.fields.ForwardStartBucket.ForwardStartBucket
 import regulation.us.fr2052a.fields.MaturityAmount.MaturityAmount
 import regulation.us.fr2052a.fields.MaturityBucket.MaturityBucket
+import regulation.us.fr2052a.fields.TreasuryControl.TreasuryControl
+import regulation.us.fr2052a.fields.Unencumbered.Unencumbered
 import regulation.us.fr2052a.fields.{CollateralClass, SubProduct}
 import regulation.us.lcr.Calculations
 
@@ -38,8 +44,12 @@ object SimpleApp {
       , toWholesale(outflows.Wholesale.FreeCredits, 20, MaturityBucket.Day(10), None, None, None)
     )
 
+    val inSecured = List(
+      toSecuredIn(inflows.Secured.Product.ReverseRepo, None, None, None, CollateralClass.a1Q, 4000, true, true)
+    )
+
     val dataTables = DataTables.DataTables(
-      DataTables.Inflows(assets, Nil, Nil, othersIn)
+      DataTables.Inflows(assets, Nil, inSecured, othersIn)
       , DataTables.Outflows(Nil, wholesale, Nil, Nil)
       , DataTables.Supplemental(Nil, Nil, Nil, Nil, Nil)
     )
@@ -53,14 +63,18 @@ object SimpleApp {
 //    println(" ------------ ")
 //    println(regulation.us.lcr.inflows.Assets.applyRules(dataTables.inflows.assets));
 //    println(regulation.us.lcr.inflows.Assets.toRuleBalances(dataTables.inflows.assets));
-    println("Other.toRuleBalances " + regulation.us.lcr.inflows.Other.toRuleBalances(t0)(dataTables.inflows.other))
-
     println(" ------------ ")
+    println("Other.toRuleBalances " + regulation.us.lcr.inflows.Other.toRuleBalances(t0)(dataTables.inflows.other))
+    println("Secured.toRuleBalances " + regulation.us.lcr.inflows.Secured.toRuleBalances(t0)(dataTables.inflows.secured))
     println("Wholesale.toRuleBalances " + regulation.us.lcr.outflows.Wholesale.toRuleBalances(t0)(dataTables.outflows.wholesale))
 
     println(" ------------ ")
     println("AggregatedRuleBalances.inflowValues " + regulation.us.lcr.AggregatedRuleBalances.inflowValues(t0)(dataTables.inflows))
     println("AggregatedRuleBalances.outflowValues " + regulation.us.lcr.AggregatedRuleBalances.outflowValues(t0)(dataTables.outflows))
+
+    println(" ------------ ")
+    println("Flows.applyInflowRules " + regulation.us.lcr.Flows.applyInflowRules(t0)(dataTables.inflows))
+    println("Flows.applyOutflowRules " + regulation.us.lcr.Flows.applyOutflowRules(t0)(dataTables.outflows))
 
     println(" ------------ ")
     val bankCategory = Calculations.GlobalSystemicallyImportantBHCOrGSIBDepositoryInstitution
@@ -158,5 +172,41 @@ object SimpleApp {
       None,
       None,
       "BusinessLine"
+    )
+
+  def toSecuredIn(
+                   product : inflows.Secured.Product
+                   , effectiveMaturityBucket : Option [EffectiveMaturityBucket]
+                   , forwardStartAmount : Option [ForwardStartAmount]
+                   , forwardStartBucket : Option [ForwardStartBucket]
+                   , collateralClass : CollateralClass
+                   , collateralValue : CollateralValue
+                   , unencumbered : Unencumbered
+                   , treasuryControl : TreasuryControl
+                 ) =
+    inflows.Secured.Secured(
+      Currency.USD
+      , true
+      , "ReportingEntity"
+      , product
+      , None
+      , 100
+      , MaturityBucket.Open
+      , None
+      , effectiveMaturityBucket
+      , None
+      , forwardStartAmount
+      , forwardStartBucket
+      , collateralClass
+      , collateralValue
+      , unencumbered
+      , treasuryControl
+      , "Internal"
+      , None
+      , None
+      , "BusinessLine"
+      , "Settlement"
+      , Counterparty.CentralBank
+      , None
     )
 }

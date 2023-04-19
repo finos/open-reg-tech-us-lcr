@@ -32,30 +32,6 @@ import Regulation.US.LCR.Supplemental.DerivativesCollateral as DerivativesCollat
 import Regulation.US.LCR.Supplemental.LiquidityRiskMeasurement as LiquidityRiskMeasurement
 
 
-
---type Input_20_a_1
---    = Assets (List Assets)
---    | DerivativesCollateral (List DerivativesCollateral)
---
---
---rule_20_a_1 : Input_20_a_1 -> Float
---rule_20_a_1 input =
---    case input of
---        Assets assets ->
---            assets
---                |> List.filterMap Assets.rule_20_a_1
---                |> List.sum
---
---        DerivativesCollateral derivatives ->
---            derivatives
---                |> List.filterMap DerivativesCollateral.rule_20_a_1
---                |> List.sum
-
-
-type alias Flow =
-    { label : String, value : Float }
-
-
 {-| The list of all rules pertaining to inflows.
 -}
 applyInflowRules : FromDate -> DataTables.Inflows -> List RuleBalance
