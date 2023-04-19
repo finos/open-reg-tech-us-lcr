@@ -59,7 +59,7 @@ level_1_HQLA_additive_values fromDate data =
                     [ "20(a)(1)"
                     , "20(b)(1)"
                     , "20(c)(1)"
-                    , "20(a)(1)C"
+                    , "20(a)(1)-C"
                     ]
     in
     inflow_amount + supplemental_amount
@@ -425,4 +425,4 @@ asset_exchange_unwind_collateral_values_with_level_2B_collateral_class : FromDat
 asset_exchange_unwind_collateral_values_with_level_2B_collateral_class fromDate data =
     Flows.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
-            [ "21(c)(todo)" ]
+            [ "21(c)(1)" ]

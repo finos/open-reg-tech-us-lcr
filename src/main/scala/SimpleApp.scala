@@ -1,10 +1,20 @@
 import regulation.us.fr2052a.DataTables
 import regulation.us.fr2052a.datatables.inflows
+import regulation.us.fr2052a.datatables.inflows.Assets
 import regulation.us.fr2052a.datatables.outflows
+import regulation.us.fr2052a.fields.CollateralClass.CollateralClass
+import regulation.us.fr2052a.fields.CollateralValue.CollateralValue
+import regulation.us.fr2052a.fields.Converted.Converted
+import regulation.us.fr2052a.fields.Currency.Currency
+import regulation.us.fr2052a.fields.MaturityAmount.MaturityAmount
+import regulation.us.fr2052a.fields.MaturityBucket.MaturityBucket
+import regulation.us.fr2052a.fields.{CollateralClass, SubProduct}
 import regulation.us.lcr.Calculations
+
 
 object SimpleApp {
   def main(args: Array[String]) {
+    val t0 = 0
 
     val data = Seq(
       ("UnrestrictedReserveBalances", "not Currency and Coin", 0, "a_0_Q", null, null, null, true, 1000000)
@@ -14,17 +24,79 @@ object SimpleApp {
       , ("UnrestrictedReserveBalances", "Currency and Coin", 0, "a_5_Q", null, null, null, true, 200000)
     )
 
-    val assets = inflows.Assets.Assets(regulation.us.fr2052a.fields.Currency.Currency.USD,
-      true,
+    val assets = List(
+      toAssets(Currency.USD, true, inflows.Assets.Product.UnrestrictedReserveBalances, Some(SubProduct.level1), 1, MaturityBucket.Open, CollateralClass.a0Q)
+      , toAssets(Currency.USD, true, inflows.Assets.Product.Capacity, Some(SubProduct.level2A), 10, MaturityBucket.Open, CollateralClass.e1Q)
+    )
+
+    val othersIn = List(
+      toOtherIn(Currency.USD, true, inflows.Other.Product.Net30DayDerivativeReceivables, 100, MaturityBucket.Open, CollateralClass.a1Q, 100)
+    )
+
+    val wholesale = List(
+      toWholesale(outflows.Wholesale.Product.AssetBackedCommercialPaperSingleSeller, 2, MaturityBucket.Open, Some(CollateralClass.a0Q), None, None)
+      , toWholesale(outflows.Wholesale.FreeCredits, 20, MaturityBucket.Day(10), None, None, None)
+    )
+
+    val dataTables = DataTables.DataTables(
+      DataTables.Inflows(assets, Nil, Nil, othersIn)
+      , DataTables.Outflows(Nil, wholesale, Nil, Nil)
+      , DataTables.Supplemental(Nil, Nil, Nil, Nil, Nil)
+    )
+
+
+//    println(regulation.us.lcr.inflows.Assets.rule1Section20A1(assets(0)));
+//    println(regulation.us.lcr.inflows.Assets.rule1Section20A1C(assets(0)));
+//    println(regulation.us.lcr.inflows.Assets.rule1Section20B1(assets(0)));
+//    println(regulation.us.lcr.inflows.Assets.rule1Section20C1(assets(1)));
+//    println(regulation.us.lcr.inflows.Assets.rule107Section33D1(assets(0)));
+//    println(" ------------ ")
+//    println(regulation.us.lcr.inflows.Assets.applyRules(dataTables.inflows.assets));
+//    println(regulation.us.lcr.inflows.Assets.toRuleBalances(dataTables.inflows.assets));
+    println("Other.toRuleBalances " + regulation.us.lcr.inflows.Other.toRuleBalances(t0)(dataTables.inflows.other))
+
+    println(" ------------ ")
+    println("Wholesale.toRuleBalances " + regulation.us.lcr.outflows.Wholesale.toRuleBalances(t0)(dataTables.outflows.wholesale))
+
+    println(" ------------ ")
+    println("AggregatedRuleBalances.inflowValues " + regulation.us.lcr.AggregatedRuleBalances.inflowValues(t0)(dataTables.inflows))
+    println("AggregatedRuleBalances.outflowValues " + regulation.us.lcr.AggregatedRuleBalances.outflowValues(t0)(dataTables.outflows))
+
+    println(" ------------ ")
+    val bankCategory = Calculations.GlobalSystemicallyImportantBHCOrGSIBDepositoryInstitution
+    println("HQLA Amount: " + Calculations.hqlaAmount(dataTables))
+    println("Total Net Cash Outflows: " + Calculations.totalNetCashOutflows(dataTables)(bankCategory))
+    println("Liquidity Coverage Ratio: " + Calculations.lcr(bankCategory)(dataTables))
+    println(" ------------ ")
+
+    //    println("   ++++++++++++++++++ ")
+    //    val result = SparkJobs.toRuleBalances(df)
+    ////    result.foreach(row => println(row.get(0) + " -> " + row.get(1)))
+    //    result.show()
+    //    println("   ++++++++++++++++++ ")
+    //
+    //    spark.stop()
+  }
+
+  def toAssets(
+                currency: regulation.us.fr2052a.fields.Currency.Currency,
+                converted: regulation.us.fr2052a.fields.Converted.Converted,
+                product: inflows.Assets.Product,
+                subProduct: morphir.sdk.Maybe.Maybe[regulation.us.fr2052a.fields.SubProduct.SubProduct],
+                marketValue: regulation.us.fr2052a.fields.MarketValue.MarketValue,
+                maturityBucket: regulation.us.fr2052a.fields.MaturityBucket.MaturityBucket,
+                collateralClass: regulation.us.fr2052a.fields.CollateralClass.CollateralClass
+              ): Assets.Assets =
+    inflows.Assets.Assets(currency, converted,
       "ReportingEntity",
-      regulation.us.fr2052a.datatables.inflows.Assets.Product.UnrestrictedReserveBalances,
-      Some(regulation.us.fr2052a.fields.SubProduct.currencyAndCoin + " not"),
-      1000000,
+      product,
+      subProduct,
+      marketValue,
       "one",
-      regulation.us.fr2052a.fields.MaturityBucket.open,
+      maturityBucket,
       None,
       None,
-      regulation.us.fr2052a.fields.CollateralClass.a0Q,
+      collateralClass,
       true,
       "AccountingDesignation",
       None,
@@ -33,33 +105,58 @@ object SimpleApp {
       "BusinessLine"
     )
 
-    val dataTables = DataTables.DataTables(
-      DataTables.Inflows(List(assets), Nil, Nil, Nil)
-      , DataTables.Outflows(Nil, Nil, Nil, Nil)
-      , DataTables.Supplemental(Nil, Nil, Nil, Nil, Nil)
+  def toOtherIn(
+                 currency: Currency
+                 , converted: Converted
+                 , product: inflows.Other.Product
+                 , maturityAmount: MaturityAmount
+                 , maturityBucket: MaturityBucket
+                 , collateralClass: CollateralClass
+                 , collateralValue: CollateralValue) =
+    inflows.Other.Other(
+      currency
+      , converted
+      , "ReportingEntity"
+      , product
+      , maturityAmount
+      , maturityBucket
+      , None
+      , None
+      , Some(collateralClass)
+      , Some(collateralValue)
+      , true
+      , None
+      , None
+      , "Internal"
+      , None
+      , "BusinessLine"
     )
 
-
-    println(regulation.us.lcr.inflows.Assets.rule1Section20A1(assets));
-    println(regulation.us.lcr.inflows.Assets.rule1Section20A1C(assets));
-    println(regulation.us.lcr.inflows.Assets.rule1Section20B1(assets));
-    println(regulation.us.lcr.inflows.Assets.rule1Section20C1(assets));
-    println(regulation.us.lcr.inflows.Assets.rule107Section33D1(assets));
-
-    println (" ------------ ")
-    val bankCategory = Calculations.GlobalSystemicallyImportantBHCOrGSIBDepositoryInstitution
-    println(Calculations.hqlaAmount(dataTables));
-    println(Calculations.totalNetCashOutflows(dataTables)(bankCategory));
-    val lcr = Calculations.lcr(bankCategory)(dataTables)
-    println("Liquidity Coverage Ratio: " + lcr)
-    println (" ------------ ")
-
-//    println("   ++++++++++++++++++ ")
-//    val result = SparkJobs.toRuleBalances(df)
-////    result.foreach(row => println(row.get(0) + " -> " + row.get(1)))
-//    result.show()
-//    println("   ++++++++++++++++++ ")
-//
-//    spark.stop()
-  }
+  def toWholesale(
+                   product: regulation.us.fr2052a.datatables.outflows.Wholesale.Product,
+                   maturityAmount: regulation.us.fr2052a.fields.MaturityAmount.MaturityAmount,
+                   maturityBucket: regulation.us.fr2052a.fields.MaturityBucket.MaturityBucket,
+                   collateralClass: morphir.sdk.Maybe.Maybe[regulation.us.fr2052a.fields.CollateralClass.CollateralClass],
+                   forwardStartAmount: morphir.sdk.Maybe.Maybe[regulation.us.fr2052a.fields.ForwardStartAmount.ForwardStartAmount],
+                   forwardStartBucket: morphir.sdk.Maybe.Maybe[regulation.us.fr2052a.fields.ForwardStartBucket.ForwardStartBucket]
+                 ) =
+    outflows.Wholesale.Wholesale(
+      Currency.USD,
+      true,
+      "ReportingEntity",
+      product,
+      None,
+      None,
+      maturityAmount: regulation.us.fr2052a.fields.MaturityAmount.MaturityAmount,
+      maturityBucket: regulation.us.fr2052a.fields.MaturityBucket.MaturityBucket,
+      None,
+      collateralClass,
+      None,
+      forwardStartAmount,
+      forwardStartBucket,
+      "Internal",
+      None,
+      None,
+      "BusinessLine"
+    )
 }

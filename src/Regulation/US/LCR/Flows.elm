@@ -61,12 +61,10 @@ type alias Flow =
 applyInflowRules : FromDate -> DataTables.Inflows -> List RuleBalance
 applyInflowRules fromDate inflows =
     List.concat
-        [ --List.concatMap (\a -> Assets.applyRules a) inflows.assets
-          --,
-          List.concatMap (\u -> Unsecured.applyRules fromDate u) inflows.unsecured
-        , List.concatMap (\s -> InSecured.applyRules fromDate s) inflows.secured
-
-        --, List.concatMap (\o -> InOther.applyRules o) inflows.other
+        [ List.concatMap (\a -> Assets.toRuleBalances fromDate a) [ inflows.assets ]
+        , List.concatMap (\u -> Unsecured.toRuleBalances fromDate u) [ inflows.unsecured ]
+        , List.concatMap (\s -> InSecured.toRuleBalances fromDate s) [ inflows.secured ]
+        , List.concatMap (\o -> InOther.toRuleBalances fromDate o) [ inflows.other ]
         ]
 
 
@@ -77,7 +75,7 @@ applyOutflowRules fromDate outflows =
     List.concat
         [ List.concatMap (\d -> Deposits.applyRules fromDate d) outflows.deposits
         , List.concatMap (\s -> OutSecured.applyRules fromDate s) outflows.secured
-        , List.concatMap (\w -> Wholesales.applyRules fromDate w) outflows.wholesale
+        , List.concatMap (\w -> Wholesales.toRuleBalances fromDate w) [ outflows.wholesale ]
         , List.concatMap (\o -> OutOther.applyRules fromDate o) outflows.other
         ]
 
