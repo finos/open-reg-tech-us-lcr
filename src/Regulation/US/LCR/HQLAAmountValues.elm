@@ -7,8 +7,8 @@ import Regulation.US.FR2052A.DataTables.Inflows.Secured as Inflows
 import Regulation.US.FR2052A.DataTables.Supplemental.DerivativesCollateral as Supplemental exposing (DerivativesCollateral)
 import Regulation.US.FR2052A.DataTables.Supplemental.LiquidityRiskMeasurement exposing (LiquidityRiskMeasurement)
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct exposing (SubProduct, isSubProduct)
+import Regulation.US.LCR.AggregatedRuleBalances as Agg
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
-import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.Inflows.Assets as Assets
 import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rules as Rules
@@ -42,7 +42,7 @@ level_1_HQLA_additive_values fromDate data =
 
         inflow_amount : Balance
         inflow_amount =
-            Flows.applyInflowRules fromDate level_1_inflows
+            Agg.applyInflowRules fromDate level_1_inflows
                 |> Rules.matchAndSum
                     [ "33(c)"
                     , "33(d)(1)"
@@ -54,7 +54,7 @@ level_1_HQLA_additive_values fromDate data =
 
         supplemental_amount : Balance
         supplemental_amount =
-            Flows.applySupplementalRules level_1_supplementals
+            Agg.applySupplementalRules level_1_supplementals
                 |> Rules.matchAndSum
                     [ "20(a)(1)"
                     , "20(b)(1)"
@@ -93,7 +93,7 @@ level_2A_HQLA_additive_values fromDate data =
 
         inflow_amount : Balance
         inflow_amount =
-            Flows.applyInflowRules fromDate level_2A_inflows
+            Agg.applyInflowRules fromDate level_2A_inflows
                 |> Rules.matchAndSum
                     [ "33(c)"
                     , "33(d)(1)"
@@ -105,7 +105,7 @@ level_2A_HQLA_additive_values fromDate data =
 
         supplemental_amount : Balance
         supplemental_amount =
-            Flows.applySupplementalRules level_2A_supplementals
+            Agg.applySupplementalRules level_2A_supplementals
                 |> Rules.matchAndSum
                     [ "20(a)(1)"
                     , "20(b)(1)"
@@ -144,7 +144,7 @@ level_2B_HQLA_additive_values fromDate data =
 
         inflow_amount : Balance
         inflow_amount =
-            Flows.applyInflowRules fromDate level_2B_inflows
+            Agg.applyInflowRules fromDate level_2B_inflows
                 |> Rules.matchAndSum
                     [ "33(c)"
                     , "33(d)(1)"
@@ -156,7 +156,7 @@ level_2B_HQLA_additive_values fromDate data =
 
         supplemental_amount : Balance
         supplemental_amount =
-            Flows.applySupplementalRules level_2B_supplementals
+            Agg.applySupplementalRules level_2B_supplementals
                 |> Rules.matchAndSum
                     [ "20(a)(1)"
                     , "20(b)(1)"
@@ -202,7 +202,7 @@ level_1_HQLA_subtractive_values data =
         ----
         liquidity_risk_amount : Balance
         liquidity_risk_amount =
-            Flows.applySupplementalRules level_1_supplementals
+            Agg.applySupplementalRules level_1_supplementals
                 |> Rules.matchAndSum
                     [ "22(b)(3)L1"
                     , "22(a)(3)L1"
@@ -210,7 +210,7 @@ level_1_HQLA_subtractive_values data =
 
         derivatives_collateral_amount : Balance
         derivatives_collateral_amount =
-            Flows.applySupplementalRules level_1_supplementals_derivatives
+            Agg.applySupplementalRules level_1_supplementals_derivatives
                 |> Rules.matchAndSum
                     [ "22(b)(5)L1" ]
     in
@@ -252,7 +252,7 @@ level_2A_HQLA_subtractive_values data =
         ----
         liquidity_risk_amount : Balance
         liquidity_risk_amount =
-            Flows.applySupplementalRules level_2A_supplementals
+            Agg.applySupplementalRules level_2A_supplementals
                 |> Rules.matchAndSum
                     [ "22(b)(3)L2a"
                     , "22(a)(3)L2a"
@@ -260,7 +260,7 @@ level_2A_HQLA_subtractive_values data =
 
         derivatives_collateral_amount : Balance
         derivatives_collateral_amount =
-            Flows.applySupplementalRules level_2A_supplementals_derivatives
+            Agg.applySupplementalRules level_2A_supplementals_derivatives
                 |> Rules.matchAndSum
                     [ "22(b)(5)L2a" ]
     in
@@ -302,7 +302,7 @@ level_2B_HQLA_subtractive_values data =
         ----
         liquidity_risk_amount : Balance
         liquidity_risk_amount =
-            Flows.applySupplementalRules level_2B_supplementals
+            Agg.applySupplementalRules level_2B_supplementals
                 |> Rules.matchAndSum
                     [ "22(b)(3)L2b"
                     , "22(a)(3)L2b"
@@ -310,7 +310,7 @@ level_2B_HQLA_subtractive_values data =
 
         derivatives_collateral_amount : Balance
         derivatives_collateral_amount =
-            Flows.applySupplementalRules level_2B_supplementals_derivatives
+            Agg.applySupplementalRules level_2B_supplementals_derivatives
                 |> Rules.matchAndSum
                     [ "22(b)(5)L2b" ]
     in
@@ -324,42 +324,42 @@ level_2B_HQLA_subtractive_values data =
 
 secured_lending_unwind_maturity_amounts : FromDate -> DataTables -> Balance
 secured_lending_unwind_maturity_amounts fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "21(a)(todo)" ]
 
 
 secured_lending_unwind_collateral_values_with_level_1_collateral_class : FromDate -> DataTables -> Balance
 secured_lending_unwind_collateral_values_with_level_1_collateral_class fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "33(f)(1)(iii)" ]
 
 
 secured_funding_unwind_maturity_amounts : FromDate -> DataTables -> Balance
 secured_funding_unwind_maturity_amounts fromDate data =
-    Flows.applyOutflowRules fromDate data.outflows
+    Agg.applyOutflowRules fromDate data.outflows
         |> Rules.matchAndSum
             [ "21(b)(todo)" ]
 
 
 secured_funding_unwind_collateral_values_with_level_1_collateral_class : FromDate -> DataTables -> Balance
 secured_funding_unwind_collateral_values_with_level_1_collateral_class fromDate data =
-    Flows.applyOutflowRules fromDate data.outflows
+    Agg.applyOutflowRules fromDate data.outflows
         |> Rules.matchAndSum
             [ "32(j)(1)(i)" ]
 
 
 asset_exchange_unwind_maturity_amounts_with_level_1_subProduct : FromDate -> DataTables -> Balance
 asset_exchange_unwind_maturity_amounts_with_level_1_subProduct fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "21(c)(todo)" ]
 
 
 asset_exchange_unwind_collateral_values_with_level_1_collateral_class : FromDate -> DataTables -> Balance
 asset_exchange_unwind_collateral_values_with_level_1_collateral_class fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "33(f)(2)(i)" ]
 
@@ -370,28 +370,28 @@ asset_exchange_unwind_collateral_values_with_level_1_collateral_class fromDate d
 
 secured_lending_unwind_collateral_values_with_level_2A_collateral_class : FromDate -> DataTables -> Balance
 secured_lending_unwind_collateral_values_with_level_2A_collateral_class fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "33(f)(1)(iv)" ]
 
 
 secured_funding_unwind_collateral_values_with_level_2A_collateral_class : FromDate -> DataTables -> Balance
 secured_funding_unwind_collateral_values_with_level_2A_collateral_class fromDate data =
-    Flows.applyOutflowRules fromDate data.outflows
+    Agg.applyOutflowRules fromDate data.outflows
         |> Rules.matchAndSum
             [ "32(j)(1)(ii)" ]
 
 
 asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct : FromDate -> DataTables -> Balance
 asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "32(j)(3)(ii)" ]
 
 
 asset_exchange_unwind_collateral_values_with_level_2A_collateral_class : FromDate -> DataTables -> Balance
 asset_exchange_unwind_collateral_values_with_level_2A_collateral_class fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "21(c)(todo)" ]
 
@@ -402,27 +402,27 @@ asset_exchange_unwind_collateral_values_with_level_2A_collateral_class fromDate 
 
 secured_lending_unwind_collateral_values_with_level_2B_collateral_class : FromDate -> DataTables -> Balance
 secured_lending_unwind_collateral_values_with_level_2B_collateral_class fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "33(f)(1)(v)" ]
 
 
 secured_funding_unwind_collateral_values_with_level_2B_collateral_class : FromDate -> DataTables -> Balance
 secured_funding_unwind_collateral_values_with_level_2B_collateral_class fromDate data =
-    Flows.applyOutflowRules fromDate data.outflows
+    Agg.applyOutflowRules fromDate data.outflows
         |> Rules.matchAndSum
             [ "32(j)(1)(iv)" ]
 
 
 asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct : FromDate -> DataTables -> Balance
 asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "32(j)(3)(iii)" ]
 
 
 asset_exchange_unwind_collateral_values_with_level_2B_collateral_class : FromDate -> DataTables -> Balance
 asset_exchange_unwind_collateral_values_with_level_2B_collateral_class fromDate data =
-    Flows.applyInflowRules fromDate data.inflows
+    Agg.applyInflowRules fromDate data.inflows
         |> Rules.matchAndSum
             [ "21(c)(1)" ]

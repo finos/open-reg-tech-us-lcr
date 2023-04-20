@@ -15,9 +15,8 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
-import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
+import Regulation.US.LCR.AggregatedRuleBalances as Agg exposing (..)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
-import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
 import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rules as Rules
@@ -161,7 +160,7 @@ cumulative_outflow_amount_from_one_to_m m data =
         --TODO apply accumulation over maturity buckets
         outflow_amount : FromDate -> Balance
         outflow_amount fromDate =
-            Flows.applyOutflowRules fromDate data.outflows
+            Agg.applyOutflowRules fromDate data.outflows
                 |> Rules.matchAndSum
                     [ "32(g)(1)"
                     , "32(g)(2)"
@@ -182,7 +181,7 @@ cumulative_outflow_amount_from_one_to_m m data =
 
         inflow_amount : FromDate -> Balance
         inflow_amount fromDate =
-            Flows.applyInflowRules fromDate data.inflows
+            Agg.applyInflowRules fromDate data.inflows
                 |> Rules.matchAndSum
                     [ "33(c)"
                     , "33(d)"

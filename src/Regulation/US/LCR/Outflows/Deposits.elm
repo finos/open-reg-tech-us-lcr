@@ -109,27 +109,27 @@ toRuleBalances fromDate flows =
 
                     else if match_rule_72_section_32_j_1_iv fromDate flow then
                         "32(j)(1)(iv)"
-                        --TODO
-                        --                    else if match_rule_73_section_32_j_1_iv flow then
-                        --                        "32(j)(1)(iv)"
-                        --
-                        --                    else if match_rule_77_section_32_j_1_vi flow then
-                        --                        "32(j)(1)(vi)"
-                        --
-                        --                    else if match_rule_78_section_32_j_1_vi flow then
-                        --                        "32(j)(1)(vi)"
-                        --
-                        --                    else if match_rule_81_section_32_j_2 flow then
-                        --                        "32(j)(2)"
-                        --
-                        --                    else if match_rule_83_section_32_j_2 flow then
-                        --                        "32(j)(2)"
-                        --
-                        --                    else if match_rule_84_section_32_j_2 flow then
-                        --                        "32(j)(2)"
-                        --
-                        --                    else if match_rule_98_section_32_k flow then
-                        --                        "32(k)"
+
+                    else if match_rule_73_section_32_j_1_iv fromDate flow then
+                        "32(j)(1)(iv)"
+
+                    else if match_rule_77_section_32_j_1_vi fromDate flow then
+                        "32(j)(1)(vi)"
+
+                    else if match_rule_78_section_32_j_1_vi fromDate flow then
+                        "32(j)(1)(vi)"
+
+                    else if match_rule_81_section_32_j_2 fromDate flow then
+                        "32(j)(2)"
+
+                    else if match_rule_83_section_32_j_2 fromDate flow then
+                        "32(j)(2)"
+
+                    else if match_rule_84_section_32_j_2 fromDate flow then
+                        "32(j)(2)"
+
+                    else if match_rule_98_section_32_k fromDate flow then
+                        "32(k)"
 
                     else
                         ""
