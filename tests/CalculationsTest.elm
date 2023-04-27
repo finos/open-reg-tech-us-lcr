@@ -23,6 +23,7 @@ import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)
 import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
 import Regulation.US.FR2052A.Fields.Insured exposing (Insured(..))
 import Regulation.US.LCR.Calculations as Calculations exposing (..)
+import Regulation.US.FR2052A.Fields.Counterparty exposing (..)
 import Test exposing (Test, test)
 
 
@@ -37,7 +38,7 @@ inflows =
 
 
 deposits =
-    [ Deposits.Deposits USD True "Bank1" o_D_1 "OtherBank1" Nothing 100 1 Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
+    [ Deposits.Deposits USD True "Bank1" o_D_1 Central_Bank Nothing 100 1 Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
     ]
 
 
