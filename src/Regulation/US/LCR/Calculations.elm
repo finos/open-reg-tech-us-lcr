@@ -28,13 +28,6 @@ import Regulation.US.LCR.Rules as Rules
 -}
 
 
-{-| The
--}
-t0 : FromDate
-t0 =
-    0
-
-
 {-| The lcr function is the top-most calculation for executing the Liquidity Coverage Ratio.
 -}
 lcr : BankCategory -> DataTables -> Float
@@ -252,3 +245,11 @@ outflow_adjustment_percentage bankCategory =
 
         Category_IV_Board_regulated_institution ->
             0.7
+
+
+{-| The date for which the LCR is being calculated. Part of the specification requires looking into the next
+30 days of cash flows, so t0 represents day 0.
+-}
+t0 : FromDate
+t0 =
+    0
