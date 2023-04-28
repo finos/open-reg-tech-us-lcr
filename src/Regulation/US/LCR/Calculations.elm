@@ -15,9 +15,9 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
-import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (FromDate)
+import Regulation.US.LCR.AggregatedRuleBalances as Agg exposing (..)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
-import Regulation.US.LCR.Flows as Flows exposing (..)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
 import Regulation.US.LCR.Rules as Rules
 
@@ -42,9 +42,9 @@ see: <https://www.federalreserve.gov/reportforms/forms/FR_2052a20220429_f.pdf#AP
 -}
 hqla_amount : DataTables -> Float
 hqla_amount data =
-    (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
-        + (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
-        + (0.5 * (level_2B_HQLA_additive_values data - level_2A_HQLA_additive_values data))
+    (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data)
+        + (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
+        + (0.5 * (level_2B_HQLA_additive_values t0 data - level_2A_HQLA_additive_values t0 data))
         + max (unadjusted_excess_HQLA data) (adjusted_excess_HQLA data)
 
 
@@ -56,47 +56,47 @@ unadjusted_excess_HQLA data =
 level_2_cap_excess_amount : DataTables -> Balance
 level_2_cap_excess_amount data =
     max 0
-        (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
-        + (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
-        - (0.6667 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
+        (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
+        + (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data))
+        - (0.6667 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data))
 
 
 level_2B_cap_excess_amount : DataTables -> Balance
 level_2B_cap_excess_amount data =
     max 0
-        (0.5 * (level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+        (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data))
         - level_2_cap_excess_amount data
-        + (0.1765 * (level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
-        - (0.85 * (level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
+        + (0.1765 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data))
+        - (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
 
 
 adjusted_level_1_HQLA_additive_values : DataTables -> Balance
 adjusted_level_1_HQLA_additive_values data =
-    level_1_HQLA_additive_values data
-        + secured_lending_unwind_maturity_amounts data
-        - secured_lending_unwind_collateral_values_with_level_1_collateral_class data
-        - secured_funding_unwind_maturity_amounts data
-        + secured_funding_unwind_collateral_values_with_level_1_collateral_class data
-        + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct data
-        - asset_exchange_unwind_collateral_values_with_level_1_collateral_class data
+    level_1_HQLA_additive_values t0 data
+        + secured_lending_unwind_maturity_amounts t0 data
+        - secured_lending_unwind_collateral_values_with_level_1_collateral_class t0 data
+        - secured_funding_unwind_maturity_amounts t0 data
+        + secured_funding_unwind_collateral_values_with_level_1_collateral_class t0 data
+        + asset_exchange_unwind_maturity_amounts_with_level_1_subProduct t0 data
+        - asset_exchange_unwind_collateral_values_with_level_1_collateral_class t0 data
 
 
 adjusted_level_2A_HQLA_additive_values : DataTables -> Balance
 adjusted_level_2A_HQLA_additive_values data =
-    level_2A_HQLA_additive_values data
-        - secured_lending_unwind_collateral_values_with_level_2A_collateral_class data
-        + secured_funding_unwind_collateral_values_with_level_2A_collateral_class data
-        + asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct data
-        - asset_exchange_unwind_collateral_values_with_level_2A_collateral_class data
+    level_2A_HQLA_additive_values t0 data
+        - secured_lending_unwind_collateral_values_with_level_2A_collateral_class t0 data
+        + secured_funding_unwind_collateral_values_with_level_2A_collateral_class t0 data
+        + asset_exchange_unwind_maturity_amounts_with_level_2A_subProduct t0 data
+        - asset_exchange_unwind_collateral_values_with_level_2A_collateral_class t0 data
 
 
 adjusted_level_2B_HQLA_additive_values : DataTables -> Balance
 adjusted_level_2B_HQLA_additive_values data =
-    level_2B_HQLA_additive_values data
-        - secured_lending_unwind_collateral_values_with_level_2B_collateral_class data
-        + secured_funding_unwind_collateral_values_with_level_2B_collateral_class data
-        + asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct data
-        - asset_exchange_unwind_collateral_values_with_level_2B_collateral_class data
+    level_2B_HQLA_additive_values t0 data
+        - secured_lending_unwind_collateral_values_with_level_2B_collateral_class t0 data
+        + secured_funding_unwind_collateral_values_with_level_2B_collateral_class t0 data
+        + asset_exchange_unwind_maturity_amounts_with_level_2B_subProduct t0 data
+        - asset_exchange_unwind_collateral_values_with_level_2B_collateral_class t0 data
 
 
 adjusted_excess_HQLA : DataTables -> Balance
@@ -131,8 +131,8 @@ see: <https://www.federalreserve.gov/reportforms/forms/FR_2052a20220429_f.pdf#AP
 total_net_cash_outflows : DataTables -> BankCategory -> Float
 total_net_cash_outflows data bankCategory =
     outflow_adjustment_percentage bankCategory
-        * (outflow_values data.outflows
-            - min (inflow_values data.inflows) (0.75 * outflow_values data.outflows)
+        * (outflow_values t0 data.outflows
+            - min (inflow_values t0 data.inflows) (0.75 * outflow_values t0 data.outflows)
             + maturity_mismatch_add_on data
           )
 
@@ -151,9 +151,9 @@ cumulative_outflow_amount_from_one_to_m m data =
             List.range 1 m
 
         --TODO apply accumulation over maturity buckets
-        outflow_amount : Balance
-        outflow_amount =
-            Flows.applyOutflowRules data.outflows
+        outflow_amount : FromDate -> Balance
+        outflow_amount fromDate =
+            Agg.applyOutflowRules fromDate data.outflows
                 |> Rules.matchAndSum
                     [ "32(g)(1)"
                     , "32(g)(2)"
@@ -172,9 +172,9 @@ cumulative_outflow_amount_from_one_to_m m data =
                     , "32(l)"
                     ]
 
-        inflow_amount : Balance
-        inflow_amount =
-            Flows.applyInflowRules data.inflows
+        inflow_amount : FromDate -> Balance
+        inflow_amount fromDate =
+            Agg.applyInflowRules fromDate data.inflows
                 |> Rules.matchAndSum
                     [ "33(c)"
                     , "33(d)"
@@ -182,7 +182,10 @@ cumulative_outflow_amount_from_one_to_m m data =
                     , "33(f)"
                     ]
     in
-    outflow_amount - inflow_amount
+    -- todo : Fix this logic
+    applicable_buckets
+        |> List.map (\fromDate -> outflow_amount fromDate - inflow_amount fromDate)
+        |> List.sum
 
 
 largest_net_cumulative_maturity_outflow_amount : DataTables -> Balance
@@ -216,6 +219,7 @@ net_day30_cumulative_maturity_outflow_amount data =
 
 ---------- Other
 
+
 type BankCategory
     = Global_systemically_important_BHC_or_GSIB_depository_institution
     | Category_II_Board_regulated_institution
@@ -241,3 +245,11 @@ outflow_adjustment_percentage bankCategory =
 
         Category_IV_Board_regulated_institution ->
             0.7
+
+
+{-| The date for which the LCR is being calculated. Part of the specification requires looking into the next
+30 days of cash flows, so t0 represents day 0.
+-}
+t0 : FromDate
+t0 =
+    0

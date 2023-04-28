@@ -15,79 +15,76 @@
 module Regulation.US.LCR.Inflows.Unsecured exposing (..)
 
 import Regulation.US.FR2052A.DataTables.Inflows.Unsecured exposing (..)
-import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
+import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rule exposing (applyRule)
-import Regulation.US.LCR.Rules exposing (RuleBalance)
+import Regulation.US.LCR.Rules exposing (RuleBalance, orElse)
 
 
-{-| Given a list, applies the applicable rule for each assets along with the relevant amount
+{-| Given a list of Unsecured, applies the applicable rule for each assets along with the relevant amount
 -}
-toRuleBalances : List Unsecured -> List RuleBalance
-toRuleBalances flows =
-    flows
-        |> List.map
+toRuleBalances : FromDate -> List Unsecured -> List RuleBalance
+toRuleBalances fromDate list =
+    list
+        |> List.filterMap
             (\flow ->
-                { rule =
-                    if match_rule_104_section_33_c flow then
-                        "33(c)"
-
-                    else if match_rule_106_section_33_d_1 flow then
-                        "33(d)(1)"
-
-                    else if match_rule_109_section_33_d_2 flow then
-                        "33(d)(2)"
-
-                    else
-                        ""
-                , amount = flow.maturityAmount
-                }
+                rule_104_section_33_c fromDate flow
+                    |> orElse (rule_106_section_33_d_1 fromDate flow)
+                    |> orElse (rule_109_section_33_d_2 fromDate flow)
             )
-        |> List.filter (\rb -> rb.rule /= "")
-
-
-applyRules : Unsecured -> List RuleBalance
-applyRules flow =
-    List.concat
-        [ applyRule (match_rule_104_section_33_c flow) "33(c)" flow.maturityAmount
-        , applyRule (match_rule_106_section_33_d_1 flow) "33(d)(1)" flow.maturityAmount
-        , applyRule (match_rule_109_section_33_d_2 flow) "33(d)(2)" flow.maturityAmount
-        ]
 
 
 {-| (104) Retail Cash Inflow Amount (§.33(c))
 -}
-match_rule_104_section_33_c : Unsecured -> Bool
-match_rule_104_section_33_c flow =
-    List.member flow.product [ i_U_5, i_U_6 ]
-        -- Maturity Bucket: <= 30 calendar days but not Open
-        && (MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket && flow.maturityBucket /= MaturityBucket.open)
-        -- Forward Start Amount: NULL
-        && (flow.forwardStartAmount == Nothing)
-        -- Forward Start Bucket: NULL
-        && (flow.forwardStartBucket == Nothing)
+rule_104_section_33_c : FromDate -> Unsecured -> Maybe RuleBalance
+rule_104_section_33_c fromDate flow =
+    if
+        List.member flow.product [ i_U_5, i_U_6 ]
+            -- Maturity Bucket: <= 30 calendar days but not Open
+            && (MaturityBucket.isLessThanOrEqual30Days fromDate flow.maturityBucket && flow.maturityBucket /= MaturityBucket.Open)
+            -- Forward Start Amount: NULL
+            && (flow.forwardStartAmount == Nothing)
+            -- Forward Start Bucket: NULL
+            && (flow.forwardStartBucket == Nothing)
+    then
+        Just (RuleBalance "33(c)" flow.maturityAmount)
+
+    else
+        Nothing
 
 
 {-| (106) Financial and Central Bank Cash Inflow Amount (§.33(d)(1))
 -}
-match_rule_106_section_33_d_1 : Unsecured -> Bool
-match_rule_106_section_33_d_1 flow =
-    List.member flow.product [ i_U_1, i_U_2, i_U_4, i_U_5, i_U_6, i_U_8 ]
-        -- Maturity Bucket: <= 30 calendar days
-        && MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket
-        -- Forward Start Amount: NULL
-        && (flow.forwardStartAmount == Nothing)
-        -- Forward Start Bucket: NULL
-        && (flow.forwardStartBucket == Nothing)
+rule_106_section_33_d_1 : FromDate -> Unsecured -> Maybe RuleBalance
+rule_106_section_33_d_1 fromDate flow =
+    if
+        List.member flow.product [ i_U_1, i_U_2, i_U_4, i_U_5, i_U_6, i_U_8 ]
+            -- Maturity Bucket: <= 30 calendar days
+            && MaturityBucket.isLessThanOrEqual30Days fromDate flow.maturityBucket
+            -- Forward Start Amount: NULL
+            && (flow.forwardStartAmount == Nothing)
+            -- Forward Start Bucket: NULL
+            && (flow.forwardStartBucket == Nothing)
+    then
+        Just (RuleBalance "33(d)(1)" flow.maturityAmount)
+
+    else
+        Nothing
 
 
 {-| (109) Non-Financial Wholesale Cash Inflow Amount (§.33(d)(2))
 -}
-match_rule_109_section_33_d_2 : Unsecured -> Bool
-match_rule_109_section_33_d_2 flow =
-    List.member flow.product [ i_U_1, i_U_2, i_U_6 ]
-        -- Maturity Bucket: <= 30 calendar days
-        && MaturityBucket.isLessThanOrEqual30Days flow.maturityBucket
-        -- Forward Start Amount: NULL
-        && (flow.forwardStartAmount == Nothing)
-        -- Forward Start Bucket: NULL
-        && (flow.forwardStartBucket == Nothing)
+rule_109_section_33_d_2 : FromDate -> Unsecured -> Maybe RuleBalance
+rule_109_section_33_d_2 fromDate flow =
+    if
+        List.member flow.product [ i_U_1, i_U_2, i_U_6 ]
+            -- Maturity Bucket: <= 30 calendar days
+            && MaturityBucket.isLessThanOrEqual30Days fromDate flow.maturityBucket
+            -- Forward Start Amount: NULL
+            && (flow.forwardStartAmount == Nothing)
+            -- Forward Start Bucket: NULL
+            && (flow.forwardStartBucket == Nothing)
+    then
+        Just (RuleBalance "33(d)(2)" flow.maturityAmount)
+
+    else
+        Nothing
