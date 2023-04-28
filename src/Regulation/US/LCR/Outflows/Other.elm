@@ -15,9 +15,8 @@
 module Regulation.US.LCR.Outflows.Other exposing (..)
 
 import Regulation.US.FR2052A.DataTables.Outflows.Other exposing (..)
-import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
+import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.AmountCalculations exposing (..)
-import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rule exposing (applyRule)
 import Regulation.US.LCR.Rules exposing (RuleBalance, orElse)
 

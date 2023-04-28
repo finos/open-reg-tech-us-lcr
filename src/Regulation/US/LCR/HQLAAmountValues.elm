@@ -6,11 +6,11 @@ import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets)
 import Regulation.US.FR2052A.DataTables.Inflows.Secured as Inflows
 import Regulation.US.FR2052A.DataTables.Supplemental.DerivativesCollateral as Supplemental exposing (DerivativesCollateral)
 import Regulation.US.FR2052A.DataTables.Supplemental.LiquidityRiskMeasurement exposing (LiquidityRiskMeasurement)
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (FromDate)
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct exposing (SubProduct, isSubProduct)
 import Regulation.US.LCR.AggregatedRuleBalances as Agg
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
 import Regulation.US.LCR.Inflows.Assets as Assets
-import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rules as Rules
 
 

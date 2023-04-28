@@ -14,12 +14,10 @@
 
 module Regulation.US.LCR.Inflows.Assets exposing (..)
 
-import Morphir.SDK.Aggregate as Aggregate
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
-import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
+import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket exposing (FromDate, MaturityBucket)
 import Regulation.US.FR2052A.Fields.SubProduct exposing (currency_and_coin)
-import Regulation.US.LCR.MaturityBucket exposing (FromDate, MaturityBucket)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
 
 

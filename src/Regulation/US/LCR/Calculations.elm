@@ -15,10 +15,10 @@
 module Regulation.US.LCR.Calculations exposing (..)
 
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables, Inflows)
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.AggregatedRuleBalances as Agg exposing (..)
 import Regulation.US.LCR.Basics exposing (Balance, Ratio)
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues exposing (..)
-import Regulation.US.LCR.MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rules as Rules
 
 

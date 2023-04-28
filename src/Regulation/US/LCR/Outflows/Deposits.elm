@@ -18,8 +18,7 @@ import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (..)
 import Regulation.US.FR2052A.Fields.CollateralClass as CollateralClass
 import Regulation.US.FR2052A.Fields.Counterparty as Counterparty
 import Regulation.US.FR2052A.Fields.Insured as Insured
-import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket
-import Regulation.US.LCR.MaturityBucket exposing (FromDate)
+import Regulation.US.FR2052A.Fields.MaturityBucket as MaturityBucket exposing (FromDate)
 import Regulation.US.LCR.Rule exposing (applyRule)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
 

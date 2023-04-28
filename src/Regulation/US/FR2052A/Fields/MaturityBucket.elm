@@ -28,7 +28,13 @@ type MaturityBucket
     | Perpetual
 
 
-isLessThanOrEqual30Days : Int -> MaturityBucket -> Bool
+{-| Conceptual point from which relative comparisons on MaturityBucket are calculated.
+-}
+type alias FromDate =
+    Int
+
+
+isLessThanOrEqual30Days : FromDate -> MaturityBucket -> Bool
 isLessThanOrEqual30Days fromDate maturityBucket =
     case maturityBucket of
         Day n ->
@@ -38,7 +44,7 @@ isLessThanOrEqual30Days fromDate maturityBucket =
             False
 
 
-isGreaterThan30Days : Int -> MaturityBucket -> Bool
+isGreaterThan30Days : FromDate -> MaturityBucket -> Bool
 isGreaterThan30Days fromDate maturityBucket =
     case maturityBucket of
         Day n ->
