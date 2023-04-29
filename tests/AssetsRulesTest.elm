@@ -14,7 +14,6 @@
 
 module AssetsRulesTest exposing (..)
 
-import Array
 import Expect
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets, Product(..))
 import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)

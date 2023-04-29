@@ -14,27 +14,39 @@
 
 module CalculationsTest exposing (..)
 
-import Expect as Float exposing (FloatingPointTolerance(..))
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables)
-import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets, Product(..))
-import Regulation.US.FR2052A.DataTables.Outflows exposing (Outflows(..))
+import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
+import Regulation.US.FR2052A.DataTables.Inflows.Unsecured exposing (Unsecured, Product(..))
+import Regulation.US.FR2052A.DataTables.Inflows.Secured exposing (Secured, Product(..))
+import Regulation.US.FR2052A.Fields.Counterparty as Counterparty
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits as Deposits exposing (o_D_1)
 import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)
 import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
 import Regulation.US.FR2052A.Fields.Insured exposing (Insured(..))
 import Regulation.US.LCR.Calculations as Calculations exposing (..)
 import Regulation.US.FR2052A.Fields.Counterparty exposing (..)
+import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
+import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues
+import Regulation.US.LCR.Flows as Flows
+import Regulation.US.LCR.Rules as Rules
+import Regulation.US.LCR.Basics exposing (..)
+
 import Test exposing (Test, test)
+import Expect exposing(..)
 
 
-assets : List Assets
-assets =
-    [ Assets USD True "LCR" UnencumberedAssets (Just "not Currency and Coin") 60 "Valuable" 1 Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
-    ]
 
+assets : Assets
+assets = Assets USD True "LCR" UnencumberedAssets (Just SubProduct.level_1) 60 "Valuable" 1 Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
+
+unsecured : Unsecured
+unsecured = Unsecured USD True "LCR" OnshorePlacements (Just Counterparty.Retail) (Just "gsib") 75 1 Nothing Nothing Nothing Nothing Nothing "internal" Nothing Nothing "Trade"
+    
+secured : Secured
+secured = Secured USD True "LCR" ReverseRepo (Just SubProduct.level_1) 80 1 Nothing Nothing Nothing Nothing Nothing "internal" 10 True True "internal" Nothing Nothing "busi" "settlement" Bank Nothing
 
 inflows =
-    DataTables.Inflows assets [] [] []
+    DataTables.Inflows [assets] [] [secured] []
 
 
 deposits =
@@ -60,4 +72,37 @@ endpoint =
     test "endpoint" <|
         \_ ->
             Calculations.lcr Global_systemically_important_BHC_or_GSIB_depository_institution dataTables
-                |> Float.within (Absolute 0.000000001) 0.6
+                |> Expect.within (Absolute 0.000000001) 0.6
+
+
+testIsSubProduct : Test
+testIsSubProduct = 
+    test "test isSubProduct function" <|
+        \_ ->
+            [assets]
+                |> List.filter (\a -> SubProduct.isSubProduct a.subProduct SubProduct.isHQLALevel1)
+                |> List.length
+                |> Expect.equal 1
+
+testInflowRules : Test
+testInflowRules = 
+    test "test applyInflowRules function" <|
+        \_ ->
+                Flows.applyInflowRules inflows
+                |> Rules.matchAndSum
+                    [ "33(c)"
+                    , "33(d)(1)"
+                    , "33(d)(2)"
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    ]
+                    |> Expect.equal 240 --80*3
+     
+
+testLevel1 : Test
+testLevel1 = 
+    test "test level_1_HQLA_additive_values function" <|
+        \() ->
+            HQLAAmountValues.level_1_HQLA_additive_values dataTables
+            |> Expect.equal 240 
