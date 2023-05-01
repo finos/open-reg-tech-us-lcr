@@ -23,17 +23,18 @@ import Regulation.US.FR2052A.DataTables.Outflows.Deposits as Deposits exposing (
 import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)
 import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
 import Regulation.US.FR2052A.Fields.Insured exposing (Insured(..))
-import Regulation.US.LCR.Calculations as Calculations exposing (..)
+import Regulation.US.LCR.Calculations exposing (..)
 import Regulation.US.FR2052A.Fields.Counterparty exposing (..)
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues
 import Regulation.US.LCR.Flows as Flows
 import Regulation.US.LCR.Rules as Rules
 import Regulation.US.LCR.Basics exposing (..)
+import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
+import Regulation.US.LCR.HQLAAmountValues exposing (..)
 
-import Test exposing (Test, test)
+import Test exposing (Test, test, describe)
 import Expect exposing(..)
-
 
 
 assets : Assets
@@ -67,13 +68,12 @@ dataTables =
     DataTables inflows outflows supplemental
 
 
-endpoint : Test
-endpoint =
-    test "endpoint" <|
+testTotalNetCashOutflows : Test
+testTotalNetCashOutflows =
+    test "function total_net_cash_outflows" <|
         \_ ->
-            Calculations.lcr Global_systemically_important_BHC_or_GSIB_depository_institution dataTables
-                |> Expect.within (Absolute 0.000000001) 0.6
-
+        total_net_cash_outflows dataTables Global_systemically_important_BHC_or_GSIB_depository_institution
+        |> Expect.within (Absolute 0.000000001) 25 -- 100 - min(80, 0.75 * 100)
 
 testIsSubProduct : Test
 testIsSubProduct = 
@@ -90,9 +90,9 @@ testInflowRules =
         \_ ->
                 Flows.applyInflowRules inflows
                 |> Rules.matchAndSum
-                    [ "33(c)"
-                    , "33(d)(1)"
-                    , "33(d)(2)"
+                    [ "33(c)" -- I.S.1
+                    , "33(d)(1)" -- I.S.1
+                    , "33(d)(2)" -- I.S.1
                     , "20(a)(1)"
                     , "20(b)(1)"
                     , "20(c)(1)"
@@ -106,3 +106,41 @@ testLevel1 =
         \() ->
             HQLAAmountValues.level_1_HQLA_additive_values dataTables
             |> Expect.equal 240 
+
+testHqlaAmount : Test
+testHqlaAmount = 
+    test "function hqla_amount" <|
+        \_ ->
+        hqla_amount dataTables
+            |> Expect.within (Absolute 0.000000001) 240          
+
+
+hqlaAmountTests : Test
+hqlaAmountTests = 
+    describe "test each expression in function hqla_amount"
+    [
+        test "1st part" <|
+            \_ ->
+            (level_1_HQLA_additive_values dataTables - level_1_HQLA_subtractive_values dataTables)
+            |> Expect.within (Absolute 0.000000001) 240
+        , test "2nd part" <|
+            \_ ->
+            0.85 * (level_2A_HQLA_additive_values dataTables - level_2A_HQLA_subtractive_values dataTables)
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "3rd part" <|
+            \_ ->
+            0.5 * (level_2B_HQLA_additive_values dataTables - level_2A_HQLA_additive_values dataTables)
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "level_2_cap_excess_amount" <|
+            \_ ->
+            level_2_cap_excess_amount dataTables
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "level_2B_cap_excess_amount" <|
+            \_ ->
+            level_2B_cap_excess_amount dataTables
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "adjusted_excess_HQLA" <|
+            \_ ->
+            adjusted_excess_HQLA dataTables
+            |> Expect.within (Absolute 0.000000001) 0
+    ]

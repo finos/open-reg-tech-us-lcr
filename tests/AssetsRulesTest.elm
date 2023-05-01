@@ -16,27 +16,26 @@ module AssetsRulesTest exposing (..)
 
 import Expect
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets, Product(..))
-import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)
+import Regulation.US.FR2052A.Fields.CollateralClass exposing (..)
 import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
--- import Regulation.US.LCR.Inflows.ApplyRules exposing (rule_1_section_20_a_1)
-import Regulation.US.LCR.Inflows.Assets as Assets exposing (rule_1_section_20_a_1, rule_1_section_20_a_1_C)
+import Regulation.US.LCR.Inflows.Assets as Assets exposing (..)
+import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
+import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
 import Test exposing (Test, test)
 
 
-assets : List Assets
+assets : Assets
 assets =
-    [ Assets USD True "LCR" UnencumberedAssets (Just "not Currency and Coin") 60 "Valuable" 1 Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
-    ]
+    Assets USD True "LCR" UnencumberedAssets (Just SubProduct.level_1) 60 "Valuable" 1 Nothing Nothing a_1_Q True "None" Nothing Nothing Nothing "Trade"
 
 testRule1Section20A1C : Test
 testRule1Section20A1C =
     test "testRule1Section20A1" <|
         \_ ->
-            assets
+                [assets]
                 |> List.map Assets.rule_1_section_20_a_1
-                |> List.filterMap identity
-                |> Expect.equal [6.0]
+                |> Expect.equal [Just 60]
 
 
 getAmount : List RuleBalance -> Float
@@ -51,5 +50,5 @@ testToRuleBalances : Test
 testToRuleBalances =
     test "toRuleBalances" <|
         \_ ->
-            getAmount (Assets.toRuleBalances assets)
-                |> Expect.equal 100
+            getAmount (Assets.toRuleBalances [assets])
+                |> Expect.equal 60
