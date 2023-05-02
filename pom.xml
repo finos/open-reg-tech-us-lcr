@@ -50,8 +50,8 @@
     <!-- using Scala 2.11.12 to match morphir scala dependency version -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.12.17</scala.version>
-        <scala.binary.version>2.12</scala.binary.version>
+        <scala.version>2.13.10</scala.version>
+        <scala.binary.version>2.13</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>8</java.version>
         <scalaSrcDir>${project.basedir}/target/generated-sources/main/scala</scalaSrcDir>
@@ -81,11 +81,6 @@
             <artifactId>scalatest_${scala.binary.version}</artifactId>
             <version>3.2.15</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.morphir</groupId>
-            <artifactId>morphir-sdk-core_2.12</artifactId>
-            <version>3356918</version>
         </dependency>
     </dependencies>
 
@@ -132,6 +127,9 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
+                <configuration>
+                    <mainClass>sample.SimpleApp</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <id>npm-install</id>
@@ -247,15 +245,6 @@
                 </executions>
             </plugin>
 
-            <!-- Execute -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <mainClass>sample.SimpleApp</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
