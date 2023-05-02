@@ -5,7 +5,7 @@ The LCR project uses [the FINOS Morphir project](https://morphir.finos.org) so r
 [Morphir installation](https://morphir.finos.org/docs/using/installation_and_usage). 
 
 The quick summary is:
-1. Create a fork of this project and clone it to your workspace. 
+1. Create a fork of this project and clone it to your workspace (requires [git to be installed](https://github.com/git-guides/install-git)). 
 1. Be sure to [install **npm**](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 1. Install the Morphir command line tool with: `npm install morphir`
 1. Compile the CLR with: `npx morphir-elm make -f`
