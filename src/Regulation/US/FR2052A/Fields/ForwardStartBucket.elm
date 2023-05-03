@@ -11,7 +11,11 @@
    limitations under the License.
 -}
 
+
 module Regulation.US.FR2052A.Fields.ForwardStartBucket exposing (..)
 
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (MaturityBucket)
 
-type alias ForwardStartBucket = String
+
+type alias ForwardStartBucket =
+    MaturityBucket

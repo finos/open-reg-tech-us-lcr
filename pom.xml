@@ -50,12 +50,12 @@
     <!-- using Scala 2.11.12 to match morphir scala dependency version -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.11.12</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
+        <scala.version>2.13.10</scala.version>
+        <scala.binary.version>2.13</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>8</java.version>
-        <scalaSrcDir>${project.basedir}/generated/scala/src</scalaSrcDir>
-        <scalaTestDir>${project.basedir}/generated/scala/test</scalaTestDir>
+        <scalaSrcDir>${project.basedir}/target/generated-sources/main/scala</scalaSrcDir>
+        <scalaTestDir>${project.basedir}/target/generated-sources/test/scala</scalaTestDir>
     </properties>
 
     <dependencies>
@@ -82,15 +82,10 @@
             <version>3.2.15</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.morphir</groupId>
-            <artifactId>morphir-sdk-core_2.11</artifactId>
-            <version>0.11.0</version>
-        </dependency>
     </dependencies>
 
     <build>
-        <sourceDirectory>${scalaSrcDir}</sourceDirectory>
+        <sourceDirectory>src/main/scala</sourceDirectory>
         <testSourceDirectory>${scalaTestDir}</testSourceDirectory>
         <plugins>
 
@@ -132,6 +127,9 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
+                <configuration>
+                    <mainClass>sample.SimpleApp</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <id>npm-install</id>
@@ -144,11 +142,12 @@
                             <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>morphir-elm</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm-build</id>
+                        <id>morphir-ir</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
@@ -158,10 +157,40 @@
                             <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>run</argument>
-                                <argument>build</argument>
+                                <argument>morphir-elm-make-clean</argument>
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>npm-generate-scala</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>morphir-gen-scala</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+<!--                    <execution>-->
+<!--                        <id>npm-generate-spark</id>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>exec</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <executable>npm</executable>-->
+<!--                            <workingDirectory>${project.basedir}</workingDirectory>-->
+<!--                            <arguments>-->
+<!--                                <argument>run</argument>-->
+<!--                                <argument>morphir-gen-spark</argument>-->
+<!--                            </arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                 </executions>
             </plugin>
 
@@ -177,6 +206,24 @@
             </plugin>
 
             <!-- Scala compiler -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${scalaSrcDir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
@@ -247,11 +294,10 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>npm</executable>
+                                    <executable>morphir-elm</executable>
                                     <workingDirectory>${project.basedir}</workingDirectory>
                                     <arguments>
-                                        <argument>run</argument>
-                                        <argument>morphir-test</argument>
+                                        <argument>test</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -292,7 +338,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

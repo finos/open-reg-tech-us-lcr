@@ -30,6 +30,7 @@ type alias RuleBalance =
     , amount : Balance
     }
 
+
 findAll : List RuleName -> List RuleBalance -> List RuleBalance
 findAll rules flows =
     flows
@@ -41,3 +42,13 @@ matchAndSum rules flows =
     findAll rules flows
         |> List.map .amount
         |> List.sum
+
+
+orElse : Maybe b -> Maybe b -> Maybe b
+orElse check fallback =
+    case check of
+        Just value ->
+            Just value
+
+        Nothing ->
+            fallback

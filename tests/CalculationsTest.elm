@@ -27,7 +27,7 @@ import Regulation.US.LCR.Calculations exposing (..)
 import Regulation.US.FR2052A.Fields.Counterparty exposing (..)
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
 import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues
-import Regulation.US.LCR.Flows as Flows
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
 import Regulation.US.LCR.Rules as Rules
 import Regulation.US.LCR.Basics exposing (..)
 import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
@@ -38,20 +38,20 @@ import Expect exposing(..)
 
 
 assets : Assets
-assets = Assets USD True "LCR" UnencumberedAssets (Just SubProduct.level_1) 60 "Valuable" 1 Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
+assets = Assets USD True "LCR" UnrestrictedReserveBalances (Just SubProduct.level_1) 30 "Valuable" (Day 90) Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
 
 unsecured : Unsecured
-unsecured = Unsecured USD True "LCR" OnshorePlacements (Just Counterparty.Retail) (Just "gsib") 75 1 Nothing Nothing Nothing Nothing Nothing "internal" Nothing Nothing "Trade"
+unsecured = Unsecured USD True "LCR" OnshorePlacements (Just Counterparty.Retail) (Just "gsib") 75 Open Nothing Nothing Nothing Nothing Nothing "internal" Nothing Nothing "Trade"
     
 secured : Secured
-secured = Secured USD True "LCR" ReverseRepo (Just SubProduct.level_1) 80 1 Nothing Nothing Nothing Nothing Nothing "internal" 10 True True "internal" Nothing Nothing "busi" "settlement" Bank Nothing
+secured = Secured USD True "LCR" ReverseRepo (Just SubProduct.level_1) 80 (Day 10) Nothing Nothing Nothing Nothing Nothing "internal" 10 True True "internal" Nothing Nothing "busi" "settlement" Bank Nothing
 
 inflows =
     DataTables.Inflows [assets] [] [secured] []
 
 
 deposits =
-    [ Deposits.Deposits USD True "Bank1" o_D_1 Central_Bank Nothing 100 1 Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
+    [ Deposits.Deposits USD True "Bank1" o_D_1 Central_Bank Nothing 100 Open Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
     ]
 
 
@@ -88,7 +88,7 @@ testInflowRules : Test
 testInflowRules = 
     test "test applyInflowRules function" <|
         \_ ->
-                Flows.applyInflowRules inflows
+                applyInflowRules 15 inflows
                 |> Rules.matchAndSum
                     [ "33(c)" -- I.S.1
                     , "33(d)(1)" -- I.S.1
@@ -104,7 +104,7 @@ testLevel1 : Test
 testLevel1 = 
     test "test level_1_HQLA_additive_values function" <|
         \() ->
-            HQLAAmountValues.level_1_HQLA_additive_values dataTables
+            HQLAAmountValues.level_1_HQLA_additive_values t0 dataTables
             |> Expect.equal 240 
 
 testHqlaAmount : Test
@@ -121,15 +121,15 @@ hqlaAmountTests =
     [
         test "1st part" <|
             \_ ->
-            (level_1_HQLA_additive_values dataTables - level_1_HQLA_subtractive_values dataTables)
+            (level_1_HQLA_additive_values t0 dataTables - level_1_HQLA_subtractive_values dataTables)
             |> Expect.within (Absolute 0.000000001) 240
         , test "2nd part" <|
             \_ ->
-            0.85 * (level_2A_HQLA_additive_values dataTables - level_2A_HQLA_subtractive_values dataTables)
+            0.85 * (level_2A_HQLA_additive_values t0 dataTables - level_2A_HQLA_subtractive_values dataTables)
             |> Expect.within (Absolute 0.000000001) 0
         , test "3rd part" <|
             \_ ->
-            0.5 * (level_2B_HQLA_additive_values dataTables - level_2A_HQLA_additive_values dataTables)
+            0.5 * (level_2B_HQLA_additive_values t0 dataTables - level_2A_HQLA_additive_values t0 dataTables)
             |> Expect.within (Absolute 0.000000001) 0
         , test "level_2_cap_excess_amount" <|
             \_ ->

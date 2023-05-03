@@ -22,12 +22,13 @@ import Regulation.US.LCR.Inflows.Assets as Assets exposing (..)
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
 import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
 import Test exposing (Test, test)
 
 
 assets : Assets
 assets =
-    Assets USD True "LCR" UnencumberedAssets (Just SubProduct.level_1) 60 "Valuable" 1 Nothing Nothing a_1_Q True "None" Nothing Nothing Nothing "Trade"
+    Assets USD True "LCR" UnencumberedAssets (Just SubProduct.level_1) 60 "Valuable" Open Nothing Nothing a_1_Q True "None" Nothing Nothing Nothing "Trade"
 
 testRule1Section20A1C : Test
 testRule1Section20A1C =
@@ -50,5 +51,5 @@ testToRuleBalances : Test
 testToRuleBalances =
     test "toRuleBalances" <|
         \_ ->
-            getAmount (Assets.toRuleBalances [assets])
+            getAmount (Assets.toRuleBalances 15 [assets])
                 |> Expect.equal 60
