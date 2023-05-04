@@ -18,7 +18,8 @@
     "morphir-gen-spark": "npx morphir-elm gen -t Spark -o ./spark/open_reg_tech_us_lcr/src && echo 'SPARK GENERATED INTO spark/open_reg_tech_us_lcr/src'",
     "morphir-gen-spark-with-config": "npx morphir-elm gen -t Spark -o ./spark/open_reg_tech_us_lcr/src --custom-config spark.config.json && echo SPARK GENERATED INTO spark/open_reg_tech_us_lcr/src",
     "test-spark": "cd spark && mill open_reg_tech_us_lcr.test",
-    "test": "lobo  --framework=elm-test"
+    "test": "lobo  --framework=elm-test",
+    "morphir-test": "morphir-elm test"
   },
   "devDependencies": {
     "lobo": "^1.0.0"

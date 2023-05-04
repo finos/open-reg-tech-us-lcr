@@ -294,10 +294,11 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>morphir-elm</executable>
+                                    <executable>npm</executable>
                                     <workingDirectory>${project.basedir}</workingDirectory>
                                     <arguments>
-                                        <argument>test</argument>
+                                        <argument>run</argument>
+                                        <argument>morphir-test</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
