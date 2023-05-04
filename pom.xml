@@ -86,7 +86,7 @@
 
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
-        <testSourceDirectory>${scalaTestDir}</testSourceDirectory>
+        <testSourceDirectory>src/</testSourceDirectory>
         <plugins>
 
             <!-- ************************ -->
