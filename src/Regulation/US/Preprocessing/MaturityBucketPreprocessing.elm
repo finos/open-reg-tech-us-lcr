@@ -25,7 +25,7 @@ import Regulation.US.FR2052A.DataTables.Inflows.Other as Other
 
 
 type InflowsProductCategory
-     = Assets Assets.Product 
+     = Assets Assets.Product
      | Unsecured Unsecured.Product
      | Secured Secured.Product
      | Other Other.Product
@@ -73,9 +73,9 @@ maturity_bucket_tailoring days maturityBucketBankCategory productType =
         US_Category_III_or_Category_IV_banking_organizations_with_wSTWF_greater_than_50B_and_FBOS_identified_as_Category_III_or_IV_with_wSTWF_greater_than_50B ->
             getBucketCaseTwo days productType
         US_Category_IV_banking_organizations_with_wSTWF_less_than_50B_and_FBOS_identified_as_Category_IV_with_wSTWF_less_than_50B ->
-            getBucketCaseTwo days productType
+            getBucketCaseThree days productType
            
-            --getBucketCaseThree days productType inflowProductType inflowAssetProduct inflowUnsecuredProduct inflowSecuredProduct
+            --getBucketCaseThree days productType
 
 
 getBucketCaseOne : TPlusN -> MaturityBucket
@@ -112,10 +112,43 @@ getBucketCaseTwo bucket productType =
             outflow_and_supplemental_buckets bucket
 
 
+getBucketCaseThree : TPlusN -> ProductType -> MaturityBucket
+getBucketCaseThree days productType =
+    case productType of
+    Inflows inflowsProductCategory ->
+        case inflowsProductCategory of
+                Assets a ->
+                    --rule 3 a
+                    if rule_3_a a then
+                        rule_3_a_bucket days
+                    --rule 3 c
+                    else
+                        inflow_buckets days
+                Unsecured u ->
+                    --rule 3b
+                    if rule_3_b_u u then
+                        rule_3_b_bucket days
+                    --rule 3 c
+                    else
+                        inflow_buckets days
+                Secured s ->
+                    --rule 3b
+                    if rule_3_b_s s then
+                        rule_3_b_bucket days
+                    --rule 3 c
+                    else
+                        inflow_buckets days
+                Other o ->
+                    inflow_buckets days
+
+    OutflowOrSupplemental ->
+        outflow_and_supplemental_buckets days
+
+
 
 {-
-getBucketCaseThree : TPlusN -> ProductType -> InflowProductType -> InflowAssetProduct -> InflowUnsecuredProduct -> InflowSecuredProduct-> MaturityBucket
-getBucketCaseThree days productType inflowProductType inflowAssetProduct inflowUnsecuredProduct inflowSecuredProduct=
+getBucketCaseThree : TPlusN -> ProductType -> MaturityBucket
+getBucketCaseThree days productType =
     case productType of
         Inflow ->
             case inflowProductType of
