@@ -75,9 +75,9 @@ object SimpleApp {
     println("AggregatedRuleBalances.inflowValues " + regulation.us.lcr.AggregatedRuleBalances.inflowValues(t0)(dataTables.inflows))
     println("AggregatedRuleBalances.outflowValues " + regulation.us.lcr.AggregatedRuleBalances.outflowValues(t0)(dataTables.outflows))
 
-    println(" ------------ ")
-    println("AggregatedRuleBalances.applyInflowRules " + regulation.us.lcr.AggregatedRuleBalances.applyInflowRules(t0)(dataTables.inflows))
-    println("AggregatedRuleBalances.applyOutflowRules " + regulation.us.lcr.AggregatedRuleBalances.applyOutflowRules(t0)(dataTables.outflows))
+//    println(" ------------ ")
+//    println("AggregatedRuleBalances.applyInflowRules " + regulation.us.lcr.AggregatedRuleBalances.inflowValues(t0)(dataTables.inflows))
+//    println("AggregatedRuleBalances.applyOutflowRules " + regulation.us.lcr.AggregatedRuleBalances.outflowValues(t0)(dataTables.outflows))
 
     println(" ------------ ")
     val bankCategory = Calculations.GlobalSystemicallyImportantBHCOrGSIBDepositoryInstitution
