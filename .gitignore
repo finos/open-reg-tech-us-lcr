@@ -32,3 +32,8 @@ morphir-hashes.json
 
 # Maven generated compiled scala will be ignored
 target
+
+# Scala-cli
+.scala-build/
+.vscode
+.bsp/
