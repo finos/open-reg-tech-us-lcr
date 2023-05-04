@@ -18,6 +18,7 @@ import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables)
 import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
 import Regulation.US.FR2052A.DataTables.Inflows.Unsecured exposing (Unsecured, Product(..))
 import Regulation.US.FR2052A.DataTables.Inflows.Secured exposing (Secured, Product(..))
+import Regulation.US.LCR.Inflows.Secured exposing (..)
 import Regulation.US.FR2052A.Fields.Counterparty as Counterparty
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits as Deposits exposing (o_D_1)
 import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)
@@ -37,14 +38,16 @@ import Test exposing (Test, test, describe)
 import Expect exposing(..)
 
 
+assetsMarketValue = 30
 assets : Assets
-assets = Assets USD True "LCR" UnrestrictedReserveBalances (Just SubProduct.level_1) 30 "Valuable" (Day 90) Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
+assets = Assets USD True "LCR" UnrestrictedReserveBalances (Just SubProduct.level_1) assetsMarketValue "Valuable" (Day 20) Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
 
 unsecured : Unsecured
 unsecured = Unsecured USD True "LCR" OnshorePlacements (Just Counterparty.Retail) (Just "gsib") 75 Open Nothing Nothing Nothing Nothing Nothing "internal" Nothing Nothing "Trade"
     
+securedMaturityAmount = 80
 secured : Secured
-secured = Secured USD True "LCR" ReverseRepo (Just SubProduct.level_1) 80 (Day 10) Nothing Nothing Nothing Nothing Nothing "internal" 10 True True "internal" Nothing Nothing "busi" "settlement" Bank Nothing
+secured = Secured USD True "LCR" ReverseRepo (Just SubProduct.level_1) securedMaturityAmount (Day 10) Nothing Nothing Nothing Nothing Nothing "internal" 10 True True "internal" Nothing Nothing "busi" "settlement" Bank Nothing
 
 inflows =
     DataTables.Inflows [assets] [] [secured] []
@@ -88,16 +91,20 @@ testInflowRules : Test
 testInflowRules = 
     test "test applyInflowRules function" <|
         \_ ->
-                applyInflowRules 15 inflows
+            -- toRuleBalances 1 [secured]
+            
+                applyInflowRules 1 inflows
+                    -- |> Expect.equal [RuleBalance "33(c)" 30,  RuleBalance "33(d)(1)" 80]
                 |> Rules.matchAndSum
-                    [ "33(c)" -- I.S.1
-                    , "33(d)(1)" -- I.S.1
-                    , "33(d)(2)" -- I.S.1
+                    [ "33(c)"
+                    , "33(d)(1)" 
+                    , "33(d)(2)" 
                     , "20(a)(1)"
                     , "20(b)(1)"
                     , "20(c)(1)"
+                    , "33(f)(1)(ii)"
                     ]
-                    |> Expect.equal 240 --80*3
+                    |> Expect.equal (assetsMarketValue + securedMaturityAmount) -- 33(c) and 33(f)(1)(ii)
      
 
 testLevel1 : Test
@@ -105,14 +112,14 @@ testLevel1 =
     test "test level_1_HQLA_additive_values function" <|
         \() ->
             HQLAAmountValues.level_1_HQLA_additive_values t0 dataTables
-            |> Expect.equal 240 
+            |> Expect.equal assetsMarketValue 
 
 testHqlaAmount : Test
 testHqlaAmount = 
     test "function hqla_amount" <|
         \_ ->
         hqla_amount dataTables
-            |> Expect.within (Absolute 0.000000001) 240          
+            |> Expect.within (Absolute 0.000000001) assetsMarketValue          
 
 
 hqlaAmountTests : Test
@@ -122,7 +129,7 @@ hqlaAmountTests =
         test "1st part" <|
             \_ ->
             (level_1_HQLA_additive_values t0 dataTables - level_1_HQLA_subtractive_values dataTables)
-            |> Expect.within (Absolute 0.000000001) 240
+            |> Expect.within (Absolute 0.000000001) assetsMarketValue
         , test "2nd part" <|
             \_ ->
             0.85 * (level_2A_HQLA_additive_values t0 dataTables - level_2A_HQLA_subtractive_values dataTables)

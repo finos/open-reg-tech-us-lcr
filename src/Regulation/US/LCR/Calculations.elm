@@ -64,10 +64,10 @@ level_2_cap_excess_amount data =
 level_2B_cap_excess_amount : DataTables -> Balance
 level_2B_cap_excess_amount data =
     max 0
-        (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data))
+        (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data)
         - level_2_cap_excess_amount data
-        - (0.1765 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data))
-        + (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
+        - 0.1765 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data)
+        + 0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
 
 
 adjusted_level_1_HQLA_additive_values : DataTables -> Balance
