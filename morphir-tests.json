@@ -17,6 +17,64 @@
                     "r"
                 ],
                 [
+                    "amount",
+                    "calculations"
+                ]
+            ],
+            [
+                "apply",
+                "note",
+                "4"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    "G-2-Q",
+                    1000,
+                    1500
+                ],
+                "expectedOutput": 650,
+                "description": "G-2-Q"
+            },
+            {
+                "inputs": [
+                    "S-1-Q",
+                    1000,
+                    1500
+                ],
+                "expectedOutput": 500,
+                "description": "S-1-Q"
+            },
+            {
+                "inputs": [
+                    "Other",
+                    1000,
+                    1500
+                ],
+                "expectedOutput": 1500,
+                "description": "Other"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
                     "inflows"
                 ],
                 [
