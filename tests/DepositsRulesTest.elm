@@ -20,12 +20,14 @@ import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
 import Regulation.US.FR2052A.Fields.Insured exposing (Insured(..))
 import Regulation.US.LCR.Outflows.Deposits exposing (toRuleBalances)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
+import Regulation.US.FR2052A.Fields.Counterparty exposing (..)
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
 import Test exposing (Test, test)
 
 
 deposits : List Deposits
 deposits =
-    [ Deposits USD True "Bank1" o_D_1 "OtherBank1" Nothing 100 1 Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
+    [ Deposits USD True "Bank1" o_D_1 Central_Bank Nothing 100 Open Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
     ]
 
 
@@ -41,5 +43,5 @@ testToRuleBalances : Test
 testToRuleBalances =
     test "toRuleBalances" <|
         \_ ->
-            getAmount (toRuleBalances deposits)
+            getAmount (toRuleBalances 10 deposits)
                 |> Expect.equal 100
