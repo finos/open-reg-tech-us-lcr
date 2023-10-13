@@ -20,6 +20,7 @@ import regulation.us.fr2052a.fields.Unencumbered.Unencumbered
 import regulation.us.fr2052a.fields.{CollateralClass, SubProduct}
 import regulation.us.lcr.Calculations
 
+import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 
 object SimpleApp {
   def main(args: Array[String]) {
