@@ -45,7 +45,7 @@ hqla_amount data =
     (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data)
         + (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
         + (0.5 * (level_2B_HQLA_additive_values t0 data - level_2A_HQLA_additive_values t0 data))
-        + max (unadjusted_excess_HQLA data) (adjusted_excess_HQLA data)
+        - max (unadjusted_excess_HQLA data) (adjusted_excess_HQLA data)
 
 
 unadjusted_excess_HQLA : DataTables -> Balance
