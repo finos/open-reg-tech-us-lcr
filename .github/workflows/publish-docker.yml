@@ -1,6 +1,7 @@
 name: Publish Docker image
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - 'main'
@@ -9,6 +10,7 @@ on:
       - 'morphir.json'
       - 'package.json'
       - 'elm.json'
+      - 'Dockerfile'
       - '.github/workflows/publish-docker.yml'
 
 jobs:
