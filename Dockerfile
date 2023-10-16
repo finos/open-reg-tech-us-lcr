@@ -23,4 +23,4 @@ EXPOSE $PORT
 
 USER $MORPHIR_USER
 
-ENTRYPOINT ["morphir-elm","develop"]
+ENTRYPOINT ["morphir-elm","develop", "-o", "0.0.0.0"]
