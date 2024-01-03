@@ -35,26 +35,6 @@ toRuleBalances fromDate list =
             )
 
 
-
---{-| Given a list of Others, applies the applicable rule for each assets along with the relevant amount
----}
---apply_rules : FromDate -> List Other -> Float
---apply_rules fromDate list =
---    list
---        |> List.map (\x -> apply_rule fromDate x)
---        |> List.sum
---
---apply_rule : FromDate -> Other -> Float
---apply_rule fromDate flow =
---    (rule_33_b flow
---        |> orElse (rule_111_x_33_e fromDate flow)
---        |> orElse (rule_112_x_33_e fromDate flow)
---        |> orElse (rule_33_g fromDate flow)
---        |> orElse (rule_33_h fromDate flow)
---        |> Maybe.withDefault (RuleBalance "" 0)
---    ).amount
-
-
 {-| (103) Net Derivatives Cash Inflow Amount (§.33(b))
 -}
 rule_33_b : Other -> Maybe RuleBalance

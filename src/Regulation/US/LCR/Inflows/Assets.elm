@@ -54,26 +54,9 @@ toRuleBalances fromDate assetsList =
         |> List.filter (\rb -> rb.rule /= "")
 
 
-apply_rules : FromDate -> List Assets -> Float
-apply_rules fromDate list =
-    list
-        |> List.map
-            (\asset ->
-                [ rule_1_section_20_a_1_C asset
-                , rule_1_section_20_a_1 asset
-                , rule_1_section_20_b_1 asset
-                , rule_1_section_20_c_1 asset
-                , rule_107_section_33_d_1 fromDate asset
-                ]
-                    |> List.filterMap (\a -> a)
-                    |> List.sum
-            )
-        |> List.sum
-
-
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_1_section_20_a_1_C : Assets -> Maybe Float
+rule_1_section_20_a_1_C : Assets -> Maybe RuleBalance
 rule_1_section_20_a_1_C flow =
     if
         List.member flow.product [ i_A_3 ]
@@ -93,7 +76,7 @@ rule_1_section_20_a_1_C flow =
             -- Treasury Control: Y
             && (flow.treasuryControl == True)
     then
-        Just flow.marketValue
+        Just (RuleBalance "20(a)(1)-C" flow.marketValue)
 
     else
         Nothing
@@ -101,7 +84,7 @@ rule_1_section_20_a_1_C flow =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_1_section_20_a_1 : Assets -> Maybe Float
+rule_1_section_20_a_1 : Assets -> Maybe RuleBalance
 rule_1_section_20_a_1 flow =
     if
         List.member flow.product [ i_A_1, i_A_2 ]
@@ -119,7 +102,7 @@ rule_1_section_20_a_1 flow =
             -- Treasury Control: Y
             && (flow.treasuryControl == True)
     then
-        Just flow.marketValue
+        Just (RuleBalance "20(a)(1)" flow.marketValue)
 
     else
         Nothing
@@ -127,7 +110,7 @@ rule_1_section_20_a_1 flow =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_1_section_20_b_1 : Assets -> Maybe Float
+rule_1_section_20_b_1 : Assets -> Maybe RuleBalance
 rule_1_section_20_b_1 flow =
     if
         List.member flow.product [ i_A_1, i_A_2 ]
@@ -145,7 +128,7 @@ rule_1_section_20_b_1 flow =
             -- Treasury Control: Y
             && (flow.treasuryControl == True)
     then
-        Just flow.marketValue
+        Just (RuleBalance "20(b)(1)" flow.marketValue)
 
     else
         Nothing
@@ -153,7 +136,7 @@ rule_1_section_20_b_1 flow =
 
 {-| (1) High-Quality Liquid Assets (Subpart C, §.20-.22)
 -}
-rule_1_section_20_c_1 : Assets -> Maybe Float
+rule_1_section_20_c_1 : Assets -> Maybe RuleBalance
 rule_1_section_20_c_1 flow =
     if
         List.member flow.product [ i_A_1, i_A_2 ]
@@ -171,7 +154,7 @@ rule_1_section_20_c_1 flow =
             -- Treasury Control: Y
             && (flow.treasuryControl == True)
     then
-        Just flow.marketValue
+        Just (RuleBalance "20(c)(1)" flow.marketValue)
 
     else
         Nothing
@@ -179,7 +162,7 @@ rule_1_section_20_c_1 flow =
 
 {-| (107) Financial and Central Bank Cash Inflow Amount (§.33(d)(1))
 -}
-rule_107_section_33_d_1 : FromDate -> Assets -> Maybe Float
+rule_107_section_33_d_1 : FromDate -> Assets -> Maybe RuleBalance
 rule_107_section_33_d_1 fromDate flow =
     if
         List.member flow.product [ i_A_3 ]
@@ -192,7 +175,7 @@ rule_107_section_33_d_1 fromDate flow =
             -- Forward Start Bucket: NULL
             && (flow.forwardStartBucket == Nothing)
     then
-        Just flow.marketValue
+        Just (RuleBalance "20(d)(1)" flow.marketValue)
 
     else
         Nothing
