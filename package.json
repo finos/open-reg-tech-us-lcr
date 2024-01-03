@@ -25,7 +25,7 @@
     "lobo": "^1.0.0"
   },
   "dependencies": {
-    "morphir-elm": "^2.79.0"
+    "morphir-elm": "^2.87.4"
   },
   "files": [
     "morphir-ir.json"
