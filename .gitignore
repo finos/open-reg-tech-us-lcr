@@ -17,7 +17,7 @@ website/package-lock.json
 
 # Morphir
 /.lobo/
-/.idea/
+.idea
 /node_modules/
 *.iml
 morphir-ir.json
@@ -32,3 +32,9 @@ morphir-hashes.json
 
 # Maven generated compiled scala will be ignored
 target
+
+# Scala-cli
+.scala-build/
+.vscode
+.bsp/
+src/main/generated-sources/
