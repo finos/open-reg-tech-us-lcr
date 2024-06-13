@@ -14,30 +14,47 @@
 
 module CalculationsTest exposing (..)
 
-import Expect as Float exposing (FloatingPointTolerance(..))
 import Regulation.US.FR2052A.DataTables as DataTables exposing (DataTables)
-import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (Assets, Product(..))
-import Regulation.US.FR2052A.DataTables.Outflows exposing (Outflows(..))
+import Regulation.US.FR2052A.DataTables.Inflows.Assets exposing (..)
+import Regulation.US.FR2052A.DataTables.Inflows.Unsecured exposing (Unsecured, Product(..))
+import Regulation.US.FR2052A.DataTables.Inflows.Secured exposing (Secured, Product(..))
+import Regulation.US.LCR.Inflows.Secured exposing (..)
+import Regulation.US.FR2052A.Fields.Counterparty as Counterparty
 import Regulation.US.FR2052A.DataTables.Outflows.Deposits as Deposits exposing (o_D_1)
 import Regulation.US.FR2052A.Fields.CollateralClass exposing (a_0_Q)
 import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
 import Regulation.US.FR2052A.Fields.Insured exposing (Insured(..))
-import Regulation.US.LCR.Calculations as Calculations exposing (..)
-import Test exposing (Test, test)
+import Regulation.US.LCR.Calculations exposing (..)
+import Regulation.US.FR2052A.Fields.Counterparty exposing (..)
+import Regulation.US.FR2052A.Fields.SubProduct as SubProduct
+import Regulation.US.LCR.HQLAAmountValues as HQLAAmountValues
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (..)
+import Regulation.US.LCR.Rules as Rules
+import Regulation.US.LCR.Basics exposing (..)
+import Regulation.US.LCR.AggregatedRuleBalances exposing (..)
+import Regulation.US.LCR.HQLAAmountValues exposing (..)
+
+import Test exposing (Test, test, describe)
+import Expect exposing(..)
 
 
-assets : List Assets
-assets =
-    [ Assets USD True "LCR" UnencumberedAssets (Just "not Currency and Coin") 60 "Valuable" 1 Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
-    ]
+assetsMarketValue = 30
+assets : Assets
+assets = Assets USD True "LCR" UnrestrictedReserveBalances (Just SubProduct.level_1) assetsMarketValue "Valuable" (Day 20) Nothing Nothing a_0_Q True "None" Nothing Nothing Nothing "Trade"
 
+unsecured : Unsecured
+unsecured = Unsecured USD True "LCR" OnshorePlacements (Just Counterparty.Retail) (Just "gsib") 75 Open Nothing Nothing Nothing Nothing Nothing "internal" Nothing Nothing "Trade"
+    
+securedMaturityAmount = 80
+secured : Secured
+secured = Secured USD True "LCR" ReverseRepo (Just SubProduct.level_1) securedMaturityAmount (Day 10) Nothing Nothing Nothing Nothing Nothing "internal" 10 True True "internal" Nothing Nothing "busi" "settlement" Bank Nothing
 
 inflows =
-    DataTables.Inflows assets [] [] []
+    DataTables.Inflows [assets] [] [secured] []
 
 
 deposits =
-    [ Deposits.Deposits USD True "Bank1" o_D_1 "OtherBank1" Nothing 100 1 Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
+    [ Deposits.Deposits USD True "Bank1" o_D_1 Central_Bank Nothing 100 Open Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
     ]
 
 
@@ -54,9 +71,83 @@ dataTables =
     DataTables inflows outflows supplemental
 
 
-endpoint : Test
-endpoint =
-    test "endpoint" <|
+testTotalNetCashOutflows : Test
+testTotalNetCashOutflows =
+    test "function total_net_cash_outflows" <|
         \_ ->
-            Calculations.lcr Global_systemically_important_BHC_or_GSIB_depository_institution dataTables
-                |> Float.within (Absolute 0.000000001) 0.6
+        total_net_cash_outflows dataTables Global_systemically_important_BHC_or_GSIB_depository_institution
+        |> Expect.within (Absolute 0.000000001) 25 -- 100 - min(80, 0.75 * 100)
+
+testIsSubProduct : Test
+testIsSubProduct = 
+    test "test isSubProduct function" <|
+        \_ ->
+            [assets]
+                |> List.filter (\a -> SubProduct.isSubProduct a.subProduct SubProduct.isHQLALevel1)
+                |> List.length
+                |> Expect.equal 1
+
+testInflowRules : Test
+testInflowRules = 
+    test "test applyInflowRules function" <|
+        \_ ->
+            -- toRuleBalances 1 [secured]
+            
+                applyInflowRules 1 inflows
+                    -- |> Expect.equal [RuleBalance "33(c)" 30,  RuleBalance "33(d)(1)" 80]
+                |> Rules.matchAndSum
+                    [ "33(c)"
+                    , "33(d)(1)" 
+                    , "33(d)(2)" 
+                    , "20(a)(1)"
+                    , "20(b)(1)"
+                    , "20(c)(1)"
+                    , "33(f)(1)(ii)"
+                    ]
+                    |> Expect.equal (assetsMarketValue + securedMaturityAmount) -- 33(c) and 33(f)(1)(ii)
+     
+
+testLevel1 : Test
+testLevel1 = 
+    test "test level_1_HQLA_additive_values function" <|
+        \() ->
+            HQLAAmountValues.level_1_HQLA_additive_values t0 dataTables
+            |> Expect.equal assetsMarketValue 
+
+testHqlaAmount : Test
+testHqlaAmount = 
+    test "function hqla_amount" <|
+        \_ ->
+        hqla_amount dataTables
+            |> Expect.within (Absolute 0.000000001) assetsMarketValue          
+
+
+hqlaAmountTests : Test
+hqlaAmountTests = 
+    describe "test each expression in function hqla_amount"
+    [
+        test "1st part" <|
+            \_ ->
+            (level_1_HQLA_additive_values t0 dataTables - level_1_HQLA_subtractive_values dataTables)
+            |> Expect.within (Absolute 0.000000001) assetsMarketValue
+        , test "2nd part" <|
+            \_ ->
+            0.85 * (level_2A_HQLA_additive_values t0 dataTables - level_2A_HQLA_subtractive_values dataTables)
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "3rd part" <|
+            \_ ->
+            0.5 * (level_2B_HQLA_additive_values t0 dataTables - level_2A_HQLA_additive_values t0 dataTables)
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "level_2_cap_excess_amount" <|
+            \_ ->
+            level_2_cap_excess_amount dataTables
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "level_2B_cap_excess_amount" <|
+            \_ ->
+            level_2B_cap_excess_amount dataTables
+            |> Expect.within (Absolute 0.000000001) 0
+        , test "adjusted_excess_HQLA" <|
+            \_ ->
+            adjusted_excess_HQLA dataTables
+            |> Expect.within (Absolute 0.000000001) 0
+    ]

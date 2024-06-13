@@ -56,18 +56,18 @@ unadjusted_excess_HQLA data =
 level_2_cap_excess_amount : DataTables -> Balance
 level_2_cap_excess_amount data =
     max 0
-        (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
-        + (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data))
-        - (0.6667 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data))
+        (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data)
+        + 0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data)
+        - 0.6667 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data))
 
 
 level_2B_cap_excess_amount : DataTables -> Balance
 level_2B_cap_excess_amount data =
     max 0
-        (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data))
+        (0.5 * (level_2B_HQLA_additive_values t0 data - level_2B_HQLA_subtractive_values data)
         - level_2_cap_excess_amount data
-        + (0.1765 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data))
-        - (0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
+        - 0.1765 * (level_1_HQLA_additive_values t0 data - level_1_HQLA_subtractive_values data)
+        + 0.85 * (level_2A_HQLA_additive_values t0 data - level_2A_HQLA_subtractive_values data))
 
 
 adjusted_level_1_HQLA_additive_values : DataTables -> Balance
@@ -107,20 +107,18 @@ adjusted_excess_HQLA data =
 adjusted_level_2_cap_excess_amount : DataTables -> Balance
 adjusted_level_2_cap_excess_amount data =
     max 0
-        (0.85 * (adjusted_level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
-        + (0.5 * (adjusted_level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
-        - (0.6667 * (adjusted_level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
+        (0.85 * (adjusted_level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data)
+        + 0.5 * (adjusted_level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data)
+        - 0.6667 * (adjusted_level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data))
 
 
 adjusted_level_2B_cap_excess_amount : DataTables -> Balance
 adjusted_level_2B_cap_excess_amount data =
     max 0
-        (0.5 * (adjusted_level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data))
+        (0.5 * (adjusted_level_2B_HQLA_additive_values data - level_2B_HQLA_subtractive_values data)
         - adjusted_level_2_cap_excess_amount data
-        - (0.1765
-            * (adjusted_level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
-            + (0.85 * (adjusted_level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
-          )
+        - 0.1765 * (adjusted_level_1_HQLA_additive_values data - level_1_HQLA_subtractive_values data)
+        + 0.85 * (adjusted_level_2A_HQLA_additive_values data - level_2A_HQLA_subtractive_values data))
 
 
 {-| Calculates the Total Net Cash Outflows to be considered for the denominator of the LCR.
