@@ -622,7 +622,7 @@ rule_97_section_32_j_3_xiii fromDate flow =
             -- Forward Start Bucket: NULL
             && (flow.forwardStartBucket == Nothing)
     then
-        Just (RuleBalance "32(j)(3)(iii)" flow.maturityAmount)
+        Just (RuleBalance "32(j)(3)(xiii)" flow.maturityAmount)
 
     else
         Nothing

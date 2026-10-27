@@ -121,8 +121,537 @@
                         "businessLine": "foo"
                     }
                 ],
-                "expectedOutput": 200000,
+                "expectedOutput": {
+                    "rule": "20(c)(1)",
+                    "amount": 200000
+                },
                 "description": "20(c)(1)"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
+                    "assets"
+                ]
+            ],
+            [
+                "rule",
+                "107",
+                "section",
+                "33",
+                "d",
+                "1"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    0,
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": true,
+                        "reportingEntity": "Foo",
+                        "product": [
+                            "unrestrictedReserveBalances"
+                        ],
+                        "subProduct": null,
+                        "marketValue": 50000,
+                        "lendableValue": "1000",
+                        "maturityBucket": [
+                            "day",
+                            10
+                        ],
+                        "forwardStartAmount": null,
+                        "forwardStartBucket": null,
+                        "collateralClass": "A-0-Q",
+                        "treasuryControl": true,
+                        "accountingDesignation": "foo",
+                        "effectiveMaturityBucket": null,
+                        "encumbranceType": null,
+                        "internalCounterparty": null,
+                        "businessLine": "foo"
+                    }
+                ],
+                "expectedOutput": {
+                    "rule": "33(d)(1)",
+                    "amount": 50000
+                },
+                "description": "33(d)(1)"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
+                    "other"
+                ]
+            ],
+            [
+                "rule",
+                "112",
+                "x",
+                "33",
+                "e"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    0,
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": true,
+                        "reportingEntity": "Foo",
+                        "product": [
+                            "interestAndDividendsReceivable"
+                        ],
+                        "maturityAmount": 75000,
+                        "maturityBucket": [
+                            "day",
+                            10
+                        ],
+                        "forwardStartAmount": null,
+                        "forwardStartBucket": null,
+                        "collateralClass": "A-1-Q",
+                        "collateralValue": 75000,
+                        "treasuryControl": false,
+                        "counterparty": null,
+                        "gSIB": null,
+                        "internal": "N",
+                        "internalCounterparty": null,
+                        "businessLine": "foo"
+                    }
+                ],
+                "expectedOutput": {
+                    "rule": "33(e)",
+                    "amount": 75000
+                },
+                "description": "33(e)"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "inflows"
+                ],
+                [
+                    "secured"
+                ]
+            ],
+            [
+                "rule",
+                "97",
+                "section",
+                "32",
+                "j",
+                "3",
+                "xiii"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    0,
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": true,
+                        "reportingEntity": "Foo",
+                        "product": [
+                            "collateralSwaps"
+                        ],
+                        "subProduct": "Non-HQLA",
+                        "maturityAmount": 120000,
+                        "maturityBucket": [
+                            "day",
+                            10
+                        ],
+                        "maturityOptionality": null,
+                        "effectiveMaturityBucket": [
+                            "day",
+                            45
+                        ],
+                        "encumbranceType": null,
+                        "forwardStartAmount": null,
+                        "forwardStartBucket": null,
+                        "collateralClass": "Other",
+                        "collateralValue": 120000,
+                        "unencumbered": false,
+                        "treasuryControl": false,
+                        "internal": "N",
+                        "internalCounterparty": null,
+                        "riskWeight": null,
+                        "businessLine": "foo",
+                        "settlement": "Bilateral",
+                        "counterparty": [
+                            "bank"
+                        ],
+                        "gSIB": null
+                    }
+                ],
+                "expectedOutput": {
+                    "rule": "32(j)(3)(xiii)",
+                    "amount": 120000
+                },
+                "description": "32(j)(3)(xiii)"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "outflows"
+                ],
+                [
+                    "deposits"
+                ]
+            ],
+            [
+                "rule",
+                "72",
+                "section",
+                "32",
+                "j",
+                "1",
+                "iv",
+                "amount"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "currency": [
+                            "uSD"
+                        ],
+                        "converted": true,
+                        "reportingEntity": "Foo",
+                        "counterparty": [
+                            "retail"
+                        ],
+                        "product": [
+                            "lessStableAffiliatedSweepAccountBalances"
+                        ],
+                        "gSIB": null,
+                        "maturityAmount": 10000,
+                        "maturityBucket": [
+                            "day",
+                            15
+                        ],
+                        "maturityOptionality": null,
+                        "collateralClass": "E-1-Q",
+                        "collateralValue": 8000,
+                        "insured": [
+                            "other"
+                        ],
+                        "trigger": "N",
+                        "rehypothecated": true,
+                        "businessLine": "foo",
+                        "internal": "N",
+                        "internalCounterparty": null
+                    }
+                ],
+                "expectedOutput": [
+                    {
+                        "rule": "32(h)",
+                        "amount": 2000
+                    },
+                    {
+                        "rule": "32(j)(1)(iv)",
+                        "amount": 10000
+                    }
+                ],
+                "description": "32(j)(1)(iv)"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "calculations"
+                ]
+            ],
+            [
+                "level",
+                "2",
+                "cap",
+                "excess",
+                "amount"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "inflows": {
+                            "assets": [
+                                {
+                                    "currency": [
+                                        "uSD"
+                                    ],
+                                    "converted": true,
+                                    "reportingEntity": "Foo",
+                                    "product": [
+                                        "unencumberedAssets"
+                                    ],
+                                    "subProduct": "Level 1",
+                                    "marketValue": 1000,
+                                    "lendableValue": "1000",
+                                    "maturityBucket": [
+                                        "open"
+                                    ],
+                                    "forwardStartAmount": null,
+                                    "forwardStartBucket": null,
+                                    "collateralClass": "A-1-Q",
+                                    "treasuryControl": true,
+                                    "accountingDesignation": "foo",
+                                    "effectiveMaturityBucket": null,
+                                    "encumbranceType": null,
+                                    "internalCounterparty": null,
+                                    "businessLine": "foo"
+                                }
+                            ],
+                            "unsecured": [],
+                            "secured": [],
+                            "other": []
+                        },
+                        "outflows": {
+                            "deposits": [],
+                            "wholesale": [],
+                            "secured": [],
+                            "other": []
+                        },
+                        "supplemental": {
+                            "balanceSheet": [],
+                            "derivativesCollateral": [],
+                            "foreignExchange": [],
+                            "informational": [],
+                            "liquidityRiskMeasurement": []
+                        }
+                    }
+                ],
+                "expectedOutput": 0,
+                "description": "Level 2 cap excess clamped at 0 when below 40% cap"
+            }
+        ]
+    ],
+    [
+        [
+            [
+                [
+                    "regulation"
+                ]
+            ],
+            [
+                [
+                    "u",
+                    "s"
+                ],
+                [
+                    "l",
+                    "c",
+                    "r"
+                ],
+                [
+                    "calculations"
+                ]
+            ],
+            [
+                "hqla",
+                "amount"
+            ]
+        ],
+        [
+            {
+                "inputs": [
+                    {
+                        "inflows": {
+                            "assets": [
+                                {
+                                    "currency": [
+                                        "uSD"
+                                    ],
+                                    "converted": true,
+                                    "reportingEntity": "Foo",
+                                    "product": [
+                                        "unencumberedAssets"
+                                    ],
+                                    "subProduct": "Level 1",
+                                    "marketValue": 1000,
+                                    "lendableValue": "1000",
+                                    "maturityBucket": [
+                                        "open"
+                                    ],
+                                    "forwardStartAmount": null,
+                                    "forwardStartBucket": null,
+                                    "collateralClass": "A-1-Q",
+                                    "treasuryControl": true,
+                                    "accountingDesignation": "foo",
+                                    "effectiveMaturityBucket": null,
+                                    "encumbranceType": null,
+                                    "internalCounterparty": null,
+                                    "businessLine": "foo"
+                                },
+                                {
+                                    "currency": [
+                                        "uSD"
+                                    ],
+                                    "converted": true,
+                                    "reportingEntity": "Foo",
+                                    "product": [
+                                        "unencumberedAssets"
+                                    ],
+                                    "subProduct": "Level 2a",
+                                    "marketValue": 200,
+                                    "lendableValue": "200",
+                                    "maturityBucket": [
+                                        "open"
+                                    ],
+                                    "forwardStartAmount": null,
+                                    "forwardStartBucket": null,
+                                    "collateralClass": "G-1-Q",
+                                    "treasuryControl": true,
+                                    "accountingDesignation": "foo",
+                                    "effectiveMaturityBucket": null,
+                                    "encumbranceType": null,
+                                    "internalCounterparty": null,
+                                    "businessLine": "foo"
+                                },
+                                {
+                                    "currency": [
+                                        "uSD"
+                                    ],
+                                    "converted": true,
+                                    "reportingEntity": "Foo",
+                                    "product": [
+                                        "unencumberedAssets"
+                                    ],
+                                    "subProduct": "Level 2b",
+                                    "marketValue": 100,
+                                    "lendableValue": "100",
+                                    "maturityBucket": [
+                                        "open"
+                                    ],
+                                    "forwardStartAmount": null,
+                                    "forwardStartBucket": null,
+                                    "collateralClass": "E-1-Q",
+                                    "treasuryControl": true,
+                                    "accountingDesignation": "foo",
+                                    "effectiveMaturityBucket": null,
+                                    "encumbranceType": null,
+                                    "internalCounterparty": null,
+                                    "businessLine": "foo"
+                                }
+                            ],
+                            "unsecured": [],
+                            "secured": [],
+                            "other": []
+                        },
+                        "outflows": {
+                            "deposits": [],
+                            "wholesale": [],
+                            "secured": [],
+                            "other": []
+                        },
+                        "supplemental": {
+                            "balanceSheet": [],
+                            "derivativesCollateral": [],
+                            "foreignExchange": [],
+                            "informational": [],
+                            "liquidityRiskMeasurement": []
+                        }
+                    }
+                ],
+                "expectedOutput": 1220,
+                "description": "HQLA = 1000 (L1) + 0.85 * 200 (L2A) + 0.50 * 100 (L2B) - 0 excess = 1220"
             }
         ]
     ]

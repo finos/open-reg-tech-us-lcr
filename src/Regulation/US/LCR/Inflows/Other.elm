@@ -84,7 +84,7 @@ rule_112_x_33_e fromDate flow =
             -- Treasury Control: N
             && (flow.treasuryControl == False)
     then
-        Just (RuleBalance "33(3)" flow.maturityAmount)
+        Just (RuleBalance "33(e)" flow.maturityAmount)
 
     else
         Nothing
