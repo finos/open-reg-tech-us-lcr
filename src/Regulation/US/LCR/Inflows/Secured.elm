@@ -46,7 +46,7 @@ toRuleBalances fromDate list =
                     |> orElse (rule_94_section_32_j_3_x fromDate flow)
                     |> orElse (rule_95_section_32_j_3_xi fromDate flow)
                     |> orElse (rule_96_section_32_j_3_xii fromDate flow)
-                    |> orElse (rule_97_section_32_j_3_xiii fromDate flow)
+                    |> orElse (rule_97_section_33_f_1_v fromDate flow)
                     |> orElse (rule_105_section_33_c fromDate flow)
                     |> orElse (rule_108_section_33_d_1 fromDate flow)
                     |> orElse (rule_110_section_33_d_2 fromDate flow)
@@ -598,10 +598,10 @@ rule_96_section_32_j_3_xii fromDate flow =
         Nothing
 
 
-{-| (97) Asset Exchange Post Rehypothecated Assets >30 days Receive Non-HQLA (§.32(j)(3)(xiii))
+{-| (97) Asset Exchange Post Rehypothecated Assets >30 days Receive Non-HQLA (§.33(f)(1)(v))
 -}
-rule_97_section_32_j_3_xiii : FromDate -> Secured -> Maybe RuleBalance
-rule_97_section_32_j_3_xiii fromDate flow =
+rule_97_section_33_f_1_v : FromDate -> Secured -> Maybe RuleBalance
+rule_97_section_33_f_1_v fromDate flow =
     if
         List.member flow.product [ i_S_4 ]
             -- Sub-Product: Non-HQLA or No Collateral Pledged
@@ -622,7 +622,7 @@ rule_97_section_32_j_3_xiii fromDate flow =
             -- Forward Start Bucket: NULL
             && (flow.forwardStartBucket == Nothing)
     then
-        Just (RuleBalance "32(j)(3)(xiii)" flow.maturityAmount)
+        Just (RuleBalance "33(f)(1)(v)" flow.maturityAmount)
 
     else
         Nothing

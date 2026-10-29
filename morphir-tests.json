@@ -299,10 +299,10 @@
                 "rule",
                 "97",
                 "section",
-                "32",
-                "j",
-                "3",
-                "xiii"
+                "33",
+                "f",
+                "1",
+                "v"
             ]
         ],
         [
@@ -348,10 +348,10 @@
                     }
                 ],
                 "expectedOutput": {
-                    "rule": "32(j)(3)(xiii)",
+                    "rule": "33(f)(1)(v)",
                     "amount": 120000
                 },
-                "description": "32(j)(3)(xiii)"
+                "description": "33(f)(1)(v)"
             }
         ]
     ],
