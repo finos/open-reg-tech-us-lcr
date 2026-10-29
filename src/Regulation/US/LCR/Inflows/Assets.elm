@@ -175,7 +175,7 @@ rule_107_section_33_d_1 fromDate flow =
             -- Forward Start Bucket: NULL
             && (flow.forwardStartBucket == Nothing)
     then
-        Just (RuleBalance "20(d)(1)" flow.marketValue)
+        Just (RuleBalance "33(d)(1)" flow.marketValue)
 
     else
         Nothing

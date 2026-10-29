@@ -15,18 +15,26 @@
 module DepositsRulesTest exposing (..)
 
 import Expect
-import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits, o_D_1)
+import Regulation.US.FR2052A.DataTables.Outflows.Deposits exposing (Deposits, o_D_1, o_D_10)
+import Regulation.US.FR2052A.Fields.CollateralClass exposing (e_1_Q)
+import Regulation.US.FR2052A.Fields.Counterparty as Counterparty
 import Regulation.US.FR2052A.Fields.Currency exposing (Currency(..))
 import Regulation.US.FR2052A.Fields.Insured exposing (Insured(..))
-import Regulation.US.LCR.Outflows.Deposits exposing (toRuleBalances)
+import Regulation.US.FR2052A.Fields.MaturityBucket exposing (MaturityBucket(..))
+import Regulation.US.LCR.Outflows.Deposits exposing (rule_72_section_32_j_1_iv_amount, toRuleBalances)
 import Regulation.US.LCR.Rules exposing (RuleBalance)
 import Test exposing (Test, test)
 
 
 deposits : List Deposits
 deposits =
-    [ Deposits USD True "Bank1" o_D_1 "OtherBank1" Nothing 100 1 Nothing Nothing Nothing FDIC "trig1" Nothing "bl" "in" Nothing
+    [ Deposits USD True "Bank1" o_D_1 Counterparty.Retail Nothing 100 (Day 1) Nothing Nothing Nothing FDIC "N" Nothing "bl" "N" Nothing
     ]
+
+
+collateralizedDeposit : Deposits
+collateralizedDeposit =
+    Deposits USD True "Bank1" o_D_10 Counterparty.Retail Nothing 10000 (Day 15) Nothing (Just e_1_Q) (Just 8000) Other "N" (Just True) "bl" "N" Nothing
 
 
 getAmount : List RuleBalance -> Float
@@ -41,5 +49,16 @@ testToRuleBalances : Test
 testToRuleBalances =
     test "toRuleBalances" <|
         \_ ->
-            getAmount (toRuleBalances deposits)
+            getAmount (toRuleBalances 0 deposits)
                 |> Expect.equal 100
+
+
+testRule72Section32J1IvAmount : Test
+testRule72Section32J1IvAmount =
+    test "rule72Section32J1IvAmount emits 32(j)(1)(iv)" <|
+        \_ ->
+            rule_72_section_32_j_1_iv_amount collateralizedDeposit
+                |> Expect.equal
+                    [ RuleBalance "32(h)" 2000
+                    , RuleBalance "32(j)(1)(iv)" 10000
+                    ]
