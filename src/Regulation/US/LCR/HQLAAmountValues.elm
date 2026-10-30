@@ -20,12 +20,12 @@ level_1_HQLA_additive_values fromDate data =
         level_1_inflow_assets : List Assets
         level_1_inflow_assets =
             data.inflows.assets
-                |> List.filter (\a -> SubProduct.isSubProduct a.subProduct SubProduct.isHQLALevel1)
+                |> List.filter (\a -> a.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel1 sp) |> Maybe.withDefault False)
 
         level_1_inflow_secured : List Inflows.Secured
         level_1_inflow_secured =
             data.inflows.secured
-                |> List.filter (\s -> SubProduct.isSubProduct s.subProduct SubProduct.isHQLALevel1)
+                |> List.filter (\s -> s.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel1 sp) |> Maybe.withDefault False)
 
         level_1_inflows : DataTables.Inflows
         level_1_inflows =
@@ -34,7 +34,7 @@ level_1_HQLA_additive_values fromDate data =
         level_1_supplemental_derivativesCollateral : List Supplemental.DerivativesCollateral
         level_1_supplemental_derivativesCollateral =
             data.supplemental.derivativesCollateral
-                |> List.filter (\d -> SubProduct.isSubProduct d.subProduct SubProduct.isHQLALevel1)
+                |> List.filter (\d -> d.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel1 sp) |> Maybe.withDefault False)
 
         level_1_supplementals : DataTables.Supplemental
         level_1_supplementals =
@@ -71,12 +71,12 @@ level_2A_HQLA_additive_values fromDate data =
         level_2A_inflow_assets : List Assets
         level_2A_inflow_assets =
             data.inflows.assets
-                |> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel2A)
+                |> List.filter (\a -> a.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel2A sp) |> Maybe.withDefault False)
 
         level_2A_inflow_secured : List Inflows.Secured
         level_2A_inflow_secured =
             data.inflows.secured
-                |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel2A)
+                |> List.filter (\s -> s.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel2A sp) |> Maybe.withDefault False)
 
         level_2A_inflows : DataTables.Inflows
         level_2A_inflows =
@@ -85,7 +85,7 @@ level_2A_HQLA_additive_values fromDate data =
         level_2A_supplemental_derivativesCollateral : List Supplemental.DerivativesCollateral
         level_2A_supplemental_derivativesCollateral =
             data.supplemental.derivativesCollateral
-                |> List.filter (\d -> isSubProduct d.subProduct SubProduct.isHQLALevel2A)
+                |> List.filter (\d -> d.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel2A sp) |> Maybe.withDefault False)
 
         level_2A_supplementals : DataTables.Supplemental
         level_2A_supplementals =
@@ -122,12 +122,12 @@ level_2B_HQLA_additive_values fromDate data =
         level_2B_inflow_assets : List Assets
         level_2B_inflow_assets =
             data.inflows.assets
-                |> List.filter (\a -> isSubProduct a.subProduct SubProduct.isHQLALevel2B)
+                |> List.filter (\a -> a.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel2B sp) |> Maybe.withDefault False)
 
         level_2B_inflow_secured : List Inflows.Secured
         level_2B_inflow_secured =
             data.inflows.secured
-                |> List.filter (\s -> isSubProduct s.subProduct SubProduct.isHQLALevel2B)
+                |> List.filter (\s -> s.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel2B sp) |> Maybe.withDefault False)
 
         level_2B_inflows : DataTables.Inflows
         level_2B_inflows =
@@ -136,7 +136,7 @@ level_2B_HQLA_additive_values fromDate data =
         level_2B_supplemental_derivativesCollateral : List Supplemental.DerivativesCollateral
         level_2B_supplemental_derivativesCollateral =
             data.supplemental.derivativesCollateral
-                |> List.filter (\d -> isSubProduct d.subProduct SubProduct.isHQLALevel2B)
+                |> List.filter (\d -> d.subProduct |> Maybe.map (\sp -> SubProduct.isHQLALevel2B sp) |> Maybe.withDefault False)
 
         level_2B_supplementals : DataTables.Supplemental
         level_2B_supplementals =
