@@ -13,7 +13,7 @@ implementation for non-technical users.
 
 # Using the LCR
 The LCR can be generated into any target language or platform supported by Morphir. See 
-the [Morphir Documentation on Generating](https://github.com/finos/morphir/blob/main/docs/users-guide/command_line_tools.md#Generate)
+the [Morphir Documentation on Generating](https://morphir.finos.org/docs/command-line-tools)
 for details on available generators.
 
 As a convenience, this project includes configuration for generating into Scala with Maven. To use it,
